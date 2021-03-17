@@ -1,10 +1,22 @@
 <h1 align="center">
   <br>
-   <img src="./src/img/dog_without_bg.png" width="auto" height="80"><img src="./src/img/remy's_best_without_bg.png" width="auto" height="80">
+   <img src="./src/img/dog-x-remys.png" width="auto" height="128">
   <br>
   Remy's Best Server
   <br>
 </h1>
+<p align="center">
+  <a href="https://github.com/sopra-fs21-group-06/remys-best-server/actions">
+    <img src="https://github.com/sopra-fs21-group-06/remys-best-server/workflows/Deploy%20Project/badge.svg">
+  </a>
+  <a href="https://heroku-badge.herokuapp.com/?app=remys-best-server"><img src="https://heroku-badge.herokuapp.com/?app=remys-best-server&style=flat&svg=1"></a>
+  <a href="https://sonarcloud.io/dashboard?id=sopra-fs21-group-06_remys-best-server">
+      <img src="https://sonarcloud.io/api/project_badges/measure?project=sopra-fs21-group-06_remys-best-server&metric=coverage">
+  </a>
+  <a href="https://sonarcloud.io/dashboard?id=sopra-fs21-group-06_remys-best-server">
+        <img src="https://sonarcloud.io/api/project_badges/measure?project=sopra-fs21-group-06_remys-best-server&metric=alert_status">
+    </a>
+</p>
 
 ## Getting started with Spring Boot
 
