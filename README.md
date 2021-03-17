@@ -1,4 +1,10 @@
-# SoPra FS21 Group 06 (Remy's Best)
+<h1 align="center">
+  <br>
+   <img src="./src/img/dog_without_bg.png" width="auto" height="80"><img src="./src/img/remy's_best_without_bg.png" width="auto" height="80">
+  <br>
+  Remy's Best Server
+  <br>
+</h1>
 
 ## Getting started with Spring Boot
 
