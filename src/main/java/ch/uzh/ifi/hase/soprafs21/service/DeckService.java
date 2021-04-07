@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.objects.Deck;
+import ch.uzh.ifi.hase.soprafs21.objects.Hand;
 
 public class DeckService {
     private final Deck deck;
@@ -14,5 +15,9 @@ public class DeckService {
     }
     public void shuffle(){
         // shuffle api deck
+    }
+    public Hand draw(int nrCards){
+        // get nr crads
+
     }
 }

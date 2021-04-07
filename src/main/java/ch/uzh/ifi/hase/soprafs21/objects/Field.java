@@ -12,6 +12,8 @@ public class Field {
     private Boolean isStart;
     private Color color;
 
+    public Field(int fieldValue){this. fieldValue = fieldValue;}
+
     public Boolean getFinish() {
         return isFinish;
     }
@@ -58,6 +60,10 @@ public class Field {
 
     public void setStart(Boolean start) {
         isStart = start;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 }
 
