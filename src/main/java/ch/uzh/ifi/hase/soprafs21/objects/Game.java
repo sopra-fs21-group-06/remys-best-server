@@ -1,15 +1,28 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
+import ch.uzh.ifi.hase.soprafs21.entity.User;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class Game {
-    private List<Player> playerList;
-    private int nrCards;
-    private Deck deck;
+    /** should game have a Round ? such that we just instantiate a new variable of round that automatically is created with right number of cards etc?**/
+    private List<Player> playerList = new ArrayList<Player>();
+    private int nrCards=7;
+    private Deck deck= new Deck();
     private Player startPlayer;
-    private PlayingBoard playingBoard;
-    private UUID gameID;
+    private PlayingBoard playingBoard = new PlayingBoard();
+    private final UUID gameID = UUID.randomUUID();
+
+    public Game(List<User> users){
+        for(User user : users){
+            playerList.add(userToPlayer(user));
+        }
+    }
+    public Player userToPlayer(User user){
+        return new Player(user.getName());
+    }
+    public void initializeGame(){}
 
     public Deck getDeck() {
         return deck;
@@ -37,10 +50,6 @@ public class Game {
 
     public void setDeck(Deck deck) {
         this.deck = deck;
-    }
-
-    public void setGameID(UUID gameID) {
-        this.gameID = gameID;
     }
 
     public void setNrCards(int nrCards) {

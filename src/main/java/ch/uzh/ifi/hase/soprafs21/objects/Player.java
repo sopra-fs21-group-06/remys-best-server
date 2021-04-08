@@ -6,12 +6,17 @@ import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import java.util.List;
 
 public class Player {
+
     private Color color;
     private Hand hand;
-    private String playerName;
+    private final String playerName;
     private UserStatus status;
     private List<Marble> marbleList;
     private Player teamMate;
+
+    public Player(String playerName) {
+        this.playerName=playerName;
+    }
 
     public Color getColor() {
         return color;
@@ -47,10 +52,6 @@ public class Player {
 
     public void setMarbleList(List<Marble> marbleList) {
         this.marbleList = marbleList;
-    }
-
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
     }
 
     public void setStatus(UserStatus status) {
