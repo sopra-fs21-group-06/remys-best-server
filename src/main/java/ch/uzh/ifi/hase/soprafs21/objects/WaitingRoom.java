@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -37,4 +38,17 @@ public class WaitingRoom {
     public void setUserQueue(List<User> userQueue) {
         this.userQueue = userQueue;
     }
+
+    /** here we do not need to specifically look for the first four since this method is only called when the size is exactly four **/
+    public List<User> getFirstFour(){
+        return (List<User>) new ArrayList<User>(userQueue);
+    };
+    public boolean userInHere(User user){
+        return userQueue.contains(user);
+    }
+    public void removeUser(User user){
+        userQueue.remove(user);
+    }
+
+    public int addUser(User user){userQueue.add(user);userCount++;return userQueue.size();}
 }

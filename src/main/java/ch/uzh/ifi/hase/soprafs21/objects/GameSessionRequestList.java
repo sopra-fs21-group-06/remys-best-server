@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 /** needs a constructor**/
 public class GameSessionRequestList {
     private List<GameSessionRequest> gameSessionRequestList;
@@ -42,6 +45,7 @@ public class GameSessionRequestList {
 
     /**can throw nullPointerException **/
     public List<GameSessionRequest> getRequestsByUserID(UUID id){
+<<<<<<< Updated upstream
         List<GameSessionRequest> list = new ArrayList<GameSessionRequest>();
         for (GameSessionRequest request : gameSessionRequestList) {
             if (request.getReceiverID().equals(id)) {
@@ -52,3 +56,14 @@ public class GameSessionRequestList {
     };
 };
 
+=======
+            List<GameSessionRequest> list = new ArrayList<GameSessionRequest>();
+            for (GameSessionRequest request : gameSessionRequestList) {
+                if (request.getReceiverID().equals(id)) {
+                    list.add(request);
+                }
+            }
+            return list;
+    };
+};
+>>>>>>> Stashed changes

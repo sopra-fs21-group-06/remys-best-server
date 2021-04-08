@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs21.constant.RequestStatus;
 
 import java.util.UUID;
 
+/**basically just a data container with getters and setters**/
 public class GameSessionRequest{
     private UUID hostID;
     private UUID receiverID;

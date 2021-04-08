@@ -10,8 +10,6 @@ public class RoundService {
     public RoundService(Round round) {
         this.round = round;
     }
-    public Player changeStartPlayer(){
-
-    }
+    public Player changeStartPlayer(){}
     public void makeMove(){}
 }
