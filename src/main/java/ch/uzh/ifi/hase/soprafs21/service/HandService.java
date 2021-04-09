@@ -21,5 +21,4 @@ public class HandService {
         this.hand.getHandDeck().add(card);
     }
 
-
 }

@@ -24,7 +24,6 @@ public class Card {
         this.image = image;
         this.card_id = code;
         this.changeCardValueToCardMoveValue(value);
-
     }
 
     public CardSuit getCardSuit() {
@@ -32,34 +31,34 @@ public class Card {
     }
     // 15 for changing marbles, 14 for getting out homefields
     // make methods setAce(),setKing() etc.
-    public void changeCardValueToCardMoveValue(String value){
+    public void changeCardValueToCardMoveValue(String value) {
 
         if (value.matches("[2-3][5-6][8-9]]")) {
             int number = Integer.valueOf(value);
             cardMoveValue.add(number);
-        } else if (value.matches("4")) {
+        }
+        else if (value.matches("4")) {
             cardMoveValue.add(-4);
             cardMoveValue.add(4);
-        } else if (value.matches("0")){
+        }
+        else if (value.matches("0")) {
             cardMoveValue.add(10);
-        } else if (value.matches("J")) {
+        }
+        else if (value.matches("J")) {
             cardMoveValue.add(15);
-        } else if   (value.matches("A")){
+        }
+        else if (value.matches("A")) {
             cardMoveValue.add(14);
             cardMoveValue.add(1);
             cardMoveValue.add(11);
-        } else if (value.matches("Q")){
+        }
+        else if (value.matches("Q")) {
             cardMoveValue.add(12);
-        }else if (value.matches("K")){
+        }
+        else if (value.matches("K")) {
             cardMoveValue.add(14);
             cardMoveValue.add(13);
         }
-
-
-
-
-
-
     }
 
 

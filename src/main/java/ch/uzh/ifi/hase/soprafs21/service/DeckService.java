@@ -12,7 +12,6 @@ public class DeckService {
     public DeckService(Deck deck) {
         this.deck = deck;
     }
-
     public int generateDeck(){
         // generate deck from api and add id to deck
         return 0;
