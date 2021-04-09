@@ -23,12 +23,15 @@ public class User implements Serializable {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String password;
 
     @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(unique = true)
     private String token;
 
     @Column(nullable = false)
@@ -42,12 +45,12 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getPassword() {
+        return password;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPassword(String name) {
+        this.password = name;
     }
 
     public String getUsername() {
@@ -72,5 +75,13 @@ public class User implements Serializable {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
