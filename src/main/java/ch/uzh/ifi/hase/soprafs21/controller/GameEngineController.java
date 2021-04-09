@@ -1,9 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-public class GameEngineController {
-    private final GameEngineService gameEngineService;
+import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 
-    GameEngineController(GameEngineService gameEngineService) {
-        this.gameEngineService = gameEngineService;
+public class GameEngineController {
+    private final GameEngine gameEngine;
+
+    GameEngineController(GameEngine gameEngine) {
+        this.gameEngine = gameEngine;
     }
 }

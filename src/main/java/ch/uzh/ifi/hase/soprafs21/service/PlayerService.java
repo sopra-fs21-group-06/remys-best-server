@@ -10,6 +10,6 @@ public class PlayerService {
     PlayerService(Player player){
         this.player = player;
     }
-    public Card chooseCard(){}
-    public Marble chooseMarble(){}
+    public Card chooseCard(){return null;}
+    public Marble chooseMarble(){return null;}
 }
