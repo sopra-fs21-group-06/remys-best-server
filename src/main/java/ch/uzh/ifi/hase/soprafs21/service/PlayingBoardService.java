@@ -1,5 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.objects.Card;
+import ch.uzh.ifi.hase.soprafs21.objects.Field;
+import ch.uzh.ifi.hase.soprafs21.objects.Marble;
 import ch.uzh.ifi.hase.soprafs21.objects.PlayingBoard;
 
 public class PlayingBoardService {
@@ -9,5 +12,5 @@ public class PlayingBoardService {
     public PlayingBoardService(PlayingBoard playingBoard) {
         this.playingBoard = playingBoard;
     }
-    public void moveMarble(Field startLocation, Field destinationLocation){}
+    public void moveMarble(Marble marble, Card card){}
 }
