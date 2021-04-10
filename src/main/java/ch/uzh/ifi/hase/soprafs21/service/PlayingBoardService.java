@@ -1,5 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.objects.Card;
+import ch.uzh.ifi.hase.soprafs21.objects.Field;
+import ch.uzh.ifi.hase.soprafs21.objects.Marble;
+import ch.uzh.ifi.hase.soprafs21.objects.PlayingBoard;
 import ch.uzh.ifi.hase.soprafs21.Application;
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
@@ -10,7 +14,6 @@ import java.util.LinkedList;
 import java.util.Stack;
 
 import static java.lang.Boolean.TRUE;
-
 
 public class PlayingBoardService {
     private final PlayingBoard playingBoard;
