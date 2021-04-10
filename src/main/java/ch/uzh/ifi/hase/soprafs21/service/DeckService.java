@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.objects.Card;
 import ch.uzh.ifi.hase.soprafs21.objects.Deck;
+import ch.uzh.ifi.hase.soprafs21.objects.Hand;
 
 import java.util.List;
 
@@ -20,5 +21,8 @@ public class DeckService {
     }
     public List<Card> draw(int nrCards){
         // draw from api deck
+    public Hand draw(int nrCards){
+        // get nr crads
+
     }
 }
