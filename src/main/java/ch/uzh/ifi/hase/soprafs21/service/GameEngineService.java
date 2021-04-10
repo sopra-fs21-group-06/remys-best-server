@@ -1,6 +1,10 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.constant.Color;
+import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
+import ch.uzh.ifi.hase.soprafs21.objects.GameSession;
+import ch.uzh.ifi.hase.soprafs21.objects.Player;
 
 public class GameEngineService {
     private final GameEngine gameEngine;
@@ -12,7 +16,11 @@ public class GameEngineService {
     public int addUserToWaitingRoom(User user){
 
     };
-    public Game createGameFromWaitingRoom(List<users> Users, GameSession gameSession){};
+    public Game createGameFromWaitingRoom(List<users> Users, GameSession gameSession){
+        //check somewhere that list is with 4 diff users
+        Player playerblue = new Player(user, Color.blue);
+
+    };
     public Game createGameFromGameSession(GameSession gameSession,List<users> Users){};
     public void deleteGameSession(GameSession gameSession){};
     public void userDisconnected(User user){};

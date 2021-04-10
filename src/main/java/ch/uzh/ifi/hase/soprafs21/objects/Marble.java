@@ -3,15 +3,20 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 
 import java.util.List;
+import java.util.Stack;
 
 public class Marble {
+    private int marbleNr;
     private Color color;
-    private StartField startField;
-    private List<FinishField> finishFields;
-    private List<HomeField> homeFields;
+
     private Field currentField;
     private Boolean isHome;
     private Boolean isFinish;
+
+
+    Marble(int nr){
+        this.marbleNr = nr;
+    }
 
     public void setHome(Boolean home) {
         isHome = home;
@@ -41,32 +46,10 @@ public class Marble {
         return currentField;
     }
 
-    public List<FinishField> getFinishFields() {
-        return finishFields;
-    }
-
-    public List<HomeField> getHomeFields() {
-        return homeFields;
-    }
-
-    public StartField getStartField() {
-        return startField;
-    }
 
     public void setCurrentField(Field currentField) {
         this.currentField = currentField;
     }
 
-    public void setFinishFields(List<FinishField> finishFields) {
-        this.finishFields = finishFields;
-    }
-
-    public void setHomeFields(List<HomeField> homeFields) {
-        this.homeFields = homeFields;
-    }
-
-    public void setStartField(StartField startField) {
-        this.startField = startField;
-    }
 
 }
