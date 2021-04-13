@@ -39,7 +39,7 @@ public class UserService {
 
     public User createUser(User newUser) {
         newUser.setToken(UUID.randomUUID().toString());
-        newUser.setStatus(UserStatus.OFFLINE);
+        newUser.setStatus(UserStatus.FREE);
 
         checkIfUserExists(newUser);
 
@@ -61,17 +61,72 @@ public class UserService {
      */
     private void checkIfUserExists(User userToBeCreated) {
         User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-        User userByName = userRepository.findByName(userToBeCreated.getName());
+        User userByEmail = userRepository.findByEmail(userToBeCreated.getEmail());
 
-        String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-        if (userByUsername != null && userByName != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username and the name", "are"));
+        String baseErrorMessage = "The %s provided %s are already used. Therefore, the user could not be created!";
+        if (userByUsername != null && userByEmail != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username and the emailadress", "are"));
         }
         else if (userByUsername != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
         }
-        else if (userByName != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "name", "is"));
+        else if (userByEmail != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "emailadress", "is"));
         }
+    }
+
+    public User logInUser(User user){
+
+        int usernameOrEmail = checkIfLoginDataCorrect(user);
+
+        // 0 means user logged in with emailadress, 1 means user logged in with username
+        User userToUpdate = usernameOrEmail == 0 ? userRepository.findByEmail(user.getUsername()): userRepository.findByUsername(user.getUsername());
+        userToUpdate.setToken(UUID.randomUUID().toString());
+        userToUpdate.setStatus(UserStatus.FREE);
+
+        userToUpdate = userRepository.save(userToUpdate);
+        userRepository.flush();
+
+        return userToUpdate;
+    }
+
+    private int checkIfLoginDataCorrect(User userToBeLoggedIn){
+
+        String usernameOrEmail = userToBeLoggedIn.getUsername();
+        String passwordWrongErrorMessage = "The provided password is wrong.";
+        String userDoesNotExistErrorMessage = "There is no userAccount with this %s. Haven't an userAccount yet? Please Register.";
+
+        if (usernameOrEmail.contains("@")){
+            User userByEmail = userRepository.findByEmail(userToBeLoggedIn.getUsername());
+            if(userByEmail == null){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(userDoesNotExistErrorMessage, "emailadress"));
+            }
+            else if(!userToBeLoggedIn.getPassword().equals(userByEmail.getPassword())){
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, passwordWrongErrorMessage);
+            }
+            return 0;
+        }
+
+        else{
+            User userByUsername = userRepository.findByUsername(userToBeLoggedIn.getUsername());
+
+            if (userByUsername == null){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(userDoesNotExistErrorMessage, "username"));
+            }
+            else if(!userToBeLoggedIn.getPassword().equals(userByUsername.getPassword())){
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, passwordWrongErrorMessage);
+            }
+            return 1;
+        }
+    }
+
+    public void logOutUser(User user){
+
+        User userToUpdate = userRepository.getOne(userRepository.findByToken(user.getToken()).getId());
+        userToUpdate.setToken(null);
+        userToUpdate.setStatus(UserStatus.OFFLINE);
+
+        userRepository.save(userToUpdate);
+        userRepository.flush();
     }
 }
