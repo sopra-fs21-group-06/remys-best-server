@@ -1,9 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-public class GameSessionRequestController {
-    private final GameSessionRequestService gameSessionRequestService;
+import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 
-    public GameSessionRequestController(GameSessionRequestService gameSessionRequestService) {
-        this.gameSessionRequestService = gameSessionRequestService;
+public class GameSessionRequestController {
+    private final GameEngine gameEngine;
+
+    public GameSessionRequestController(GameEngine gameEngine) {
+        this.gameEngine = gameEngine;
     }
 }

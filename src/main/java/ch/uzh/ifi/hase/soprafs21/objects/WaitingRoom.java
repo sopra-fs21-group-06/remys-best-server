@@ -10,6 +10,11 @@ public class WaitingRoom {
     private int userCount;
     private List<User> userQueue;
 
+    public WaitingRoom(){
+        userCount = 0;
+        userQueue = new ArrayList<User>();
+    }
+
     public void setUserCount(int userCount) {
         this.userCount = userCount;
     }
@@ -28,6 +33,7 @@ public class WaitingRoom {
 
     /** here we do not need to specifically look for the first four since this method is only called when the size is exactly four **/
     public List<User> getFirstFour(){
+        userCount=0;
         return (List<User>) new ArrayList<User>(userQueue);
     };
     public boolean userInHere(User user){

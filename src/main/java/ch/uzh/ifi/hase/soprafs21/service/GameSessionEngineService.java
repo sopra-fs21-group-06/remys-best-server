@@ -4,10 +4,6 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.objects.GameSession;
 
 public class GameSessionEngineService {
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
     private final GameSession gameSession;
 
     public GameSessionEngineService(GameSession gameSession) {

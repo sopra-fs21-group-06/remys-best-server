@@ -2,14 +2,21 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class GameSession {
 
     private final UUID GameSessionId = UUID.randomUUID();
+    private final Long hostID;
     private int userCount;
-    private List<User> userList;
+    private List<User> userList= new ArrayList<User>();
+
+    public GameSession(User host){
+        this.hostID = host.getId();
+        userList.add(host);
+    }
 
     public UUID getID(){return GameSessionId;}
     public int getUserCount(){return userCount;}
@@ -27,14 +34,8 @@ public class GameSession {
     public void addUser(User user){userList.add(user);userCount++;}
 
     /**can throw nullPointerException **/
-    //Function is used in GameSessionEngineService to remove a user
-    public void deleteUser(User user){userList.remove(user);userCount--;}
-
-    /**can throw nullPointerException **/
     public boolean userInHere(User user){return userList.contains(user);}
 
     /**can throw nullPointerException **/
-
-    public void removeUser(User user) {userList.remove(user);userCount--;
-    }
+    public void deleteUser(User user) {if(userInHere(user)&&user.getId()!=hostID){userList.remove(user);userCount--;}}
 }

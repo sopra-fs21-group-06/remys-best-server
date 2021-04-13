@@ -59,20 +59,33 @@ public class GameEngine{
 
     public void addUserToWaitingRoom(User user){
         if(waitingRoom.addUser(user)==4){
-            this.createGameFromWaitingRoom();
+            createGameFromWaitingRoom();
         }
     };
-    private Game createGameFromWaitingRoom(){return new Game(this.waitingRoom.getFirstFour());}
+    private void createGameFromWaitingRoom(){runningGamesList.add(new Game(this.waitingRoom.getFirstFour()));}
 
+    /** throws operation not valid **/
     public Game createGameFromGameSession(GameSession gameSession){
-        return new Game(gameSession.getUserList());
+        if(gameSessionList.contains(gameSession)){
+            if(gameSession.getUserList().size()==4){
+                gameSessionList.remove(gameSession);
+                Game game = new Game(gameSession.getUserList());
+                runningGamesList.add(game);
+                return game;
+            }
+        }
+        return null;
     };
+    public boolean userInGameSession(User user, UUID gameSessionId){
+        return findGameSessionByID(gameSessionId).userInHere(user);
+    }
+
     private boolean gameSessionExists(GameSession gameSession){
         return (gameSessionList.contains(gameSession));
     }
-    public void deleteGameSession(GameSession gameSession){
-        if(this.gameSessionExists(gameSession)){
-            this.gameSessionList.remove(gameSession);
+    public void deleteGameSession(UUID gameSessionId){
+        if(this.gameSessionExists(findGameSessionByID(gameSessionId))){
+            this.gameSessionList.remove(findGameSessionByID(gameSessionId));
         }
     };
     private GameSession findGameSessionByID(UUID id){
@@ -138,11 +151,7 @@ public class GameEngine{
 
     /**can throw nullPointerException **/
     public void deleteUserFromSession(User user, UUID gameSessionID){
-        for(GameSession gameSession: gameSessionList){
-            if(gameSession.getID().equals(gameSessionID)){
-                gameSession.removeUser(user);
-            }
-        }
+        findGameSessionByID(gameSessionID).deleteUser(user);
     }
 
     /**can throw nullPointerException **/
@@ -151,4 +160,10 @@ public class GameEngine{
         runningGamesList.remove(game);
 
     };
+
+    /** check needs to happen if user available before calling method **/
+    public void newGameSession(User host) {
+        GameSession gameSession = new GameSession(host);
+        gameSessionList.add(gameSession);
+    }
 }
