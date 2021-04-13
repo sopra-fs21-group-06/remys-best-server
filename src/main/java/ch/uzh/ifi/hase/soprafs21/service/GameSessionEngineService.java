@@ -11,8 +11,10 @@ public class GameSessionEngineService {
     }
 
     public void addUserToSession(User user){
-
+        if(!this.gameSession.userAlreadyExists(user)){gameSession.addUser(user);}
     }
-    public void deleteUserFromSession(User user){}
+    public void deleteUserFromSession(User user){
+        if(this.gameSession.userAlreadyExists(user)){gameSession.deleteUser(user);}
+    }
 
 }

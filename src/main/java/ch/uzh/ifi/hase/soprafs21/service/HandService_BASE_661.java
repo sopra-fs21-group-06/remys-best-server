@@ -11,6 +11,6 @@ public class HandService {
         this.hand = hand;
     }
     public void deleteCardFromHand(Card card){}
-    public Card addCardToHand(Card card){return null;}
+    public Card addCardToHand(Card card){}
 
 }

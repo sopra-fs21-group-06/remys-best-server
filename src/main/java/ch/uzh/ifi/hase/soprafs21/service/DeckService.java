@@ -15,6 +15,7 @@ public class DeckService {
 
     public int generateDeck(){
         // generate deck from api and add id to deck
+        return 0;
     }
     public void shuffle(){
         // shuffle api deck

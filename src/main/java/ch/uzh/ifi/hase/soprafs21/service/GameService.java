@@ -16,9 +16,7 @@ public class GameService {
         game.setNrCards(nrCards);
         game.setStartPlayer(startPlayer);
     }
-    public void deleteGame(){
 
-    }
     public List<Player> getPlayers(){
         return game.getPlayerList();
     }
