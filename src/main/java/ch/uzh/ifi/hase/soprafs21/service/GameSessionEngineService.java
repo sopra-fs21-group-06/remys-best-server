@@ -4,7 +4,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.objects.GameSession;
 
 public class GameSessionEngineService {
-    privte final GameSession gameSession;
+    private final GameSession gameSession;
 
     public GameSessionEngineService(GameSession gameSession) {
         this.gameSession = gameSession;

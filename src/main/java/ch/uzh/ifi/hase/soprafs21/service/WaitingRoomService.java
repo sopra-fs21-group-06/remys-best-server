@@ -1,17 +1,29 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.objects.WaitingRoom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public class WaitingRoomService {
-    private final WaitingRoom waitingRoom;
 
-    public WaitingRoomService(WaitingRoom waitingRoom) {
-        this.waitingRoom = waitingRoom;
+/**
+ * Handles WaitingRoom functionalities (queue, dequeue etc)
+ */
+@Service
+@Transactional
+public class WaitingRoomService {
+
+    Logger log = LoggerFactory.getLogger(WaitingRoomService.class);
+
+    public WaitingRoomService() {
+
     }
-    public List<User> getFirstFourUsers(){}
-    public void enqueueWaitingRoom(User user){}
-    public User dequeueWaitingRoom(){}
+
+
+    //public List<User> getFirstFourUsers(){};
+    public synchronized void enqueueWaitingRoom(User user){}
+    //public synchronized User dequeueWaitingRoom(){};
 }

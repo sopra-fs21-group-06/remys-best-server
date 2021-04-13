@@ -10,5 +10,5 @@ public class MarbleService {
     public MarbleService(Marble marble) {
         this.marble = marble;
     }
-    public Field moveMarble(){}
+//    public Field moveMarble(){}
 }

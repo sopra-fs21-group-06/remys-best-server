@@ -9,10 +9,10 @@ public class DeckService {
         this.deck = deck;
     }
 
-    public int generateDeck(){
+/*    public int generateDeck(){
         // generate deck from api and add id to deck
     }
     public void shuffle(){
         // shuffle api deck
-    }
+    }*/
 }
