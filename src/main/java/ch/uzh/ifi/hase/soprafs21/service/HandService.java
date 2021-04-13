@@ -10,7 +10,7 @@ public class HandService {
 
     public HandService(Hand hand) {
         this.hand = hand;
-        hand.setHandDeck();
+        //hand.setHandDeck();
     }
 
 
@@ -20,5 +20,6 @@ public class HandService {
     public void addCardToHand(Card card){
         this.hand.getHandDeck().add(card);
     }
+
 
 }
