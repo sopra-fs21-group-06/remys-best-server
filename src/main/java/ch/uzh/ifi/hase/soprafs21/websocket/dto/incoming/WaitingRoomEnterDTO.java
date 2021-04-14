@@ -1,6 +1,6 @@
-package ch.uzh.ifi.hase.soprafs21.websocket.dto;
+package ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming;
 
-public class WaitingRoomDTO {
+public class WaitingRoomEnterDTO {
 
     private String example;
 
