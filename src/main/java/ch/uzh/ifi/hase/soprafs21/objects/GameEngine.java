@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
+import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 
 import java.util.ArrayList;
@@ -30,31 +31,24 @@ public class GameEngine{
     public List<Game> getRunningGamesList() {
         return runningGamesList;
     }
-
     public List<GameSession> getGameSessionList() {
         return gameSessionList;
     }
-
     public GameSessionRequestList getGameSessionRequestList() {
         return gameSessionRequestList;
     }
-
     public WaitingRoom getWaitingRoom() {
         return waitingRoom;
     }
-
     public void setGameSessionList(List<GameSession> gameSessionList) {
         this.gameSessionList = gameSessionList;
     }
-
     public void setGameSessionRequestList(GameSessionRequestList gameSessionRequestList) {
         this.gameSessionRequestList = gameSessionRequestList;
     }
-
     public void setRunningGamesList(List<Game> runningGamesList) {
         this.runningGamesList = runningGamesList;
     }
-
     public void setWaitingRoom(WaitingRoom waitingRoom) {this.waitingRoom = waitingRoom;}
 
     public void addUserToWaitingRoom(User user){
@@ -64,69 +58,93 @@ public class GameEngine{
     };
     private void createGameFromWaitingRoom(){runningGamesList.add(new Game(this.waitingRoom.getFirstFour()));}
 
-    /** throws operation not valid **/
     public Game createGameFromGameSession(GameSession gameSession){
-        if(gameSessionList.contains(gameSession)){
-            if(gameSession.getUserList().size()==4){
-                gameSessionList.remove(gameSession);
-                Game game = new Game(gameSession.getUserList());
-                runningGamesList.add(game);
-                return game;
+        try {
+            if (gameSessionList.contains(gameSession)) {
+                if (gameSession.getUserList().size() == 4) {
+                    gameSessionList.remove(gameSession);
+                    Game game = new Game(gameSession.getUserList());
+                    runningGamesList.add(game);
+                    return game;
+                }
             }
+            return null;
+        }catch(NullPointerException e){
+            System.out.println("Something went wrong in createGameFromGameSession()");
+            return null;
         }
-        return null;
     };
     public boolean userInGameSession(User user, UUID gameSessionId){
-        return findGameSessionByID(gameSessionId).userInHere(user);
+        return Objects.requireNonNull(findGameSessionByID(gameSessionId)).userInHere(user);
     }
 
     private boolean gameSessionExists(GameSession gameSession){
-        return (gameSessionList.contains(gameSession));
+        if(gameSession!=null){
+            return (gameSessionList.contains(gameSession));
+        }else{
+            return false;
+        }
     }
+
     public void deleteGameSession(UUID gameSessionId){
         if(this.gameSessionExists(findGameSessionByID(gameSessionId))){
             this.gameSessionList.remove(findGameSessionByID(gameSessionId));
         }
     };
     private GameSession findGameSessionByID(UUID id){
-        for(GameSession gameSession: gameSessionList) {
-            if (gameSession.getID().equals(id)) {
-                return gameSession;
+        try {
+            for (GameSession gameSession : gameSessionList) {
+                if (gameSession.getID().equals(id)) {
+                    return gameSession;
+                }
             }
+            return null;
+        }catch(NullPointerException e){
+            System.out.println("Something went wrong in findGameSessionByID()");
+            return null;
         }
-        return null;
     }
 
     public void userDisconnected(User user){
         if(inWaitingRoom(user)){
             waitingRoom.removeUser(user);
         }else if(inGameSession(user)!=null){
-            Objects.requireNonNull(findGameSessionByID(inGameSession(user))).deleteUser(user);
+            try {
+                Objects.requireNonNull(findGameSessionByID(inGameSession(user))).deleteUser(user);
+            }catch(NullPointerException e){
+                System.out.println("Something went wrong in userDisconnected()");
+            }
         }
     }
 
     private boolean inWaitingRoom(User user) {return waitingRoom.userInHere(user);};
 
-    /** throws noSuchGameException **/
     private Game runningGameByID(UUID id){
-        for(Game game:runningGamesList){
-            if(game.getGameID().equals(id)){
-                return game;
+        try {
+            for (Game game : runningGamesList) {
+                if (game.getGameID().equals(id)) {
+                    return game;
+                }
             }
+            return null;
+        }catch(NullPointerException e){
+            System.out.println("Something went wrong in runningGameByID");
+            return null;
         }
-        return null;
     }
 
-
-
-    /** throws UserNotInAnyGameException **/
     private UUID inGameSession(User user){
-        for(GameSession gameSession:gameSessionList){
-            if (gameSession.userInHere(user)) {
-                return gameSession.getID();
+        try {
+            for(GameSession gameSession:gameSessionList){
+                if (gameSession.userInHere(user)) {
+                    return gameSession.getID();
+                }
             }
+            return null;
+        }catch(NullPointerException e) {
+            System.out.println("Something went wrong in runningGameByID");
+            return null;
         }
-        return null;
     }
 
 
@@ -137,33 +155,45 @@ public class GameEngine{
 
     public void addRequest(GameSessionRequest gameSessionRequest){gameSessionRequestList.addRequest(gameSessionRequest);}
 
-    /**can throw nullPointerException **/
     public void addUserToSession(User user,UUID gameSessionID){
-        for(GameSession gameSession: gameSessionList){
-            if(gameSession.getID().equals(gameSessionID)){
-                gameSession.addUser(user);
+        try {
+            for (GameSession gameSession : gameSessionList) {
+                if (gameSession.getID().equals(gameSessionID)) {
+                    gameSession.addUser(user);
+                }
             }
+        }catch(NullPointerException e){
+            System.out.println("Something went wrong in addUserToSession()");
         }
     }
 
 
     public List<GameSessionRequest> getRequestByUserID(UUID userID){return gameSessionRequestList.getRequestsByUserID(userID);}
 
-    /**can throw nullPointerException **/
     public void deleteUserFromSession(User user, UUID gameSessionID){
-        findGameSessionByID(gameSessionID).deleteUser(user);
+        try {
+            Objects.requireNonNull(findGameSessionByID(gameSessionID)).deleteUser(user);
+        }catch(NullPointerException e){
+            System.out.println("Something went wrong in deleteUserFromSession()");
+        }
     }
 
-    /**can throw nullPointerException **/
     public void deleteGameByGameID(UUID GameID){
         Game game = runningGameByID(GameID);
-        runningGamesList.remove(game);
-
+        if(game!=null){
+            runningGamesList.remove(game);
+        }
     };
 
     /** check needs to happen if user available before calling method **/
     public void newGameSession(User host) {
-        GameSession gameSession = new GameSession(host);
-        gameSessionList.add(gameSession);
+        if(host.getStatus().equals(UserStatus.ONLINE)){
+            GameSession gameSession = new GameSession(host);
+            try {
+                gameSessionList.add(gameSession);
+            }catch(NullPointerException e){
+                System.out.println("Something went wrong in newGameSession");
+            }
+        }
     }
 }

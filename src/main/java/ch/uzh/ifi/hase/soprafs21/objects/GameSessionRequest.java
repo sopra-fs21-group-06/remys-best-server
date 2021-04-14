@@ -4,15 +4,17 @@ import ch.uzh.ifi.hase.soprafs21.constant.RequestStatus;
 
 import java.util.UUID;
 
-/**basically just a data container with getters and setters**/
 public class GameSessionRequest{
     private UUID hostID;
     private UUID receiverID;
     private UUID gameSessionID;
     private RequestStatus requestStatus;
 
-    public UUID getGameSessionID() {
-        return gameSessionID;
+    public GameSessionRequest(UUID receiverID){
+        requestStatus=RequestStatus.pending;
+    }
+
+    public UUID getGameSessionID() {return gameSessionID;
     }
 
     public UUID getHostID() {

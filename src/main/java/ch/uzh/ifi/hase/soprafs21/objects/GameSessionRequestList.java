@@ -4,50 +4,62 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/** needs a constructor**/
 public class GameSessionRequestList {
-    private List<GameSessionRequest> gameSessionRequestList;
+    private final List<GameSessionRequest> gameSessionRequestList;
 
-    /**can throw nullPointerException **/
+    public GameSessionRequestList(){
+        this.gameSessionRequestList = new ArrayList<GameSessionRequest>();
+    }
+
     public void addRequest(GameSessionRequest request){
-        gameSessionRequestList.add(request);
-    };
-    /**can throw nullPointerException **/
-    public void remove(GameSessionRequest request){
-        gameSessionRequestList.remove(request);
+        if(request!=null){gameSessionRequestList.add(request);};
     };
 
-    /**can throw nullPointerException **/
+    public void removeRequest(GameSessionRequest request){
+        if(request!=null){gameSessionRequestList.remove(request);}
+    };
+
     public void clearByHostID(UUID id) {
-        for (GameSessionRequest request : gameSessionRequestList) {
-            if (request.getHostID().equals(id)) {
-                gameSessionRequestList.remove(request);
-                clearByHostID(id);
-                break;
+        try {
+            for (GameSessionRequest request : gameSessionRequestList) {
+                if (request.getHostID().equals(id)) {
+                    gameSessionRequestList.remove(request);
+                    clearByHostID(id);
+                    break;
+                }
             }
+        }catch(NullPointerException e){
+            System.out.println("Something went wrong in clearByHostID()");
         }
     }
 
-    /**can throw nullPointerException **/
     public void clearByUserAndGameSessionID(UUID gameSessionID, UUID userID){
-        for(GameSessionRequest request: gameSessionRequestList){
-            if(request.getGameSessionID().equals(gameSessionID)&&request.getReceiverID().equals(userID)){
-                gameSessionRequestList.remove(request);
-                clearByUserAndGameSessionID(gameSessionID,userID);
-                break;
+        try {
+            for (GameSessionRequest request : gameSessionRequestList) {
+                if (request.getGameSessionID().equals(gameSessionID) && request.getReceiverID().equals(userID)) {
+                    gameSessionRequestList.remove(request);
+                    clearByUserAndGameSessionID(gameSessionID, userID);
+                    break;
+                }
             }
+        }catch(NullPointerException e){
+            System.out.println("Something went wrong in clearByUserAndGameSessionID()");
         }
     };
 
-    /**can throw nullPointerException **/
     public List<GameSessionRequest> getRequestsByUserID(UUID id){
-        List<GameSessionRequest> list = new ArrayList<GameSessionRequest>();
-        for (GameSessionRequest request : gameSessionRequestList) {
-            if (request.getReceiverID().equals(id)) {
-                list.add(request);
+        try {
+            List<GameSessionRequest> list = new ArrayList<GameSessionRequest>();
+            for (GameSessionRequest request : gameSessionRequestList) {
+                if (request.getReceiverID().equals(id)) {
+                    list.add(request);
+                }
             }
+            return list;
+        }catch(NullPointerException e){
+            System.out.println("Something went wrong in getRequestsByUSerID");
+            return null;
         }
-        return list;
-    };
+    }
 };
 
