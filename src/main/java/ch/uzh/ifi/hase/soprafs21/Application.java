@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21;
 
+import ch.uzh.ifi.hase.soprafs21.objects.PlayingBoard;
+import ch.uzh.ifi.hase.soprafs21.service.PlayingBoardService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -33,4 +35,5 @@ public class Application {
             }
         };
     }
+
 }
