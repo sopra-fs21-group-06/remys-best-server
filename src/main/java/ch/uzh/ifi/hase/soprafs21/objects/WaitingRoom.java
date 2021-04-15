@@ -4,7 +4,6 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ArrayList;
 
 public class WaitingRoom {
     private int userCount;
@@ -31,17 +30,23 @@ public class WaitingRoom {
         this.userQueue = userQueue;
     }
 
-    /** here we do not need to specifically look for the first four since this method is only called when the size is exactly four **/
     public List<User> getFirstFour(){
         userCount=0;
-        return (List<User>) new ArrayList<User>(userQueue);
+        return new ArrayList<User>(userQueue);
     };
     public boolean userInHere(User user){
-        return userQueue.contains(user);
+        if(user!=null){
+            return userQueue.contains(user);
+        }else{
+            return false;
+        }
     }
     public void removeUser(User user){
-        userQueue.remove(user);
+        if(user!=null){
+            userQueue.remove(user);
+        }
     }
 
-    public int addUser(User user){userQueue.add(user);userCount++;return userQueue.size();}
+    public int addUser(User user){if(user!=null){userQueue.add(user);userCount++;return userQueue.size();}else{return -1;}}
+
 }

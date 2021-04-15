@@ -24,18 +24,17 @@ public class GameSession {
     public void setUserCount(int userCount){this.userCount = userCount;}
     public void setUserList(List<User> userList){this.userList = userList;}
 
-    //Function is used in GameSessionEngineService to check if a list already contains a user
     public boolean userAlreadyExists(User user){
+        if(user==null){
+            return false;
+        }
         for(User x: userList){if(x.equals(user)){return true;}}
         return false;
     }
-    /**can throw nullPointerException **/
-    //Function is used in GameSessionEngineService to add a user
-    public void addUser(User user){userList.add(user);userCount++;}
 
-    /**can throw nullPointerException **/
-    public boolean userInHere(User user){return userList.contains(user);}
+    public void addUser(User user){if(user!=null){userList.add(user);userCount++;};}
 
-    /**can throw nullPointerException **/
-    public void deleteUser(User user) {if(userInHere(user)&&user.getId()!=hostID){userList.remove(user);userCount--;}}
+    public boolean userInHere(User user){if(user!=null){return userList.contains(user);}else{return false;}}
+
+    public void deleteUser(User user) {if(user!=null){if(userInHere(user)&& !user.getId().equals(hostID)){userList.remove(user);userCount--;}}}
 }
