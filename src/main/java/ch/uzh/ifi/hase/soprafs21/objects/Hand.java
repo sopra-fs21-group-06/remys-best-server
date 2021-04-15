@@ -4,7 +4,9 @@ import java.util.List;
 
 public class Hand {
     private List<Card> handDeck;
-
+    public Hand(List<Card> handDeck){
+        this.handDeck = handDeck;
+    }
     public List<Card> getHandDeck() {
         return handDeck;
     }

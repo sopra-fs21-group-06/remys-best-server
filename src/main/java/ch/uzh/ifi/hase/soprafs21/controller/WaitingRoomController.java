@@ -1,11 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import ch.uzh.ifi.hase.soprafs21.service.WaitingRoomService;
+import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 
 public class WaitingRoomController {
-    private final WaitingRoomService waitingRoomService;
+    private GameEngine gameEngine;
 
-    public WaitingRoomController(WaitingRoomService waitingRoomService) {
-        this.waitingRoomService = waitingRoomService;
+    public WaitingRoomController(GameEngine gameEngine) {
+        this.gameEngine = gameEngine;
     }
 }

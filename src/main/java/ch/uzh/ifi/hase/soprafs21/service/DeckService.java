@@ -1,7 +1,10 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.objects.Card;
 import ch.uzh.ifi.hase.soprafs21.objects.Deck;
 import ch.uzh.ifi.hase.soprafs21.objects.Hand;
+
+import java.util.List;
 
 public class DeckService {
     private final Deck deck;
@@ -12,10 +15,13 @@ public class DeckService {
 
     public int generateDeck(){
         // generate deck from api and add id to deck
+        return 0;
     }
     public void shuffle(){
         // shuffle api deck
     }
+    public List<Card> draw(int nrCards){
+        // draw from api deck
     public Hand draw(int nrCards){
         // get nr crads
 

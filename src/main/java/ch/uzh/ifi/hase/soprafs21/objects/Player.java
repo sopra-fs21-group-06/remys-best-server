@@ -5,13 +5,21 @@ import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 
 import java.util.List;
 
+import static java.lang.Boolean.TRUE;
+
 public class Player {
+
     private Color color;
     private Hand hand;
-    private String playerName;
+    private final String playerName;
     private UserStatus status;
     private List<Marble> marbleList;
     private Player teamMate;
+    private Boolean canPlay;
+
+    public Player(String playerName) {
+        this.playerName=playerName;
+    }
 
     public Color getColor() {
         return color;
@@ -43,14 +51,16 @@ public class Player {
 
     public void setHand(Hand hand) {
         this.hand = hand;
+        this.canPlay = TRUE;
+    }
+
+    public Boolean canPlay() {
+
+        return canPlay;
     }
 
     public void setMarbleList(List<Marble> marbleList) {
         this.marbleList = marbleList;
-    }
-
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
     }
 
     public void setStatus(UserStatus status) {
@@ -60,5 +70,6 @@ public class Player {
     public void setTeamMate(Player teamMate) {
         this.teamMate = teamMate;
     }
+
 
 }

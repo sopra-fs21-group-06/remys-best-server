@@ -3,8 +3,11 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 import java.util.LinkedList;
 import java.util.Stack;
 
+import static java.lang.Boolean.TRUE;
+
 public class PlayingBoard {
     private LinkedList<Field> listPlayingFields;
+    private Boolean allStartFieldsFree = TRUE;
     private Stack blueHome = new Stack();
     private Stack greenHome = new Stack();
     private Stack yellowHome = new Stack();

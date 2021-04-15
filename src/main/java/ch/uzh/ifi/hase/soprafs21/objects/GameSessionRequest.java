@@ -10,8 +10,11 @@ public class GameSessionRequest{
     private UUID gameSessionID;
     private RequestStatus requestStatus;
 
-    public UUID getGameSessionID() {
-        return gameSessionID;
+    public GameSessionRequest(UUID receiverID){
+        requestStatus=RequestStatus.pending;
+    }
+
+    public UUID getGameSessionID() {return gameSessionID;
     }
 
     public UUID getHostID() {
