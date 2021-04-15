@@ -14,5 +14,4 @@ public class Hand {
     public void setHandDeck(List<Card> handDeck) {
         this.handDeck = handDeck;
     }
-
 }
