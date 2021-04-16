@@ -50,6 +50,10 @@ public class Marble {
     public void setCurrentField(Field currentField) {
         this.currentField = currentField;
     }
+    public int distanceToNextStartField(){
+        int i = this.getCurrentField().getFieldValue();
+        return 20 - (i%16);
+    }
 
 
 }
