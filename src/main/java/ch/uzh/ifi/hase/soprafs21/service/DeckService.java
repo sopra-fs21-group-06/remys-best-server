@@ -13,16 +13,20 @@ public class DeckService {
         this.deck = deck;
     }
 
-/*  public int generateDeck(){
+    public int generateDeck(){
         // generate deck from api and add id to deck
         return 0;
     }
     public void shuffle(){
         // shuffle api deck
     }
-    public List<Card> draw(int nrCards){
+    public List<Card> drawNumberOfCards(int nrCards){
         // draw from api deck
+        return null;
+    }
+
     public Hand draw(int nrCards){
         // get nr crads
-    }*/
+        return null;
+    }
 }

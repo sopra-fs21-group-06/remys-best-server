@@ -18,11 +18,11 @@ public class WebSocketService {
 
     Logger log = LoggerFactory.getLogger(WebSocketService.class);
 
-    private final WaitingRoomService waitingRoomService;
+    /*private final WaitingRoomService waitingRoomService;*/
 
 
-    public WebSocketService(WaitingRoomService waitingRoomService) {
-        this.waitingRoomService = waitingRoomService;
+    public WebSocketService() {
+
     }
 
 
