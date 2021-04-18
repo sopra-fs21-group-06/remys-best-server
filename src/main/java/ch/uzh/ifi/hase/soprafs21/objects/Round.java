@@ -30,8 +30,8 @@ public class Round {
 
     public Player startRound() {
         for (Player p : players) {
-            Hand hand = new Hand(deckService.draw(nrCards));
-            p.setHand(hand);
+            /*Hand hand = new Hand(deckService.draw(nrCards));
+            p.setHand(hand);*/
         }
 
         while (isNull(winner) && nrCards != 0) {
@@ -43,15 +43,15 @@ public class Round {
                     PlayerService playerService = new PlayerService(currentPlayer);
                     Marble m = playerService.chooseMarble();
                     Card c = playerService.chooseCard();
-                    playingBoardService.moveMarble(m, c);
+                    /*playingBoardService.moveMarble(m, c);*/
                     Hand h = currentPlayer.getHand();
                     HandService handService = new HandService(h);
                     handService.deleteCardFromHand(c);
                 }
-                if (currentPlayer.isWinning()) {
+                /*if (currentPlayer.isWinning()) {
                     return winner = currentPlayer;
-                }
-                currentPlayer = players.get(XY);
+                }*/
+                /*currentPlayer = players.get(XY);*/
 
             }
         }// change currentPlayer clockwise -> blue, green, red, yellow
@@ -59,17 +59,17 @@ public class Round {
         return winner;
     }
 
-    public void setPlayingBoard(PlayingBoard playingBoard) {
+/*    public void setPlayingBoard(PlayingBoard playingBoard) {
         this.playingBoard = playingBoard;
-    }
+    }*/
 
     public void setNrCards(int nrCards) {
         this.nrCards = nrCards;
     }
 
-    public PlayingBoard getPlayingBoard() {
+/*    public PlayingBoard getPlayingBoard() {
         return playingBoard;
-    }
+    }*/
 
     public int getNrCards() {
         return nrCards;

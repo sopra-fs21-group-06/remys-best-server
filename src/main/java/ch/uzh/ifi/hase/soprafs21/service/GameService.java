@@ -12,6 +12,7 @@ public class GameService {
         this.game = game;
     }
 
+/*
     public void InitiateRound(int nrCards, Player startPlayer){
         game.setNrCards(nrCards);
         game.setStartPlayer(startPlayer);
@@ -20,6 +21,7 @@ public class GameService {
     public List<Player> getPlayers(){
         return game.getPlayerList();
     }
+*/
 
 
 }

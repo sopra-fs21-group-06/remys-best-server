@@ -20,10 +20,13 @@ public class DeckService {
     public void shuffle(){
         // shuffle api deck
     }
-    public List<Card> draw(int nrCards){
+    public List<Card> drawNumberOfCards(int nrCards){
         // draw from api deck
+        return null;
+    }
+
     public Hand draw(int nrCards){
         // get nr crads
-
+        return null;
     }
 }

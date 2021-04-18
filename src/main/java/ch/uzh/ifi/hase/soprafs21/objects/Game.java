@@ -24,7 +24,7 @@ public class Game {
 
     /** used for conversion of a user into a player entity **/
     public Player userToPlayer(User user){
-        return new Player(user.getName());
+        return new Player(user.getUsername());
     }
 
     /** initializes Game, allows user to pick teamMates, Colors **/

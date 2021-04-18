@@ -187,7 +187,7 @@ public class GameEngine{
 
     /** check needs to happen if user available before calling method **/
     public void newGameSession(User host) {
-        if(host.getStatus().equals(UserStatus.ONLINE)){
+        if(host.getStatus().equals(UserStatus.FREE)){
             GameSession gameSession = new GameSession(host);
             try {
                 gameSessionList.add(gameSession);
