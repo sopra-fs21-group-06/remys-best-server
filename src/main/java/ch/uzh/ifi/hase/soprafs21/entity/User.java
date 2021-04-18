@@ -37,6 +37,9 @@ public class User implements Serializable {
     @Column(nullable = false)
     private UserStatus status;
 
+    @Column(unique = true)
+    private String sessionIdentity;
+
     public Long getId() {
         return id;
     }
