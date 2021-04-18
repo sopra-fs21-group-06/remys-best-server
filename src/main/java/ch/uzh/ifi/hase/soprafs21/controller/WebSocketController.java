@@ -34,15 +34,15 @@ public class WebSocketController {
     }
 
     @MessageMapping("/register")
-    @SendTo("/queue/register")
+    @SendTo("/topic/register")
     public synchronized WaitingRoomEnterDTO registerPlayer(SimpMessageHeaderAccessor sha) {
         log.info("Player " + getIdentity(sha) + ": Message received");
         WaitingRoomEnterDTO answer = new WaitingRoomEnterDTO();
         answer.setExample("Test");
         WaitingRoomEnterDTO answer2 = new WaitingRoomEnterDTO();
-        answer.setExample("Test2");
+        answer2.setExample("Test2");
 
-        webSocketService.sendToPlayer(getIdentity(sha), "/queue/register", answer2 );
+        this.webSocketService.sendToPlayer(getIdentity(sha), "user/queue/register", answer2 );
         return answer;
 
     }
