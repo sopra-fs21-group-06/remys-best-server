@@ -7,11 +7,13 @@ import ch.uzh.ifi.hase.soprafs21.objects.Player;
 
 
 public class PlayerService {
+
     private final Player player;
     public PlayerService(Player player){
         this.player = player;
     }
     public Card chooseCard(){return null;}
     public Marble chooseMarble(){return null;}
+
 }
 
