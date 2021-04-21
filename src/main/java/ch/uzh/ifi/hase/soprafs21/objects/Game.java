@@ -14,6 +14,7 @@ public class Game {
     private Player startPlayer;
     private PlayingBoard playingBoard = new PlayingBoard();
     private final UUID gameID = UUID.randomUUID();
+    private int roundCount = 0;
 
     /**can throw nullPointerException **/
     public Game(List<User> users){
@@ -31,6 +32,7 @@ public class Game {
     public void initializeGame(){
 
     }
+
     public Deck getDeck() {
         return deck;
     }
@@ -73,5 +75,15 @@ public class Game {
 
     public void setStartPlayer(Player startPlayer) {
         this.startPlayer = startPlayer;
+    }
+    public void addToRoundCount(){
+        roundCount++;
+    }
+    public void changeNrCards(){
+        if (nrCards == 2){
+            nrCards = 7;
+        } else {
+            nrCards--;
+        }
     }
 }

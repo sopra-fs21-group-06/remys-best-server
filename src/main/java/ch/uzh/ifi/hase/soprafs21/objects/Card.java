@@ -17,6 +17,9 @@ public class Card {
     private String image;
     private String card_id;
     private boolean canEatWhileSkip = FALSE;
+    private List<String> movesToDisplay;
+    private Boolean canStart;
+    private Boolean normalPlayingCard;
 
     public Card(CardSuit suit, String value, String image, String code){
         this.cardSuit = suit;
@@ -24,6 +27,15 @@ public class Card {
         this.image = image;
         this.card_id = code;
         this.changeCardValueToCardMoveValue(value);
+
+    }
+
+    public String getCardValue() {
+        return cardValue;
+    }
+
+    public ArrayList<Integer> getCardMoveValue() {
+        return cardMoveValue;
     }
 
     public CardSuit getCardSuit() {
@@ -31,36 +43,48 @@ public class Card {
     }
     // 15 for changing marbles, 14 for getting out homefields
     // make methods setAce(),setKing() etc.
-    public void changeCardValueToCardMoveValue(String value) {
-
+    public void changeCardValueToCardMoveValue(String value){
         if (value.matches("[2-3][5-6][8-9]]")) {
             int number = Integer.valueOf(value);
             cardMoveValue.add(number);
-        }
-        else if (value.matches("4")) {
+            movesToDisplay.add("Forward"+"number");
+            canStart = FALSE;
+        } else if (value.matches("4")) {
             cardMoveValue.add(-4);
             cardMoveValue.add(4);
-        }
-        else if (value.matches("0")) {
+            movesToDisplay.add("Forward 4");
+            movesToDisplay.add("Backwards 4");
+            canStart = FALSE;
+        } else if (value.matches("TEN")){
+            movesToDisplay.add("Forward 10");
             cardMoveValue.add(10);
-        }
-        else if (value.matches("J")) {
+            canStart = FALSE;
+        } else if (value.matches("JACK")) {
             cardMoveValue.add(15);
-        }
-        else if (value.matches("A")) {
+            movesToDisplay.add("Exchange");
+            canStart = FALSE;
+        } else if   (value.matches("ACE")){
             cardMoveValue.add(14);
             cardMoveValue.add(1);
             cardMoveValue.add(11);
-        }
-        else if (value.matches("Q")) {
+            movesToDisplay.add("Forward 1");
+            movesToDisplay.add("Forward 11");
+            movesToDisplay.add("Go To Start");
+            canStart = TRUE;
+        } else if (value.matches("QUEEN")){
             cardMoveValue.add(12);
-        }
-        else if (value.matches("K")) {
+            movesToDisplay.add("Forward 12");
+            canStart = FALSE;
+        }else if (value.matches("KING")){
             cardMoveValue.add(14);
             cardMoveValue.add(13);
+            movesToDisplay.add("Forward 13");
+            movesToDisplay.add("Go To Start");
+            canStart = TRUE;
         }
     }
 
-
-
+    public Boolean getCanStart() {
+        return canStart;
+    }
 }

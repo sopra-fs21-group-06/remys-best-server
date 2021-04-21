@@ -1,5 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
+import ch.uzh.ifi.hase.soprafs21.constant.Color;
+import ch.uzh.ifi.hase.soprafs21.service.PlayingBoardService;
+
 import java.util.LinkedList;
 import java.util.Stack;
 
@@ -16,6 +19,93 @@ public class PlayingBoard {
     private LinkedList<Field> blueField = new LinkedList<>();
     private LinkedList<Field> yellowFields = new LinkedList<>();
     private LinkedList<Field> greenFields = new LinkedList<>();
+
+    public PlayingBoard(){
+
+        LinkedList<Field> listPlayingFields = new LinkedList<>();
+
+        StartField startFieldBlue = new StartField(5);
+        startFieldBlue.setColor(Color.blue);
+        listPlayingFields.add(startFieldBlue);
+        for (int i = 6; i <= 20; i++) {
+            Field field;
+            field = new Field(i);
+            listPlayingFields.add(field);
+        }
+
+        StartField startFieldGreen = new StartField(21);
+        startFieldBlue.setColor(Color.green);
+        listPlayingFields.add(startFieldGreen);
+        for (int i = 22; i <= 36; i++) {
+            Field field;
+            field = new Field(i);
+            listPlayingFields.add(field);
+        }
+
+        StartField startFieldRed = new StartField(37);
+        startFieldRed.setColor(Color.red);
+        listPlayingFields.add(startFieldRed);
+        for (int i = 38; i <= 52; i++) {
+            Field field;
+            field = new Field(i);
+            listPlayingFields.add(field);
+        }
+
+        StartField startFieldYellow = new StartField(53);
+        startFieldYellow.setColor(Color.yellow);
+        listPlayingFields.add(startFieldYellow);
+        for (int i = 54; i <= 68; i++) {
+            Field field;
+            field = new Field(i);
+            listPlayingFields.add(field);
+        }
+        setListPlayingFields(listPlayingFields);
+        for (Color c: Color.values()) {
+            LinkedList<Field> finish = new LinkedList<>();
+            for (int i = 0; i <= 4; i++) {
+                FinishField finishField = new FinishField(i, c);
+                finish.add(finishField);
+            }
+            if (c == Color.blue){
+                finish.add(0,startFieldBlue);
+                setBlueField(finish);
+            }
+            else if (c == Color.red){
+                finish.add(0, startFieldRed);
+                setRedFields(finish);
+            }
+            else if (c == Color.green){
+                finish.add(0,startFieldGreen);
+                setGreenFields(finish);
+            }
+            else if( c == Color.yellow){
+                finish.add(0,startFieldYellow);
+                setYellowFields(finish);
+            }
+        }
+        Stack blueHome = new Stack();
+        Stack greenHome = new Stack();
+        Stack yellowHome = new Stack();
+        Stack redHome = new Stack();
+        for(int i = 0; i < 5; i++){
+            GreenMarble greenMarble = new GreenMarble(i);
+            greenMarble.setHome(TRUE);
+            greenHome.push(greenMarble);
+            RedMarble redMarble = new RedMarble(i);
+            redMarble.setHome(TRUE);
+            redHome.push(redMarble);
+            BlueMarble blueMarble = new BlueMarble(i);
+            blueMarble.setHome(TRUE);
+            blueHome.push(blueMarble);
+            YellowMarble yellowMarble = new YellowMarble(i);
+            yellowMarble.setHome(TRUE);
+            yellowHome.push(yellowMarble);
+        }
+        setBlueHome(blueHome);
+        setGreenHome(greenHome);
+        setRedHome(redHome);
+        setYellowHome(yellowHome);
+    }
 
     public LinkedList<Field> getListPlayingFields() {
         return listPlayingFields;
