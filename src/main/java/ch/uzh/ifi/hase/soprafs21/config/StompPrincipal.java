@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs21.websocket;
+package ch.uzh.ifi.hase.soprafs21.config;
 
 import java.security.Principal;
 

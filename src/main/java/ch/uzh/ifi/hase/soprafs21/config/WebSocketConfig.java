@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs21.websocket;
+package ch.uzh.ifi.hase.soprafs21.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

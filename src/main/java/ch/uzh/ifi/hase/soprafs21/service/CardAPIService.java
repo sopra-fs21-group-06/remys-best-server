@@ -38,7 +38,7 @@ public class CardAPIService {
         List<Card> drawnCards = new ArrayList<>();
 
         for (CardAPICardJson card : cardList) {
-            drawnCards.add(new Card(cardValueMapper(card.getSuit()), card.getValue()));
+            //drawnCards.add(new Card(cardValueMapper(card.getSuit()), card.getValue()));
         }
 
         return drawnCards;
