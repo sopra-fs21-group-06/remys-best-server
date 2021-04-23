@@ -10,17 +10,44 @@ public class Game {
     /** should game have a Round ? such that we just instantiate a new variable of round that automatically is created with right number of cards etc?**/
     private List<Player> playerList = new ArrayList<Player>();
     private int nrCards=7;
-    private Deck deck= new Deck();
+
+    private String deckId;
     private Player startPlayer;
     private PlayingBoard playingBoard = new PlayingBoard();
     private final UUID gameID = UUID.randomUUID();
     private int roundCount = 0;
+    private Round currentRound;
 
     /**can throw nullPointerException **/
     public Game(List<User> users){
         for(User user : users){
             playerList.add(userToPlayer(user));
         }
+    }
+
+    private void setDeckId(String deckid){
+        this.deckId = deckid;
+    }
+    private String getDeckId(){
+        return this.deckId;
+    }
+    public void setCurrentRound(Round currentRound) {
+        this.currentRound = currentRound;
+    }
+
+    public int getRoundCount() {
+        return roundCount;
+    }
+    public int getNextCardAmount(){
+        if (nrCards == 2){
+           return 7;
+        } else {
+            return nrCards - 1;
+        }
+    }
+
+    public Round getCurrentRound() {
+        return currentRound;
     }
 
     /** used for conversion of a user into a player entity **/
@@ -33,9 +60,8 @@ public class Game {
 
     }
 
-    public Deck getDeck() {
-        return deck;
-    }
+
+
 
     public int getNrCards() {
         return nrCards;
@@ -55,10 +81,6 @@ public class Game {
 
     public UUID getGameID() {
         return gameID;
-    }
-
-    public void setDeck(Deck deck) {
-        this.deck = deck;
     }
 
     public void setNrCards(int nrCards) {
