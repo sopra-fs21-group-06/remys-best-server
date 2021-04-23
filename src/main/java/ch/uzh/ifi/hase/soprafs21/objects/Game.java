@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
+import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +60,19 @@ public class Game {
     /** initializes Game, allows user to pick teamMates, Colors **/
     public void initializeGame(){
 
+    }
+    /*
+    Thats a very informative comment. o.B.d.A. trivial.
+     */
+    public List<Player> updatePlayerColor(String playername, Color color){
+
+        for(Player p: playerList){
+            if(p.getPlayerName().equals(playername)){
+                p.setColor(color);
+                break;
+            }
+        }
+        return playerList;
     }
 
 
