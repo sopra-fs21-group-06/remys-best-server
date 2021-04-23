@@ -2,7 +2,8 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
+import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.WaitingRoomEnterDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,11 @@ public class Game {
     private final UUID gameID = UUID.randomUUID();
     private int roundCount = 0;
     private Round currentRound;
+    private final WebSocketService webSocketService;
 
     /**can throw nullPointerException **/
-    public Game(List<User> users){
+    public Game(List<User> users, WebSocketService webSocketService){
+        this.webSocketService = webSocketService;
         for(User user : users){
             playerList.add(userToPlayer(user));
         }
@@ -72,8 +75,22 @@ public class Game {
                 break;
             }
         }
+        boolean allColorsAssigned = true;
+        for(Player p: playerList){
+            if (p.getColor() == null) {
+                allColorsAssigned = false;
+                break;
+            }
+        }
+
+        if(allColorsAssigned) {
+            WaitingRoomEnterDTO startGameObj = new WaitingRoomEnterDTO();
+            startGameObj.setToken("Edouard ish de Geilst");
+            String path = "/topic/game/%s/startGame";
+                this.webSocketService.sendToTopic(String.format(path, gameID), startGameObj);
+            }
         return playerList;
-    }
+        }
 
 
 

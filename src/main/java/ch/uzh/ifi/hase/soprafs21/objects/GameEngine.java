@@ -6,7 +6,6 @@ import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.ChooseColorPlayerDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.WaitingRoomUserObjDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomChooseColorDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomSendOutCurrentUsersDTO;
@@ -111,7 +110,7 @@ public class GameEngine{
     }
 
     private Game createGameFromWaitingRoom() {
-        Game createdGame = new Game(this.waitingRoom.getFirstFour());
+        Game createdGame = new Game(this.waitingRoom.getFirstFour(), webSocketService);
         runningGamesList.add(createdGame);
         return createdGame;
     }
@@ -121,7 +120,7 @@ public class GameEngine{
             if (gameSessionList.contains(gameSession)) {
                 if (gameSession.getUserList().size() == 4) {
                     gameSessionList.remove(gameSession);
-                    Game game = new Game(gameSession.getUserList());
+                    Game game = new Game(gameSession.getUserList(), webSocketService);
                     runningGamesList.add(game);
                     return game;
                 }
