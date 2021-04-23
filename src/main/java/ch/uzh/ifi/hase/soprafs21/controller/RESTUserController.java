@@ -17,11 +17,11 @@ import java.util.List;
  * The controller will receive the request and delegate the execution to the UserService and finally return the result.
  */
 @RestController
-public class UserController {
+public class RESTUserController {
 
     private final UserService userService;
 
-    UserController(UserService userService) {
+    RESTUserController(UserService userService) {
         this.userService = userService;
     }
 
