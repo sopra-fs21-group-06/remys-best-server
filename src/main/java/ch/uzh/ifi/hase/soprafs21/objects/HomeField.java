@@ -12,4 +12,8 @@ public class HomeField extends Field{
         super(fieldValue);
         this.color = color;
     }
+
+    public Color getColor() {
+        return color;
+    }
 }

@@ -15,7 +15,7 @@ public class CardJoker extends Card{
     @Override
     public void changeCardValueToCardMoveValue(String value) {
         ArrayList<Integer> combis = new ArrayList<Integer>();
-        for (int i = 1; i<16; i++){
+        for (int i = 1; i<14; i++){
             if(i==4) {
                 combis.add(4);
                 combis.add(-4);
