@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.WaitingRoomUserObjDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -38,6 +39,9 @@ public interface DTOMapper {
 
     @Mapping(source="token", target="token")
     User convertUserLogOutPostDTOtoEntity(UserLogoutPostDTO userLogoutPostDTO);
+
+    @Mapping(source = "username", target="username")
+    WaitingRoomUserObjDTO convertUsertoWaitingRoomUserObjDTO(User user);
 
 
 }

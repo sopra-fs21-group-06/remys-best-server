@@ -1,10 +1,12 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Controller
 public class WaitingRoom {
     private int userCount;
     private List<User> userQueue;

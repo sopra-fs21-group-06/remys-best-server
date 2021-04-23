@@ -38,9 +38,9 @@ public class WebSocketController {
     public synchronized WaitingRoomEnterDTO registerPlayer(SimpMessageHeaderAccessor sha) {
         log.info("Player " + getIdentity(sha) + ": Message received");
         WaitingRoomEnterDTO answer = new WaitingRoomEnterDTO();
-        answer.setExample("Test");
+        answer.setToken("Test");
         WaitingRoomEnterDTO answer2 = new WaitingRoomEnterDTO();
-        answer2.setExample("Test2");
+        answer2.setToken("Test2");
 
         this.webSocketService.sendToPlayer(getIdentity(sha), "user/queue/register", answer2 );
         return answer;

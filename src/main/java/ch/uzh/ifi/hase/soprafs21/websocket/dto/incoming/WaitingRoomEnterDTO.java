@@ -2,12 +2,12 @@ package ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming;
 
 public class WaitingRoomEnterDTO {
 
-    private String example;
+    private String token;
 
-    public String getExample() {
-        return example;
+    public String getToken() {
+        return token;
     }
-    public void setExample(String example) {
-        this.example = example;
+    public void setToken(String token) {
+        this.token = token;
     }
 }
