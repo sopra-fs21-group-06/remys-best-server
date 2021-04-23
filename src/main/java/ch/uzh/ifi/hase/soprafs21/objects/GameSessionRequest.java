@@ -11,7 +11,7 @@ public class GameSessionRequest{
     private RequestStatus requestStatus;
 
     public GameSessionRequest(UUID receiverID){
-        requestStatus=RequestStatus.pending;
+        requestStatus=RequestStatus.PENDING;
     }
 
     public UUID getGameSessionID() {return gameSessionID;

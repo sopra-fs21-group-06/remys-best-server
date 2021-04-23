@@ -49,10 +49,10 @@ public class CardAPIService {
         CardSuit cardsuit;
 
         return switch (suit) {
-            case "HEARTS" -> CardSuit.Hearts;
-            case "SPADES" -> CardSuit.Spades;
-            case "CLUBS" -> CardSuit.Clubs;
-            default -> CardSuit.Diamonds;
+            case "HEARTS" -> CardSuit.HEARTS;
+            case "SPADES" -> CardSuit.SPADES;
+            case "CLUBS" -> CardSuit.CLUBS;
+            default -> CardSuit.DIAMONDS;
         };
     }
 }
