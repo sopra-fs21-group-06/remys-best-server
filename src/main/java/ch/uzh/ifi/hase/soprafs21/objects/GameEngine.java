@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
+import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.ChooseColorPlayerDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.WaitingRoomUserObjDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomChooseColorDTO;
@@ -84,13 +85,8 @@ public class GameEngine{
         if(waitingRoom.addUser(user)==2){
             Game createdGame = createGameFromWaitingRoom();
 
-            WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = new WaitingRoomChooseColorDTO();
-            waitingRoomChooseColorDTO.setGameId(createdGame.getGameID());
-            List<ChooseColorPlayerDTO> chooseColorPlayers = new ArrayList<>();
-            for(Player p: createdGame.getPlayerList()) {
-                chooseColorPlayers.add(DTOMapper.INSTANCE.convertPlayertoChooseColorPlayerDTO(p));
-            }
-            waitingRoomChooseColorDTO.setPlayers(chooseColorPlayers);
+            //Now thats a juicy one-liner isnt it..Edi? ;) <3
+            WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = DogUtils.convertPlayerListToWaitingRoomChoosecolorDTO(createdGame.getGameID(), createdGame.getPlayerList());
 
             for(User userInWaitingRoom : waitingRoom.getUserQueue()) {
                 String userIdentity = userInWaitingRoom.getSessionIdentity();
@@ -181,7 +177,7 @@ public class GameEngine{
 
     private boolean inWaitingRoom(User user) {return waitingRoom.userInHere(user);};
 
-    private Game runningGameByID(UUID id){
+    public Game getRunningGameByID(UUID id){
         try {
             for (Game game : runningGamesList) {
                 if (game.getGameID().equals(id)) {
@@ -241,7 +237,7 @@ public class GameEngine{
     }
 
     public void deleteGameByGameID(UUID GameID){
-        Game game = runningGameByID(GameID);
+        Game game = getRunningGameByID(GameID);
         if(game!=null){
             runningGamesList.remove(game);
         }

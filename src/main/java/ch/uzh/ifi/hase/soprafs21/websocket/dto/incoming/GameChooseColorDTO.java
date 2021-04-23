@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming;
 
+import ch.uzh.ifi.hase.soprafs21.constant.Color;
+
 public class GameChooseColorDTO {
     private String token;
     private String color;
