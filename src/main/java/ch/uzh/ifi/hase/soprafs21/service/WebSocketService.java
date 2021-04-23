@@ -33,4 +33,7 @@ public class WebSocketService {
     public void sendToPlayer(String identity, String path, Object dto) {
         this.simp.convertAndSendToUser(identity, path, dto);
     }
+    public void sendToTopic(String path, Object dtO){
+        this.simp.convertAndSend(path, dtO);
+    }
 }
