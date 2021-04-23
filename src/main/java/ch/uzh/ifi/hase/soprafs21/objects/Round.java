@@ -15,12 +15,9 @@ public class Round {
     private PlayingBoardService playingBoardService;
     private Player currentPlayer;
     private List<Player> players;
-    private DeckService deckService;
+    //private DeckService deckService;
     private Player winner = null;
     private String deckId;
-
-
-
 
     public Round(List < Player > players, Player startPlayer, int nrCards, Game game, CardAPIService cardAPIService){
                 this.game = game;
@@ -35,7 +32,7 @@ public class Round {
     }
     public void initializeRound () {
         if (cardAPIService.drawCards(deckId, "1") == null) {
-            cardAPIService.shuffle();
+            //cardAPIService.shuffle();
         }
         for (Player p : players) {
             String str = "" + nrCards;

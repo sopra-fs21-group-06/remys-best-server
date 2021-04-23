@@ -14,36 +14,22 @@ import org.springframework.stereotype.Controller;
 import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
 
 @Controller
-public class WSWaitingRoomController {
-    Logger log = LoggerFactory.getLogger(WSWaitingRoomController.class);
+public class WSChoosePlaceController {
+    Logger log = LoggerFactory.getLogger(WSChoosePlaceController.class);
 
     private final GameEngine gameEngine;
     private final WebSocketService webSocketService;
 
-    public WSWaitingRoomController(GameEngine gameEngine, WebSocketService webSocketService) {
+    public WSChoosePlaceController(GameEngine gameEngine, WebSocketService webSocketService) {
         this.gameEngine = gameEngine;
         this.webSocketService = webSocketService;
     }
 
-    @MessageMapping("/waiting-room/register")
-    @SendTo("/topic/waiting-room")
+    @MessageMapping("/game/:id/choose-color")
+    @SendTo("/topic/choose-place")
     public synchronized WaitingRoomSendOutCurrentUsersDTO registerPlayer(SimpMessageHeaderAccessor sha, WaitingRoomEnterDTO waitingRoomEnterDTO) {
         log.info("Player " + getIdentity(sha) + ": Message received");
         gameEngine.addUserToWaitingRoom(gameEngine.getUserService().getUserRepository().findByToken(waitingRoomEnterDTO.getToken()));
-        WaitingRoomSendOutCurrentUsersDTO userToSendOut = new WaitingRoomSendOutCurrentUsersDTO();
-        WaitingRoomSendOutCurrentUsersDTO userObjDTOList = gameEngine.createWaitingRoomUserList();
-        log.info(userObjDTOList.toString());
-
-        //this.webSocketService.sendToPlayer(getIdentity(sha), "user/queue/register", answer2);
-
-        return userObjDTOList;
-    }
-
-    @MessageMapping("/waiting-room/unregister")
-    @SendTo("/topic/waiting-room")
-    public synchronized WaitingRoomSendOutCurrentUsersDTO unregisterPlayer(SimpMessageHeaderAccessor sha, WaitingRoomEnterDTO waitingRoomEnterDTO) {
-        log.info("Player " + getIdentity(sha) + ": Message received");
-        gameEngine.removeUserFromWaitingRoom(gameEngine.getUserService().getUserRepository().findByToken(waitingRoomEnterDTO.getToken()));
         WaitingRoomSendOutCurrentUsersDTO userToSendOut = new WaitingRoomSendOutCurrentUsersDTO();
         WaitingRoomSendOutCurrentUsersDTO userObjDTOList = gameEngine.createWaitingRoomUserList();
         log.info(userObjDTOList.toString());

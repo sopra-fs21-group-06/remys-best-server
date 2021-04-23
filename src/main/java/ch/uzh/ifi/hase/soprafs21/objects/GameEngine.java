@@ -31,14 +31,11 @@ public class GameEngine{
     private GameSessionRequestList gameSessionRequestList;
     private final WaitingRoom waitingRoom;
     private final UserService userService;
+    Logger log = LoggerFactory.getLogger(GameEngine.class);
 
 
     @Autowired
     public GameEngine(WaitingRoom waitingRoom, UserService userService){
-
-        Logger log = LoggerFactory.getLogger(GameEngine.class);
-
-
         this.gameSessionList= new ArrayList<GameSession>();
         this.runningGamesList= new ArrayList<Game>();
         this.gameSessionRequestList=new GameSessionRequestList();
@@ -57,8 +54,6 @@ public class GameEngine{
         //according to what I read online @Scope ("singleton") is the way to implement singleton in spring
         return gameEngine;
     }
-
-
 
     public List<Game> getRunningGamesList() {
         return runningGamesList;
@@ -84,22 +79,35 @@ public class GameEngine{
 
     public void addUserToWaitingRoom(User user){
         if(waitingRoom.addUser(user)==4){
-            createGameFromWaitingRoom();
+            UUID gameId = createGameFromWaitingRoom();
+
+
+            /*for(User user : waitingRoom.getUserQueue()) {
+                // send gameId to every user in waiting room
+            }*/
         }
+    }
+
+    public void removeUserFromWaitingRoom(User user){
+        waitingRoom.removeUser(user);
     }
 
     public WaitingRoomSendOutCurrentUsersDTO createWaitingRoomUserList(){
         WaitingRoomSendOutCurrentUsersDTO waitingRoomSendOutCurrentUsersDTO = new WaitingRoomSendOutCurrentUsersDTO();
         List<WaitingRoomUserObjDTO> userList = new ArrayList<>();
         for(User user : waitingRoom.getUserQueue()){
-            log.info(user.toString())
+            log.info(user.toString());
             userList.add(DTOMapper.INSTANCE.convertUsertoWaitingRoomUserObjDTO(user));
         }
         waitingRoomSendOutCurrentUsersDTO.setCurrentUsers(userList);
         return waitingRoomSendOutCurrentUsersDTO;
     }
 
-    private void createGameFromWaitingRoom(){runningGamesList.add(new Game(this.waitingRoom.getFirstFour()));}
+    private UUID createGameFromWaitingRoom() {
+        Game createdGame = new Game(this.waitingRoom.getFirstFour());
+        runningGamesList.add(createdGame);
+        return createdGame.getGameID();
+    }
 
     public Game createGameFromGameSession(GameSession gameSession){
         try {
