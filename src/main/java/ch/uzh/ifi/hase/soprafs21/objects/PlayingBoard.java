@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
-import ch.uzh.ifi.hase.soprafs21.service.PlayingBoardService;
 
 import java.util.LinkedList;
 import java.util.Stack;
@@ -25,7 +24,7 @@ public class PlayingBoard {
         LinkedList<Field> listPlayingFields = new LinkedList<>();
 
         StartField startFieldBlue = new StartField(5);
-        startFieldBlue.setColor(Color.blue);
+        startFieldBlue.setColor(Color.BLUE);
         listPlayingFields.add(startFieldBlue);
         for (int i = 6; i <= 20; i++) {
             Field field;
@@ -34,7 +33,7 @@ public class PlayingBoard {
         }
 
         StartField startFieldGreen = new StartField(21);
-        startFieldBlue.setColor(Color.green);
+        startFieldBlue.setColor(Color.GREEN);
         listPlayingFields.add(startFieldGreen);
         for (int i = 22; i <= 36; i++) {
             Field field;
@@ -43,7 +42,7 @@ public class PlayingBoard {
         }
 
         StartField startFieldRed = new StartField(37);
-        startFieldRed.setColor(Color.red);
+        startFieldRed.setColor(Color.RED);
         listPlayingFields.add(startFieldRed);
         for (int i = 38; i <= 52; i++) {
             Field field;
@@ -52,7 +51,7 @@ public class PlayingBoard {
         }
 
         StartField startFieldYellow = new StartField(53);
-        startFieldYellow.setColor(Color.yellow);
+        startFieldYellow.setColor(Color.YELLOW);
         listPlayingFields.add(startFieldYellow);
         for (int i = 54; i <= 68; i++) {
             Field field;
@@ -66,19 +65,19 @@ public class PlayingBoard {
                 FinishField finishField = new FinishField(i, c);
                 finish.add(finishField);
             }
-            if (c == Color.blue){
+            if (c == Color.BLUE){
                 finish.add(0,startFieldBlue);
                 setBlueField(finish);
             }
-            else if (c == Color.red){
+            else if (c == Color.RED){
                 finish.add(0, startFieldRed);
                 setRedFields(finish);
             }
-            else if (c == Color.green){
+            else if (c == Color.GREEN){
                 finish.add(0,startFieldGreen);
                 setGreenFields(finish);
             }
-            else if( c == Color.yellow){
+            else if( c == Color.YELLOW){
                 finish.add(0,startFieldYellow);
                 setYellowFields(finish);
             }

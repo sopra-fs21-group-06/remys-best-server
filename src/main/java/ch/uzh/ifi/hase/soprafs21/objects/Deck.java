@@ -27,7 +27,7 @@ public class Deck {
         List<Card> cards = null;
         for(int i = 0; i < nrCards; i++){
             //make api call to drw card;
-            CardSuit suit = CardSuit.Hearts;
+            CardSuit suit = CardSuit.HEARTS;
             String cardValue = "7";
             String image = null;
             String card_id = "H8";
