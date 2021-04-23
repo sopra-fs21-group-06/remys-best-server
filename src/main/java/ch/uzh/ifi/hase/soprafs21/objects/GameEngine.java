@@ -1,12 +1,13 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs21.controller.WebSocketController;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
+import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.ChooseColorPlayerDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.WaitingRoomUserObjDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomChooseColorDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomSendOutCurrentUsersDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,11 +32,13 @@ public class GameEngine{
     private GameSessionRequestList gameSessionRequestList;
     private final WaitingRoom waitingRoom;
     private final UserService userService;
+    private final WebSocketService webSocketService;
     Logger log = LoggerFactory.getLogger(GameEngine.class);
 
 
     @Autowired
-    public GameEngine(WaitingRoom waitingRoom, UserService userService){
+    public GameEngine(WaitingRoom waitingRoom, UserService userService, WebSocketService webSocketService){
+        this.webSocketService = webSocketService;
         this.gameSessionList= new ArrayList<GameSession>();
         this.runningGamesList= new ArrayList<Game>();
         this.gameSessionRequestList=new GameSessionRequestList();
@@ -78,13 +81,21 @@ public class GameEngine{
     }
 
     public void addUserToWaitingRoom(User user){
-        if(waitingRoom.addUser(user)==4){
-            UUID gameId = createGameFromWaitingRoom();
+        if(waitingRoom.addUser(user)==2){
+            Game createdGame = createGameFromWaitingRoom();
 
+            WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = new WaitingRoomChooseColorDTO();
+            waitingRoomChooseColorDTO.setGameId(createdGame.getGameID());
+            List<ChooseColorPlayerDTO> chooseColorPlayers = new ArrayList<>();
+            for(Player p: createdGame.getPlayerList()) {
+                chooseColorPlayers.add(DTOMapper.INSTANCE.convertPlayertoChooseColorPlayerDTO(p));
+            }
+            waitingRoomChooseColorDTO.setPlayers(chooseColorPlayers);
 
-            /*for(User user : waitingRoom.getUserQueue()) {
-                // send gameId to every user in waiting room
-            }*/
+            for(User userInWaitingRoom : waitingRoom.getUserQueue()) {
+                String userIdentity = userInWaitingRoom.getSessionIdentity();
+                this.webSocketService.sendToPlayer(userIdentity, "queue/waiting-room", waitingRoomChooseColorDTO);
+            }
         }
     }
 
@@ -103,10 +114,10 @@ public class GameEngine{
         return waitingRoomSendOutCurrentUsersDTO;
     }
 
-    private UUID createGameFromWaitingRoom() {
+    private Game createGameFromWaitingRoom() {
         Game createdGame = new Game(this.waitingRoom.getFirstFour());
         runningGamesList.add(createdGame);
-        return createdGame.getGameID();
+        return createdGame;
     }
 
     public Game createGameFromGameSession(GameSession gameSession){

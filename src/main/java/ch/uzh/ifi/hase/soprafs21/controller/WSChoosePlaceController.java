@@ -2,14 +2,18 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameChooseColorDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.WaitingRoomEnterDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomSendOutCurrentUsersDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
+
+import java.util.UUID;
 
 import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
 
@@ -25,18 +29,25 @@ public class WSChoosePlaceController {
         this.webSocketService = webSocketService;
     }
 
-    @MessageMapping("/game/:id/choose-color")
-    @SendTo("/topic/choose-place")
-    public synchronized WaitingRoomSendOutCurrentUsersDTO registerPlayer(SimpMessageHeaderAccessor sha, WaitingRoomEnterDTO waitingRoomEnterDTO) {
-        log.info("Player " + getIdentity(sha) + ": Message received");
-        gameEngine.addUserToWaitingRoom(gameEngine.getUserService().getUserRepository().findByToken(waitingRoomEnterDTO.getToken()));
+    @MessageMapping("/game/{gameId}/choose-color")
+    @SendTo("/topic/game/{gameId}/colors")
+    public synchronized WaitingRoomSendOutCurrentUsersDTO registerPlayer(@DestinationVariable String gameId, SimpMessageHeaderAccessor sha, GameChooseColorDTO gameChooseColorDTO) {
+        log.info("Player " + getIdentity(sha) + ": Choose place (color) received");
+
+
+        // map color to enum
+        // assign color and player
+        // send
+
+        /*
+        gameEngine.addUserToWaitingRoom(gameEngine.getUserService().getUserRepository().findByToken(gameChooseColorDTO.getToken()));
         WaitingRoomSendOutCurrentUsersDTO userToSendOut = new WaitingRoomSendOutCurrentUsersDTO();
         WaitingRoomSendOutCurrentUsersDTO userObjDTOList = gameEngine.createWaitingRoomUserList();
-        log.info(userObjDTOList.toString());
+        log.info(userObjDTOList.toString());*/
 
         //this.webSocketService.sendToPlayer(getIdentity(sha), "user/queue/register", answer2);
 
-        return userObjDTOList;
+        return null;
     }
 }
 

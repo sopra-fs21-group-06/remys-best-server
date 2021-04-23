@@ -31,13 +31,8 @@ public class WSWaitingRoomController {
         log.info("Player " + getIdentity(sha) + ": Message received");
         gameEngine.getUserService().updateUserIdentity(getIdentity(sha), waitingRoomEnterDTO.getToken());
         gameEngine.addUserToWaitingRoom(gameEngine.getUserService().getUserRepository().findByToken(waitingRoomEnterDTO.getToken()));
-        WaitingRoomSendOutCurrentUsersDTO userToSendOut = new WaitingRoomSendOutCurrentUsersDTO();
         WaitingRoomSendOutCurrentUsersDTO userObjDTOList = gameEngine.createWaitingRoomUserList();
         log.info(userObjDTOList.toString());
-
-        WaitingRoomEnterDTO answer2 = new WaitingRoomEnterDTO();
-        answer2.setToken(getIdentity(sha));
-        this.webSocketService.sendToPlayer(getIdentity(sha), "queue/waiting-room", answer2);
 
         return userObjDTOList;
     }
@@ -47,7 +42,6 @@ public class WSWaitingRoomController {
     public synchronized WaitingRoomSendOutCurrentUsersDTO unregisterPlayer(SimpMessageHeaderAccessor sha, WaitingRoomEnterDTO waitingRoomEnterDTO) {
         log.info("Player " + getIdentity(sha) + ": Message received");
         gameEngine.removeUserFromWaitingRoom(gameEngine.getUserService().getUserRepository().findByToken(waitingRoomEnterDTO.getToken()));
-        WaitingRoomSendOutCurrentUsersDTO userToSendOut = new WaitingRoomSendOutCurrentUsersDTO();
         WaitingRoomSendOutCurrentUsersDTO userObjDTOList = gameEngine.createWaitingRoomUserList();
         log.info(userObjDTOList.toString());
 

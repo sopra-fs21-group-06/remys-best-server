@@ -33,8 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * This is a WebMvcTest which allows to test the UserController i.e. GET/POST request without actually sending them over the network.
  * This tests if the UserController works.
  */
-@WebMvcTest(UserController.class)
-public class UserControllerTest {
+@WebMvcTest(RESTUserController.class)
+public class RESTUserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
