@@ -94,6 +94,14 @@ public class UserService {
         return userToUpdate;
     }
 
+    public void updateUserIdentity(String identity, String token){
+        User userToUpdate = userRepository.findByToken(token);
+        log.info(identity);
+        userToUpdate.setSessionIdentity(identity);
+        userRepository.save(userToUpdate);
+        userRepository.flush();
+    }
+
     private int checkIfLoginDataCorrect(User userToBeLoggedIn){
 
         String usernameOrEmail = userToBeLoggedIn.getUsername();

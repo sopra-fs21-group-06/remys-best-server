@@ -29,12 +29,15 @@ public class WSWaitingRoomController {
     @SendTo("/topic/waiting-room")
     public synchronized WaitingRoomSendOutCurrentUsersDTO registerPlayer(SimpMessageHeaderAccessor sha, WaitingRoomEnterDTO waitingRoomEnterDTO) {
         log.info("Player " + getIdentity(sha) + ": Message received");
+        gameEngine.getUserService().updateUserIdentity(getIdentity(sha), waitingRoomEnterDTO.getToken());
         gameEngine.addUserToWaitingRoom(gameEngine.getUserService().getUserRepository().findByToken(waitingRoomEnterDTO.getToken()));
         WaitingRoomSendOutCurrentUsersDTO userToSendOut = new WaitingRoomSendOutCurrentUsersDTO();
         WaitingRoomSendOutCurrentUsersDTO userObjDTOList = gameEngine.createWaitingRoomUserList();
         log.info(userObjDTOList.toString());
 
-        //this.webSocketService.sendToPlayer(getIdentity(sha), "user/queue/register", answer2);
+        WaitingRoomEnterDTO answer2 = new WaitingRoomEnterDTO();
+        answer2.setToken(getIdentity(sha));
+        this.webSocketService.sendToPlayer(getIdentity(sha), "queue/waiting-room", answer2);
 
         return userObjDTOList;
     }
