@@ -41,47 +41,47 @@ public class PlayingBoard {
         LinkedList<Field> listPlayingFields = new LinkedList<>();
 
         startFieldBlue = new StartField(4);
-        startFieldBlue.setColor(Color.blue);
-        startFieldBlue.setFieldStatus(FieldStatus.free);
+        startFieldBlue.setColor(Color.BLUE);
+        startFieldBlue.setFieldStatus(FieldStatus.FREE);
         listPlayingFields.add(startFieldBlue);
         for (int i = 5; i <= 19; i++) {
             Field field;
             field = new Field(i);
             listPlayingFields.add(field);
-            field.setFieldStatus(FieldStatus.free);
+            field.setFieldStatus(FieldStatus.FREE);
         }
 
         startFieldGreen = new StartField(20);
-        startFieldBlue.setColor(Color.green);
+        startFieldBlue.setColor(Color.GREEN);
         listPlayingFields.add(startFieldGreen);
-        startFieldBlue.setFieldStatus(FieldStatus.free);
+        startFieldBlue.setFieldStatus(FieldStatus.FREE);
         for (int i = 21; i <= 35; i++) {
             Field field;
             field = new Field(i);
             listPlayingFields.add(field);
-            field.setFieldStatus(FieldStatus.free);
+            field.setFieldStatus(FieldStatus.FREE);
         }
 
         startFieldRed = new StartField(36);
-        startFieldRed.setColor(Color.red);
+        startFieldRed.setColor(Color.RED);
         listPlayingFields.add(startFieldRed);
-        startFieldBlue.setFieldStatus(FieldStatus.free);
+        startFieldBlue.setFieldStatus(FieldStatus.FREE);
         for (int i = 37; i <= 51; i++) {
             Field field;
             field = new Field(i);
             listPlayingFields.add(field);
-            field.setFieldStatus(FieldStatus.free);
+            field.setFieldStatus(FieldStatus.FREE);
         }
 
         startFieldYellow = new StartField(52);
-        startFieldYellow.setColor(Color.yellow);
+        startFieldYellow.setColor(Color.YELLOW);
         listPlayingFields.add(startFieldYellow);
-        startFieldBlue.setFieldStatus(FieldStatus.free);
+        startFieldBlue.setFieldStatus(FieldStatus.FREE);
         for (int i = 53; i <= 67; i++) {
             Field field;
             field = new Field(i);
             listPlayingFields.add(field);
-            field.setFieldStatus(FieldStatus.free);
+            field.setFieldStatus(FieldStatus.FREE);
         }
         setListPlayingFields(listPlayingFields);
 
@@ -91,22 +91,22 @@ public class PlayingBoard {
             for (int i = 0; i <= 4; i++) {
                 FinishField finishField = new FinishField(i, c);
                 finish.add(finishField);
-                finishField.setFieldStatus(FieldStatus.free);
+                finishField.setFieldStatus(FieldStatus.FREE);
 
             }
-            if (c == Color.blue){
+            if (c == Color.BLUE){
                 finish.add(0,startFieldBlue);
                 setBlueField(finish);
             }
-            else if (c == Color.red){
+            else if (c == Color.RED){
                 finish.add(0, startFieldRed);
                 setRedFields(finish);
             }
-            else if (c == Color.green){
+            else if (c == Color.GREEN){
                 finish.add(0,startFieldGreen);
                 setGreenFields(finish);
             }
-            else if( c == Color.yellow){
+            else if( c == Color.YELLOW){
                 finish.add(0,startFieldYellow);
                 setYellowFields(finish);
             }
@@ -138,7 +138,7 @@ public class PlayingBoard {
         int[] postStartField = {4,20,36,52};
         List<Integer> blockedFields = null;
         for (int i = 0; i < 4; i++){
-            if(getField(postStartField[i]).getFieldStatus() != FieldStatus.blocked){
+            if(getField(postStartField[i]).getFieldStatus() != FieldStatus.BLOCKED){
                 blockedFields.add(postStartField[i]);
             }
         }
@@ -146,20 +146,20 @@ public class PlayingBoard {
     }
 
     public Boolean checkFinishFieldOccupied(int i, Color color){
-        if(color == Color.green){
-            if (greenFields.get(i).getFieldStatus() == FieldStatus.free) {
+        if(color == Color.GREEN){
+            if (greenFields.get(i).getFieldStatus() == FieldStatus.FREE) {
                 return TRUE;
             }
-        } else if (color == Color.red){
-            if (redFields.get(i).getFieldStatus() == FieldStatus.free) {
+        } else if (color == Color.RED){
+            if (redFields.get(i).getFieldStatus() == FieldStatus.FREE) {
                 return TRUE;
             }
-        } else if (color == Color.blue){
-            if (blueField.get(i).getFieldStatus() == FieldStatus.free) {
+        } else if (color == Color.BLUE){
+            if (blueField.get(i).getFieldStatus() == FieldStatus.FREE) {
                 return TRUE;
             }
-        } else if (color == Color.yellow) {
-            if (yellowFields.get(i).getFieldStatus() == FieldStatus.free) {
+        } else if (color == Color.YELLOW) {
+            if (yellowFields.get(i).getFieldStatus() == FieldStatus.FREE) {
                 return TRUE;
             }
 
@@ -167,13 +167,13 @@ public class PlayingBoard {
         return FALSE;
     }
     public Boolean hasMarbleOnHomeStack(Color color){
-        if(color == Color.green){
+        if(color == Color.GREEN){
             return (!(greenHome.isEmpty()));
-        } else if (color == Color.red){
+        } else if (color == Color.RED){
             return (!(redHome.isEmpty()));
-        } else if (color == Color.blue){
+        } else if (color == Color.BLUE){
             return (!(blueHome.isEmpty()));
-        } else if (color == Color.yellow) {
+        } else if (color == Color.YELLOW) {
             return (!(yellowHome.isEmpty()));
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No color get finishfield"));
@@ -183,13 +183,13 @@ public class PlayingBoard {
 
     public Marble getFirstHomeMarble(Color color){
         Marble m = null;
-        if(color == Color.green){
+        if(color == Color.GREEN){
             m = (Marble) greenHome.pop();
-        } else if (color == Color.red){
+        } else if (color == Color.RED){
             m = (Marble) redHome.pop();
-        } else if (color == Color.blue){
+        } else if (color == Color.BLUE){
             m =  (Marble) blueHome.pop();
-        } else if (color == Color.yellow) {
+        } else if (color == Color.YELLOW) {
             m = (Marble) yellowHome.pop();
         }
         return m;
@@ -264,7 +264,7 @@ public class PlayingBoard {
     public void marbleGoesToStart(Color c){
         Marble m = getFirstHomeMarble(c);
         StartField field = getRightColorStartField(c);
-        field.setFieldStatus(FieldStatus.blocked);
+        field.setFieldStatus(FieldStatus.BLOCKED);
         field.setMarble(m);
         m.setCurrentField(field);
         m.setHome(FALSE);
@@ -280,56 +280,56 @@ public class PlayingBoard {
 
     }
     public void makeMove(Field fieldToChange, Marble m){
-        m.getCurrentField().setFieldStatus(FieldStatus.free);
+        m.getCurrentField().setFieldStatus(FieldStatus.FREE);
         m.getCurrentField().setMarble(null);
         m.setCurrentField(fieldToChange);
         fieldToChange.setMarble(m);
-        fieldToChange.setFieldStatus(FieldStatus.occupied);
+        fieldToChange.setFieldStatus(FieldStatus.OCCUPIED);
     }
     public void makeFinishMove(Field fieldToChange, Marble m){
-        m.getCurrentField().setFieldStatus(FieldStatus.free);
+        m.getCurrentField().setFieldStatus(FieldStatus.FREE);
         m.getCurrentField().setMarble(null);
         m.setCurrentField(fieldToChange);
         fieldToChange.setMarble(m);
-        fieldToChange.setFieldStatus(FieldStatus.occupied);
+        fieldToChange.setFieldStatus(FieldStatus.OCCUPIED);
         m.setFinish(TRUE);
     }
     public StartField getRightColorStartField(Color color)  {
-        if(color == Color.green){
+        if(color == Color.GREEN){
             return this.getStartFieldGreen();
-        } else if (color == Color.red){
+        } else if (color == Color.RED){
             return this.getStartFieldRed();
-        } else if (color == Color.blue){
+        } else if (color == Color.BLUE){
             return this.getStartFieldBlue();
-        } else if (color == Color.yellow) {
+        } else if (color == Color.YELLOW) {
             return this.getStartFieldYellow();
         }
         return null;
     }
     public Boolean getHomeFieldIsNotBlocked(Color color){
-        if(color == Color.green && getStartFieldGreen().getFieldStatus() != FieldStatus.blocked){
+        if(color == Color.GREEN && getStartFieldGreen().getFieldStatus() != FieldStatus.BLOCKED){
             return TRUE;
-        } else if (color == Color.red && getStartFieldRed().getFieldStatus() != FieldStatus.blocked){
+        } else if (color == Color.RED && getStartFieldRed().getFieldStatus() != FieldStatus.BLOCKED){
             return TRUE;
-        } else if (color == Color.blue && getStartFieldBlue().getFieldStatus() != FieldStatus.blocked){
+        } else if (color == Color.BLUE && getStartFieldBlue().getFieldStatus() != FieldStatus.BLOCKED){
             return TRUE;
-        } else if (color == Color.yellow && getStartFieldYellow().getFieldStatus() != FieldStatus.blocked){
+        } else if (color == Color.YELLOW && getStartFieldYellow().getFieldStatus() != FieldStatus.BLOCKED){
             return TRUE;
         } else {
             return FALSE;
         }
     }
     public void sendHome(Marble m){
-        if(m.getColor() == Color.green){
+        if(m.getColor() == Color.GREEN){
             greenHome.push(m);
             m.setHome(TRUE);
-        } else if (m.getColor() == Color.red){
+        } else if (m.getColor() == Color.RED){
             redHome.push(m);
             m.setHome(TRUE);
-        } else if (m.getColor() == Color.blue){
+        } else if (m.getColor() == Color.BLUE){
             blueHome.push(m);
             m.setHome(TRUE);
-        } else if (m.getColor() == Color.yellow) {
+        } else if (m.getColor() == Color.YELLOW) {
             yellowHome.push(m);
             m.setHome(TRUE);
         }
@@ -349,7 +349,7 @@ public class PlayingBoard {
                     if(fieldToCheck instanceof HomeField && fieldToCheck.getColor().equals(color)){
                         List<Field> finishFields = getFinishFields(color);
                         for (Field finishf: finishFields){
-                            if(!(finishf.getFieldStatus().equals(FieldStatus.occupied))){
+                            if(!(finishf.getFieldStatus().equals(FieldStatus.OCCUPIED))){
                                 return count;
                             }
                             count++;
@@ -366,13 +366,13 @@ public class PlayingBoard {
     }
     public List<Field> getFinishFields(Color color){
 
-        if(color == Color.green){
+        if(color == Color.GREEN){
             return greenFields;
-        } else if (color == Color.red){
+        } else if (color == Color.RED){
             return redFields;
-        } else if (color == Color.blue){
+        } else if (color == Color.BLUE){
             return blueField;
-        } else if (color == Color.yellow) {
+        } else if (color == Color.YELLOW) {
             return yellowFields;
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No color get finishfield"));

@@ -5,18 +5,11 @@ import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Node;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Stack;
-
-import static ch.uzh.ifi.hase.soprafs21.constant.FieldStatus.free;
-import static ch.uzh.ifi.hase.soprafs21.constant.FieldStatus.occupied;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static jdk.nashorn.internal.objects.NativeSet.size;
 
 public class GameService {
     private final Game game;
@@ -210,7 +203,7 @@ public class GameService {
                         fieldValToCheck = 4;
                     }
                     Field fieldToCheck = this.game.getPlayingBoard().getField(fieldValToCheck);
-                    if (!(fieldToCheck.getFieldStatus().equals(FieldStatus.blocked) && !(fieldToCheck.getColor().equals(m.getColor())))) {
+                    if (!(fieldToCheck.getFieldStatus().equals(FieldStatus.BLOCKED) && !(fieldToCheck.getColor().equals(m.getColor())))) {
                         movableMarbles.add(m);
                         movableMarblesNotHome.add(m);
                     }
@@ -283,7 +276,7 @@ public class GameService {
                     possibleMarbles.add(marblesPlayer.get(i));
                 }
             }
-            if (size(marblesPlayer) > 0 && (size(possibleMarbles)) > 1) {
+            if (marblesPlayer.size() > 0 && possibleMarbles.size() > 1) {
                 for (Marble m : possibleMarbles) {
                     Color color = m.getColor();
                     int i = m.getCurrentField().getFieldValue();
@@ -308,10 +301,10 @@ public class GameService {
                             valFieldToCheck = valFieldToCheck - 67 + 3;
                         }
                         Field fieldToCheck = playingFields.get(valFieldToCheck);
-                        if (!(fieldToCheck.getFieldStatus().equals(FieldStatus.blocked))) {
+                        if (!(fieldToCheck.getFieldStatus().equals(FieldStatus.BLOCKED))) {
                             return i;
                         } else if (fieldToCheck instanceof FinishField) {
-                            if (!(fieldToCheck.getFieldStatus().equals(FieldStatus.occupied))) {
+                            if (!(fieldToCheck.getFieldStatus().equals(FieldStatus.OCCUPIED))) {
                                 return i;
                             }
                         }
@@ -434,11 +427,11 @@ public class GameService {
 
 
         public Boolean checkForJackMove(Marble m, Field endField, Player p){
-            if(endField.getFieldStatus().equals(free)){
+            if(endField.getFieldStatus().equals(FieldStatus.FREE)){
                 log.info("NO marble here to change with");
                 return FALSE;
             }
-            if(endField.getFieldStatus().equals(occupied)) {
+            if(endField.getFieldStatus().equals(FieldStatus.OCCUPIED)) {
                 Marble marbleMate = endField.getMarble();
                 if (!(p.getTeamMate().getMarblesOnFieldAndNotFinished().contains(marbleMate))) {
                     log.info("NO valid marble to change with");
@@ -450,7 +443,7 @@ public class GameService {
             return TRUE;
         }
         public void eat(Field endField){
-            if (endField.getFieldStatus().equals(FieldStatus.occupied)){
+            if (endField.getFieldStatus().equals(FieldStatus.OCCUPIED)){
                 Marble marbleToEat = endField.getMarble();
                 this.game.getPlayingBoard().sendHome(marbleToEat);
             }
@@ -466,7 +459,7 @@ public class GameService {
                 if(!(m.getColor().equals(endField.getColor()))){
                     log.info("Not you StartField");
                     return FALSE;
-                } else if (endField.getFieldStatus().equals((FieldStatus.blocked))){
+                } else if (endField.getFieldStatus().equals((FieldStatus.BLOCKED))){
                     log.info("Your StartField is blocked");
                     return FALSE;
                 }

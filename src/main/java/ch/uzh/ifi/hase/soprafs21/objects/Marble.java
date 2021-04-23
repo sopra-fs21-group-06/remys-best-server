@@ -23,7 +23,7 @@ public class Marble {
     }
 
     public Boolean isOnFieldandNotOnStart(){
-        if(!this.isHome && !this.isFinish && (this.currentField.getFieldStatus() != FieldStatus.blocked)){
+        if(!this.isHome && !this.isFinish && (this.currentField.getFieldStatus() != FieldStatus.BLOCKED)){
             if(this.currentField.getFinish())
             return TRUE;
         }
@@ -61,8 +61,7 @@ public class Marble {
     public void setCurrentField(Field currentField) {
         this.currentField = currentField;
     }
-<<<<<<< Updated upstream
-=======
+
     public int nextStartFieldValue(){
         int i = this.getCurrentField().getFieldValue();
         int distance = 20 - (i%16);
@@ -75,17 +74,11 @@ public class Marble {
     public Boolean getMarbleIsBlockingAndOnStart(){
         if (this.getCurrentField() instanceof StartField){
             if(this.getColor().equals(this.getCurrentField().getColor())){
-                if(this.currentField.getFieldStatus().equals(FieldStatus.blocked)){
+                if(this.currentField.getFieldStatus().equals(FieldStatus.BLOCKED)){
                     return TRUE;
                 }
             }
         }
         return FALSE;
     }
-
-
-
->>>>>>> Stashed changes
-
-
 }
