@@ -89,7 +89,7 @@ public class GameEngine{
             Game createdGame = createGameFromWaitingRoom();
 
             //Now thats a juicy one-liner isnt it..Edi? ;) <3
-            WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = DogUtils.convertPlayerListToWaitingRoomChoosecolorDTO(createdGame.getGameID(), createdGame.getPlayerList());
+            WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = DogUtils.convertPlayerListToWaitingRoomChoosecolorDTO(createdGame.getGameId(), createdGame.getPlayerList());
 
             for(User userInWaitingRoom : waitingRoom.getUserQueue()) {
                 String userIdentity = userInWaitingRoom.getSessionIdentity();
@@ -114,7 +114,7 @@ public class GameEngine{
     }
 
     private Game createGameFromWaitingRoom() {
-        Game createdGame = new Game(this.waitingRoom.getFirstFour(), webSocketService);
+        Game createdGame = new Game(this.waitingRoom.getFirstFour());
         runningGamesList.add(createdGame);
         return createdGame;
     }
@@ -124,7 +124,7 @@ public class GameEngine{
             if (gameSessionList.contains(gameSession)) {
                 if (gameSession.getUserList().size() == 4) {
                     gameSessionList.remove(gameSession);
-                    Game game = new Game(gameSession.getUserList(), webSocketService);
+                    Game game = new Game(gameSession.getUserList());
                     runningGamesList.add(game);
                     return game;
                 }
@@ -183,7 +183,7 @@ public class GameEngine{
     public Game getRunningGameByID(UUID id){
         try {
             for (Game game : runningGamesList) {
-                if (game.getGameID().equals(id)) {
+                if (game.getGameId().equals(id)) {
                     return game;
                 }
             }

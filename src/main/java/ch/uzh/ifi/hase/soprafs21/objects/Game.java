@@ -5,13 +5,9 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.FactDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.WaitingRoomEnterDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameFactsDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameNotificationDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.RoundCurrentPlayerDTO;
-import org.springframework.stereotype.Controller;
 
-import java.beans.JavaBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,17 +21,16 @@ public class Game {
     private String deckId;
     private Player startPlayer;
     private PlayingBoard playingBoard = new PlayingBoard();
-    private final UUID gameID = UUID.randomUUID();
+    private final UUID gameId = UUID.randomUUID();
     private int roundCount = 0;
     private Round currentRound;
     private int cardCount = 53;
+    private final GameService gameService = GameService.getInstance();
     private final WebSocketService webSocketService;
-    private final GameService gameService;
 
     /**can throw nullPointerException **/
-    public Game(List<User> users, WebSocketService webSocketService){
-        this.webSocketService = webSocketService;
-        this.gameService = GameService.getInstance();
+    public Game(List<User> users) {
+        webSocketService = new WebSocketService();
         for(User user : users){
             playerList.add(userToPlayer(user));
         }
@@ -79,10 +74,10 @@ public class Game {
     /*
     Thats a very informative comment. o.B.d.A. trivial.
      */
-    public List<Player> updatePlayerColor(String playername, Color color){
+    public List<Player> updatePlayerColor(String playerName, Color color){
 
         for(Player p: playerList){
-            if(p.getPlayerName().equals(playername)){
+            if(p.getPlayerName().equals(playerName)){
                 p.setColor(color);
                 break;
             }
@@ -98,11 +93,7 @@ public class Game {
         if(allColorsAssigned) {
             playerList.get(0).setTeamMate(playerList.get(1));
             playerList.get(1).setTeamMate(playerList.get(0));
-
-            WaitingRoomEnterDTO startGameObj = new WaitingRoomEnterDTO();
-            startGameObj.setToken("Edouard ish de Geilst");
-            String path = "/topic/game/%s/startGame";
-            this.webSocketService.sendToTopic(String.format(path, gameID.toString()), startGameObj);
+            webSocketService.sendStartGameMessage(gameId);
         }
 
         return playerList;
@@ -188,31 +179,8 @@ public class Game {
         }
 
         if(areAllPlayersReady) {
-
-            gameService.InitiateRound(this);
-
-            List<FactDTO> factList = new ArrayList<>();
-            factList.add(new FactDTO(getCurrentRound().getCurrentPlayer().getPlayerName(), "Round Beginner"));
-            factList.add(new FactDTO("Card Exchange", "Click on card to exchange"));
-
-            GameFactsDTO gameFactsDTO = new GameFactsDTO();
-            gameFactsDTO.setFacts(factList);
-
-            GameNotificationDTO gameNotificationDTO = new GameNotificationDTO();
-            gameNotificationDTO.setAction("Card Exchange");
-
-            String pathFacts = "/topic/game/%s/facts";
-            String pathNotifications = "/topic/game/%s/notification";
-
-            this.webSocketService.sendToTopic(String.format(pathFacts, gameID.toString()), gameFactsDTO);
-            this.webSocketService.sendToTopic(String.format(pathNotifications, gameID.toString()), gameNotificationDTO);
-
-
-            // TODO send initial notification
-
-
-            // TODO send cards
-
+            gameService.initiateRound(this);
+            webSocketService.sendExchangeFactsMessage(getCurrentRound().getCurrentPlayer().getPlayerName(), gameId);
         }
     }
 
@@ -235,8 +203,8 @@ public class Game {
         return playingBoard;
     }
 
-    public UUID getGameID() {
-        return gameID;
+    public UUID getGameId() {
+        return gameId;
     }
 
     public void setNrCards(int nrCards) {
@@ -274,17 +242,6 @@ public class Game {
     }
 
     public void sendOutCurrentTurnFactsDTO(){
-        List<FactDTO> factList = new ArrayList<>();
-        factList.add(new FactDTO(String.valueOf(roundCount), "Round"));
-        factList.add(new FactDTO(currentRound.getCurrentPlayer().getPlayerName(), "Active Player"));
-        factList.add(new FactDTO(String.valueOf(getNextCardAmount()), "Next Round Card Amount"));
-        factList.add(new FactDTO(currentRound.getNameNextPlayer(), "Next Round Beginner"));
-
-        GameFactsDTO gameFactsDTO = new GameFactsDTO();
-        gameFactsDTO.setFacts(factList);
-
-        String pathFacts = "/topic/game/%s/facts";
-
-        this.webSocketService.sendToTopic(String.format(pathFacts, gameID.toString()), gameFactsDTO);
+        webSocketService.sendCurrentTurnFactsMessage(roundCount, currentRound.getCurrentPlayer().getPlayerName(), getNextCardAmount(), currentRound.getNameNextPlayer(), gameId);
     }
 }
