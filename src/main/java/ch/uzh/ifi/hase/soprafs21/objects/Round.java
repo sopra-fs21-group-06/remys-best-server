@@ -2,14 +2,18 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 
 
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
-import ch.uzh.ifi.hase.soprafs21.service.*;
-
 
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
 
+import ch.uzh.ifi.hase.soprafs21.service.PlayingBoardService;
+
+
 import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
+import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
 
 
 
@@ -26,6 +30,9 @@ public class Round {
     //private DeckService deckService;
     private Player winner = null;
     private String deckId;
+
+    private int cardCountDeck = 53;
+
 
     private final WebSocketService webSocketService;
     private final UserService userService;
@@ -69,6 +76,7 @@ public class Round {
 
                 //second draw
                 p.getHand().addCardsToHand(cardAPIService.drawCards(deckId, secondDraw));
+                sendOutCardToHandDTO(p);
 
                 sendOutCardToHandDTO(p);
 
@@ -78,13 +86,15 @@ public class Round {
             else {
                 String str = String.valueOf(nrCards);
                 Hand hand = new Hand(cardAPIService.drawCards(deckId, str));
-
                 p.setHand(hand);
 
                 sendOutCardToHandDTO(p);
+
                 getGame().setCardCount(getGame().getCardCount() - nrCards);
+
             }
         }
+
     }
 
     public void changeCurrentPlayer () {
@@ -132,6 +142,7 @@ public class Round {
                 cardList.add(DTOMapper.INSTANCE.convertCardtoGameCardDTO(c));
             }
             gameListOfCardsDTO.setCards(cardList);
+
             webSocketService.sendToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), String.format("queue/game/%s/cards", game.getGameID().toString()), gameListOfCardsDTO);
         }
     }
