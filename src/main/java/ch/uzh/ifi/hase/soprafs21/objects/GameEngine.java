@@ -87,13 +87,9 @@ public class GameEngine{
     public void addUserToWaitingRoom(User user){
         if(waitingRoom.addUser(user)==2){
             Game createdGame = createGameFromWaitingRoom();
-
-            //Now thats a juicy one-liner isnt it..Edi? ;) <3
-            WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = DogUtils.convertPlayerListToWaitingRoomChoosecolorDTO(createdGame.getGameID(), createdGame.getPlayerList());
-
             for(User userInWaitingRoom : waitingRoom.getUserQueue()) {
                 String userIdentity = userInWaitingRoom.getSessionIdentity();
-                this.webSocketService.sendToPlayer(userIdentity, "queue/waiting-room", waitingRoomChooseColorDTO);
+                webSocketService.sendGameAssignmentMessage(userIdentity, createdGame.getPlayerList(), createdGame.getGameId());
             }
         }
     }
@@ -183,7 +179,7 @@ public class GameEngine{
     public Game getRunningGameByID(UUID id){
         try {
             for (Game game : runningGamesList) {
-                if (game.getGameID().equals(id)) {
+                if (game.getGameId().equals(id)) {
                     return game;
                 }
             }

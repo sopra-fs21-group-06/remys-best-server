@@ -33,6 +33,7 @@ public class WebSocketController {
         this.webSocketService = webSocketService;
     }
 
+    /*
     @MessageMapping("/register")
     @SendTo("/topic/register")
     public synchronized WaitingRoomEnterDTO registerPlayer(SimpMessageHeaderAccessor sha) {
@@ -45,7 +46,7 @@ public class WebSocketController {
         this.webSocketService.sendToPlayer(getIdentity(sha), "user/queue/register", answer2 );
         return answer;
 
-    }
+    }*/
 
     @EventListener
     public void handleSessionDisconnect(SessionDisconnectEvent event) {

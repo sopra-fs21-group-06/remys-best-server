@@ -1,45 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
-
-import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
-
-
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.FactDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.*;
-
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
 import ch.uzh.ifi.hase.soprafs21.service.PlayingBoardService;
-
-
 import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
-
-
-
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
-
-
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.RoundCurrentPlayerDTO;
-
-
-
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
-
-import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
-import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
-
-
-import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
-import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
-
-
-
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,19 +22,16 @@ public class Round {
     private final WebSocketService webSocketService;
     private final UserService userService;
 
-
-
     public Round(List<Player> players, Player startPlayer, int nrCards, Game game, CardAPIService cardAPIService, WebSocketService webSocketService, UserService userService){
-
-                this.game = game;
-                this.players = players;
-                this.currentPlayer = startPlayer;
-                this.nrCards = nrCards;
-                this.cardAPIService = cardAPIService;
-                deckId = cardAPIService.createDeck().getDeck_id();
-                this.webSocketService = webSocketService;
-                this.userService = userService;
-                initializeRound();
+        this.game = game;
+        this.players = players;
+        this.currentPlayer = startPlayer;
+        this.nrCards = nrCards;
+        this.cardAPIService = cardAPIService;
+        deckId = cardAPIService.createDeck().getDeck_id();
+        this.webSocketService = webSocketService;
+        this.userService = userService;
+        initializeRound();
     }
 
     public void setDeckId (String deckId){
@@ -144,45 +107,26 @@ public class Round {
             return currentPlayer;
         }
 
-        public void setCurrentPlayer (Player currentPlayer){
+        public void setCurrentPlayer(Player currentPlayer){
             this.currentPlayer = currentPlayer;
         }
 
-        public void setGame (Game game){
+        public void setGame(Game game){
             this.game = game;
         }
 
-        public void sendOutCardToHandDTO(Player p){
-            GameListOfCardsDTO gameListOfCardsDTO = new GameListOfCardsDTO();
-            List<GameCardDTO> cardList = new ArrayList<>();
-            for(Card c : p.getHand().getHandDeck()){
-                cardList.add(DTOMapper.INSTANCE.convertCardtoGameCardDTO(c));
-            }
-            gameListOfCardsDTO.setCards(cardList);
-
-            webSocketService.sendToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), String.format("queue/game/%s/cards", game.getGameID().toString()), gameListOfCardsDTO);
+        public void sendOutCardToHandDTO(Player p) {
+            webSocketService.sendCardsToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), p.getHand().getHandDeck(), game.getGameId());
         }
 
         public void sendOutCardDifferenceHandDTO(Player p, Card c, int idx){
-            GameListOfCardsDTO gameListOfCardsDTO = new GameListOfCardsDTO();
-            List<GameCardDTO> cardList = new ArrayList<>();
-
-            GameCardDTO gameCardDTO = new GameCardDTO();
-            gameCardDTO.setCode(c.getCard_id());
-            gameCardDTO.setIdx(idx);
-            cardList.add(gameCardDTO);
-
-            gameListOfCardsDTO.setCards(cardList);
-
-            webSocketService.sendToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), String.format("queue/game/%s/cards", game.getGameID().toString()), gameListOfCardsDTO);
+            List<Card> cardList = new ArrayList<>();
+            cardList.add(c);
+            webSocketService.sendCardsToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), cardList, game.getGameId());
         }
 
         public void sendOutCurrentTurnDTO(){
-            RoundCurrentPlayerDTO roundCurrentPlayerDTO = new RoundCurrentPlayerDTO();
-            roundCurrentPlayerDTO.setPlayerName(currentPlayer.getPlayerName());
-
-            String path = "/topic/game/%s/turn";
-            this.webSocketService.sendToTopic(String.format(path, game.getGameID().toString()), roundCurrentPlayerDTO);
+            webSocketService.sendCurrentTurnMessage(currentPlayer.getPlayerName(), game.getGameId());
         }
     }
 
