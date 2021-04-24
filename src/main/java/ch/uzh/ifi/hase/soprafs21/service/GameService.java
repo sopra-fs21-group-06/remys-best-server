@@ -17,6 +17,7 @@ import static java.lang.Boolean.TRUE;
 @Service
 @Transactional
 public class GameService {
+
     private static GameService instance;
     private CardAPIService cardAPIService;
     private final UserService userService;
@@ -37,6 +38,7 @@ public class GameService {
     // New Round initiated, then Send Card to Player and GameStats
     public void InitiateRound(Game game){
         Round currentRound = new Round(game.getPlayerList(),game.getStartPlayer(),game.getNrCards(),game, cardAPIService,webSocketService, userService);
+
         game.setCurrentRound(currentRound);
 
         sendHandToPlayer();
