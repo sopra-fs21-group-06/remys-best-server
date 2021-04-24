@@ -87,8 +87,8 @@ public class Game {
             WaitingRoomEnterDTO startGameObj = new WaitingRoomEnterDTO();
             startGameObj.setToken("Edouard ish de Geilst");
             String path = "/topic/game/%s/startGame";
-                this.webSocketService.sendToTopic(String.format(path, gameID.toString()), startGameObj);
-            }
+            this.webSocketService.sendToTopic(String.format(path, gameID.toString()), startGameObj);
+        }
         return playerList;
         }
 
