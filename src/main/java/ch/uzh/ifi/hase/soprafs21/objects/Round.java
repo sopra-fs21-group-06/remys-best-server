@@ -105,7 +105,6 @@ public class Round {
 
             }
         }
-
     }
 
     public void changeCurrentPlayer () {
