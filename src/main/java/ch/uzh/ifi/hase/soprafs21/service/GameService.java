@@ -32,7 +32,6 @@ public class GameService {
         this.webSocketService = webSocketService;
         instance = this;
 
-
     }
 
     public static GameService getInstance(){return instance;}
