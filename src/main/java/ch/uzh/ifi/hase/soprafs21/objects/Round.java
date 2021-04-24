@@ -15,6 +15,9 @@ import ch.uzh.ifi.hase.soprafs21.service.PlayingBoardService;
 import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
+
+
+
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
 
@@ -53,10 +56,6 @@ public class Round {
     //private DeckService deckService;
     private Player winner = null;
     private String deckId;
-
-    private int cardCountDeck = 53;
-
-
     private final WebSocketService webSocketService;
     private final UserService userService;
 
@@ -70,7 +69,6 @@ public class Round {
                 this.nrCards = nrCards;
                 this.cardAPIService = cardAPIService;
                 deckId = cardAPIService.createDeck().getDeck_id();
-
                 this.webSocketService = webSocketService;
                 this.userService = userService;
                 initializeRound();
@@ -101,8 +99,6 @@ public class Round {
 
                 //second draw
                 p.getHand().addCardsToHand(cardAPIService.drawCards(deckId, secondDraw));
-                sendOutCardToHandDTO(p);
-
                 sendOutCardToHandDTO(p);
 
                 getGame().setCardCount(53 - (nrCards - getGame().getCardCount()));
