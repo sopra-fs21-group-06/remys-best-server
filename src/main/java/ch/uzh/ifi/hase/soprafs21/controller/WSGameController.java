@@ -44,8 +44,6 @@ public class WSGameController {
         Game currentGame = gameEngine.getRunningGameByID(gameId);
         currentGame.setCardExhange(DogUtils.convertTokenToUsername(gameCardExchange.getToken(), gameEngine.getUserService()), gameCardExchange.getCode());
     }
-
-
     @MessageMapping("/game/{gameId}/move-request")
     public synchronized void moveRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, CardMoveRequestDTO cardMoveRequestDTO){
         log.info("Player" + getIdentity(sha) + ": Has made a moverequest");
