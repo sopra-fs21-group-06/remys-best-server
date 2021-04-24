@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.CardMoveRequestDTO;
+
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameCardExchange;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameReadyDTO;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ public class WSGameController {
         Game currentGame = gameEngine.getRunningGameByID(gameId);
         currentGame.setCardExhange(DogUtils.convertTokenToUsername(gameCardExchange.getToken(), gameEngine.getUserService()), gameCardExchange.getCode());
     }
+
 
     @MessageMapping("/game/{gameId}/move-request")
     public synchronized void moveRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, CardMoveRequestDTO cardMoveRequestDTO){

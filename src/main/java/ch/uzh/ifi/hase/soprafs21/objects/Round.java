@@ -20,7 +20,7 @@ import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
-
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.RoundCurrentPlayerDTO;
 
 
 
