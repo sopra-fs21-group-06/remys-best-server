@@ -2,11 +2,8 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 
 
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
-import ch.uzh.ifi.hase.soprafs21.service.PlayingBoardService;
+import ch.uzh.ifi.hase.soprafs21.service.*;
 
-import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
-import ch.uzh.ifi.hase.soprafs21.service.UserService;
-import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
 
@@ -24,17 +21,18 @@ public class Round {
     //private DeckService deckService;
     private Player winner = null;
     private String deckId;
-    private int cardCountDeck = 53;
-    private WebSocketService webSocketService;
-    private UserService userService;
+    private final WebSocketService webSocketService;
+    private final UserService userService;
 
-    public Round(List<Player> players, Player startPlayer, int nrCards, Game game, CardAPIService cardAPIService){
+    public Round(List<Player> players, Player startPlayer, int nrCards, Game game, CardAPIService cardAPIService, WebSocketService webSocketService, UserService userService){
                 this.game = game;
                 this.players = players;
                 this.currentPlayer = startPlayer;
                 this.nrCards = nrCards;
                 this.cardAPIService = cardAPIService;
                 deckId = cardAPIService.createDeck().getDeck_id();
+                this.webSocketService = webSocketService;
+                this.userService = userService;
                 initializeRound();
     }
 
@@ -46,13 +44,13 @@ public class Round {
     public void initializeRound () {
 
         for (Player p : players) {
-            if (cardCountDeck == 0) {
+            if (getGame().getCardCount() == 0) {
                 cardAPIService.shuffle(deckId);
-                cardCountDeck = 53;
+                getGame().setCardCount(53);
             }
-            else if (cardCountDeck < nrCards) {
-                String firstDraw = String.valueOf(cardCountDeck);
-                String secondDraw = String.valueOf(nrCards - cardCountDeck);
+            else if (getGame().getCardCount() < nrCards) {
+                String firstDraw = String.valueOf(getGame().getCardCount());
+                String secondDraw = String.valueOf(nrCards - getGame().getCardCount());
                 //first draw
                 Hand hand = new Hand(cardAPIService.drawCards(deckId, firstDraw));
                 p.setHand(hand);
@@ -63,7 +61,7 @@ public class Round {
                 p.getHand().addCardsToHand(cardAPIService.drawCards(deckId, secondDraw));
                 sendOutCardToHandDTO(p);
 
-                cardCountDeck = 53 - (nrCards - cardCountDeck);
+                getGame().setCardCount(53 - (nrCards - getGame().getCardCount()));
             }
 
             else {
@@ -72,7 +70,7 @@ public class Round {
                 p.setHand(hand);
 
                 sendOutCardToHandDTO(p);
-                cardCountDeck -= nrCards;
+                getGame().setCardCount(getGame().getCardCount() - nrCards);
             }
         }
 
@@ -122,7 +120,7 @@ public class Round {
             for(Card c : p.getHand().getHandDeck()){
                 cardList.add(DTOMapper.INSTANCE.convertCardtoGameCardDTO(c));
             }
-            gameListOfCardsDTO.setCardHand(cardList);
+            gameListOfCardsDTO.setCards(cardList);
             webSocketService.sendToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), String.format("queue/game/%s/cards", game.getGameID().toString()), gameListOfCardsDTO);
         }
     }

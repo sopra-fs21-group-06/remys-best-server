@@ -23,7 +23,7 @@ public class Card {
         this.cardSuit = suit;
         this.cardValue = value;
         this.card_id = code;
-        this.changeCardValueToCardMoveValue(value);
+        //this.changeCardValueToCardMoveValue(value);
 
     }
 

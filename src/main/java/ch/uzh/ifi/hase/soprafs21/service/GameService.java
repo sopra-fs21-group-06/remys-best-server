@@ -19,12 +19,16 @@ import static java.lang.Boolean.TRUE;
 public class GameService {
     private static GameService instance;
     private CardAPIService cardAPIService;
+    private final UserService userService;
+    private final WebSocketService webSocketService;
 
     Logger log = LoggerFactory.getLogger(GameService.class);
 
     @Autowired
-    public GameService(CardAPIService cardAPIService) {
+    public GameService(CardAPIService cardAPIService, UserService userService, WebSocketService webSocketService) {
         this.cardAPIService = cardAPIService;
+        this.userService = userService;
+        this.webSocketService = webSocketService;
         instance = this;
 
     }
@@ -32,7 +36,7 @@ public class GameService {
     public static GameService getInstance(){return instance;}
     // New Round initiated, then Send Card to Player and GameStats
     public void InitiateRound(Game game){
-        Round currentRound = new Round(game.getPlayerList(),game.getStartPlayer(),game.getNrCards(),game, cardAPIService);
+        Round currentRound = new Round(game.getPlayerList(),game.getStartPlayer(),game.getNrCards(),game, cardAPIService,webSocketService, userService);
         game.setCurrentRound(currentRound);
 
         sendHandToPlayer();
