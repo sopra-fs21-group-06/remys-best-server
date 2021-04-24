@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.FactDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.WaitingRoomEnterDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameFactsDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameNotificationDTO;
 import org.springframework.stereotype.Controller;
 
 import java.beans.JavaBean;
@@ -37,6 +38,7 @@ public class Game {
         for(User user : users){
             playerList.add(userToPlayer(user));
         }
+        this.startPlayer = playerList.get(0);
     }
 
     private void setDeckId(String deckid){
@@ -122,15 +124,21 @@ public class Game {
 
             gameService.InitiateRound(this);
 
-            FactDTO factDTO = new FactDTO();
-            factDTO.setTitle("Dummy Title");
-            factDTO.setSubTitle("Dummy Subtitle");
-            List<FactDTO> facts = new ArrayList<>();
-            facts.add(factDTO);
-            GameFactsDTO gameFacts = new GameFactsDTO();
-            gameFacts.setFacts(facts);
-            String path = "/topic/game/%s/facts";
-            this.webSocketService.sendToTopic(String.format(path, gameID.toString()), gameFacts);
+            List<FactDTO> factList = new ArrayList<>();
+            factList.add(new FactDTO(getCurrentRound().getCurrentPlayer().getPlayerName(), "Round Beginner"));
+            factList.add(new FactDTO("Card Exchange", "Click on card to exchange"));
+
+            GameFactsDTO gameFactsDTO = new GameFactsDTO();
+            gameFactsDTO.setFacts(factList);
+
+            GameNotificationDTO gameNotificationDTO = new GameNotificationDTO();
+            gameNotificationDTO.setAction("Card Exchange");
+
+            String pathFacts = "/topic/game/%s/facts";
+            String pathNotifications = "/topic/game/%s/notification";
+
+            this.webSocketService.sendToTopic(String.format(pathFacts, gameID.toString()), gameFactsDTO);
+            this.webSocketService.sendToTopic(String.format(pathNotifications, gameID.toString()), gameNotificationDTO);
 
 
             // TODO send initial notification

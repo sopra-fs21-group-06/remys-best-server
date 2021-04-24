@@ -4,6 +4,11 @@ public class FactDTO {
     private String title;
     private String subTitle;
 
+    public FactDTO(String title, String subTitle){
+        this.title = title;
+        this.subTitle = subTitle;
+    }
+
     public String getTitle() {
         return title;
     }
