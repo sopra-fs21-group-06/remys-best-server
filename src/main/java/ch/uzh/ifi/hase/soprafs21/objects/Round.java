@@ -1,12 +1,17 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
 
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.PlayingBoardService;
 
 import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
+import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Round {
@@ -20,6 +25,8 @@ public class Round {
     private Player winner = null;
     private String deckId;
     private int cardCountDeck = 53;
+    private WebSocketService webSocketService;
+    private UserService userService;
 
     public Round(List<Player> players, Player startPlayer, int nrCards, Game game, CardAPIService cardAPIService){
                 this.game = game;
@@ -34,6 +41,8 @@ public class Round {
     public void setDeckId (String deckId){
         this.deckId = deckId;
     }
+
+
     public void initializeRound () {
 
         for (Player p : players) {
@@ -52,6 +61,7 @@ public class Round {
 
                 //second draw
                 p.getHand().addCardsToHand(cardAPIService.drawCards(deckId, secondDraw));
+                sendOutCardToHandDTO(p);
 
                 cardCountDeck = 53 - (nrCards - cardCountDeck);
             }
@@ -59,11 +69,13 @@ public class Round {
             else {
                 String str = String.valueOf(nrCards);
                 Hand hand = new Hand(cardAPIService.drawCards(deckId, str));
-
                 p.setHand(hand);
+
+                sendOutCardToHandDTO(p);
                 cardCountDeck -= nrCards;
             }
         }
+
     }
 
     public void changeCurrentPlayer () {
@@ -102,6 +114,16 @@ public class Round {
 
         public void setGame (Game game){
             this.game = game;
+        }
+
+        private void sendOutCardToHandDTO(Player p){
+            GameListOfCardsDTO gameListOfCardsDTO = new GameListOfCardsDTO();
+            List<GameCardDTO> cardList = new ArrayList<>();
+            for(Card c : p.getHand().getHandDeck()){
+                cardList.add(DTOMapper.INSTANCE.convertCardtoGameCardDTO(c));
+            }
+            gameListOfCardsDTO.setCardHand(cardList);
+            webSocketService.sendToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), String.format("queue/game/%s/cards", game.getGameID().toString()), gameListOfCardsDTO);
         }
     }
 

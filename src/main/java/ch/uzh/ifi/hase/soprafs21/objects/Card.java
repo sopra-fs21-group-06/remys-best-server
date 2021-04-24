@@ -110,6 +110,14 @@ public class Card {
     public Boolean getCanStart() {
         return canStart;
     }
+
+    public String getCard_id() {
+        return card_id;
+    }
+
+    public void setCard_id(String card_id) {
+        this.card_id = card_id;
+    }
 }
 
 

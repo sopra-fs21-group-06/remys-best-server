@@ -17,15 +17,19 @@ import static java.lang.Boolean.TRUE;
 @Service
 @Transactional
 public class GameService {
+    private static GameService instance;
     private CardAPIService cardAPIService;
 
     Logger log = LoggerFactory.getLogger(GameService.class);
 
     @Autowired
-    public GameService(Game game, CardAPIService cardAPIService) {
+    public GameService(CardAPIService cardAPIService) {
         this.cardAPIService = cardAPIService;
+        instance = this;
 
     }
+
+    public static GameService getInstance(){return instance;}
     // New Round initiated, then Send Card to Player and GameStats
     public void InitiateRound(Game game){
         Round currentRound = new Round(game.getPlayerList(),game.getStartPlayer(),game.getNrCards(),game, cardAPIService);

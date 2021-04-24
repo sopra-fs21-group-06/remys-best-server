@@ -2,14 +2,18 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.FactDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.WaitingRoomEnterDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameFactsDTO;
+import org.springframework.stereotype.Controller;
 
+import java.beans.JavaBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 
 public class Game {
     /** should game have a Round ? such that we just instantiate a new variable of round that automatically is created with right number of cards etc?**/
@@ -24,10 +28,12 @@ public class Game {
     private Round currentRound;
     private int cardCount = 53;
     private final WebSocketService webSocketService;
+    private final GameService gameService;
 
     /**can throw nullPointerException **/
     public Game(List<User> users, WebSocketService webSocketService){
         this.webSocketService = webSocketService;
+        this.gameService = GameService.getInstance();
         for(User user : users){
             playerList.add(userToPlayer(user));
         }
@@ -113,6 +119,9 @@ public class Game {
         }
 
         if(areAllPlayersReady) {
+
+            gameService.InitiateRound(this);
+
             FactDTO factDTO = new FactDTO();
             factDTO.setTitle("Dummy Title");
             factDTO.setSubTitle("Dummy Subtitle");
@@ -128,6 +137,7 @@ public class Game {
 
 
             // TODO send cards
+
         }
     }
 

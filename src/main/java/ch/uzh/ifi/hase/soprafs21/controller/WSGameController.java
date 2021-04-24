@@ -17,12 +17,14 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
 import java.util.UUID;
 
 import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
 
+@Controller
 public class WSGameController {
     Logger log = LoggerFactory.getLogger(WSGameController.class);
 
