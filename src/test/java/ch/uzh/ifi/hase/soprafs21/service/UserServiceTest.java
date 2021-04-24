@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs21.service;
+/*package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
@@ -77,6 +77,4 @@ public class UserServiceTest {
         // then -> attempt to create second user with same user -> check that an error is thrown
         assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser));
     }
-
-
-}
+}*/
