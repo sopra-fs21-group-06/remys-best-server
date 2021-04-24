@@ -2,29 +2,59 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
+import ch.uzh.ifi.hase.soprafs21.service.UserService;
+import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
+import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.WaitingRoomUserObjDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomChooseColorDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomSendOutCurrentUsersDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+
+@Service
+@Scope("singleton")
+@Transactional
 public class GameEngine{
     private static GameEngine gameEngine;
     private List<GameSession> gameSessionList;
     private List<Game> runningGamesList;
     private GameSessionRequestList gameSessionRequestList;
-    private WaitingRoom waitingRoom;
+    private final WaitingRoom waitingRoom;
+    private final UserService userService;
+    private final WebSocketService webSocketService;
+    Logger log = LoggerFactory.getLogger(GameEngine.class);
 
-    private GameEngine(){
+
+    @Autowired
+    public GameEngine(WaitingRoom waitingRoom, UserService userService, WebSocketService webSocketService){
+        this.webSocketService = webSocketService;
         this.gameSessionList= new ArrayList<GameSession>();
         this.runningGamesList= new ArrayList<Game>();
         this.gameSessionRequestList=new GameSessionRequestList();
-        this.waitingRoom= new WaitingRoom();
+        this.waitingRoom= waitingRoom;
+        this.userService = userService;
+        gameEngine = this;
+    }
+
+    public UserService getUserService() {
+        return userService;
     }
 
     public static synchronized GameEngine instance() {
-        if (gameEngine==null)
-            gameEngine = new GameEngine();
+        /*if (gameEngine==null)
+            //gameEngine = new GameEngine();*/
+        //according to what I read online @Scope ("singleton") is the way to implement singleton in spring
         return gameEngine;
     }
 
@@ -49,21 +79,48 @@ public class GameEngine{
     public void setRunningGamesList(List<Game> runningGamesList) {
         this.runningGamesList = runningGamesList;
     }
-    public void setWaitingRoom(WaitingRoom waitingRoom) {this.waitingRoom = waitingRoom;}
 
     public void addUserToWaitingRoom(User user){
-        if(waitingRoom.addUser(user)==4){
-            createGameFromWaitingRoom();
+        if(waitingRoom.addUser(user)==2){
+            Game createdGame = createGameFromWaitingRoom();
+
+            //Now thats a juicy one-liner isnt it..Edi? ;) <3
+            WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = DogUtils.convertPlayerListToWaitingRoomChoosecolorDTO(createdGame.getGameID(), createdGame.getPlayerList());
+
+            for(User userInWaitingRoom : waitingRoom.getUserQueue()) {
+                String userIdentity = userInWaitingRoom.getSessionIdentity();
+                this.webSocketService.sendToPlayer(userIdentity, "queue/waiting-room", waitingRoomChooseColorDTO);
+            }
         }
-    };
-    private void createGameFromWaitingRoom(){runningGamesList.add(new Game(this.waitingRoom.getFirstFour()));}
+    }
+
+    public void removeUserFromWaitingRoom(User user){
+        waitingRoom.removeUser(user);
+    }
+
+    public WaitingRoomSendOutCurrentUsersDTO createWaitingRoomUserList(){
+        WaitingRoomSendOutCurrentUsersDTO waitingRoomSendOutCurrentUsersDTO = new WaitingRoomSendOutCurrentUsersDTO();
+        List<WaitingRoomUserObjDTO> userList = new ArrayList<>();
+        for(User user : waitingRoom.getUserQueue()){
+            log.info(user.toString());
+            userList.add(DTOMapper.INSTANCE.convertUsertoWaitingRoomUserObjDTO(user));
+        }
+        waitingRoomSendOutCurrentUsersDTO.setCurrentUsers(userList);
+        return waitingRoomSendOutCurrentUsersDTO;
+    }
+
+    private Game createGameFromWaitingRoom() {
+        Game createdGame = new Game(this.waitingRoom.getFirstFour(), webSocketService);
+        runningGamesList.add(createdGame);
+        return createdGame;
+    }
 
     public Game createGameFromGameSession(GameSession gameSession){
         try {
             if (gameSessionList.contains(gameSession)) {
                 if (gameSession.getUserList().size() == 4) {
                     gameSessionList.remove(gameSession);
-                    Game game = new Game(gameSession.getUserList());
+                    Game game = new Game(gameSession.getUserList(), webSocketService);
                     runningGamesList.add(game);
                     return game;
                 }
@@ -119,7 +176,7 @@ public class GameEngine{
 
     private boolean inWaitingRoom(User user) {return waitingRoom.userInHere(user);};
 
-    private Game runningGameByID(UUID id){
+    public Game getRunningGameByID(UUID id){
         try {
             for (Game game : runningGamesList) {
                 if (game.getGameID().equals(id)) {
@@ -179,7 +236,7 @@ public class GameEngine{
     }
 
     public void deleteGameByGameID(UUID GameID){
-        Game game = runningGameByID(GameID);
+        Game game = getRunningGameByID(GameID);
         if(game!=null){
             runningGamesList.remove(game);
         }
@@ -187,7 +244,7 @@ public class GameEngine{
 
     /** check needs to happen if user available before calling method **/
     public void newGameSession(User host) {
-        if(host.getStatus().equals(UserStatus.ONLINE)){
+        if(host.getStatus().equals(UserStatus.FREE)){
             GameSession gameSession = new GameSession(host);
             try {
                 gameSessionList.add(gameSession);

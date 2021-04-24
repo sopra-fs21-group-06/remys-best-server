@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.constant;
 
 public enum FieldStatus {
-    free, occupied, blocked
+    FREE,
+    OCCUPIED,
+    BLOCKED
 }

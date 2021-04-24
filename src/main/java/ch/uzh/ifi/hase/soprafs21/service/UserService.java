@@ -33,6 +33,10 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public UserRepository getUserRepository() {
+        return userRepository;
+    }
+
     public List<User> getUsers() {
         return this.userRepository.findAll();
     }
@@ -88,6 +92,14 @@ public class UserService {
         userRepository.flush();
 
         return userToUpdate;
+    }
+
+    public void updateUserIdentity(String identity, String token){
+        User userToUpdate = userRepository.findByToken(token);
+        log.info(identity);
+        userToUpdate.setSessionIdentity(identity);
+        userRepository.save(userToUpdate);
+        userRepository.flush();
     }
 
     private int checkIfLoginDataCorrect(User userToBeLoggedIn){

@@ -1,93 +1,86 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
-import ch.uzh.ifi.hase.soprafs21.service.DeckService;
-import ch.uzh.ifi.hase.soprafs21.service.HandService;
-import ch.uzh.ifi.hase.soprafs21.service.PlayerService;
+
 import ch.uzh.ifi.hase.soprafs21.service.PlayingBoardService;
+
+import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
+
 
 import java.util.List;
 
-import static java.util.Objects.isNull;
-
 public class Round {
+    private final CardAPIService cardAPIService;
     private Game game;
     private int nrCards;
     private PlayingBoardService playingBoardService;
     private Player currentPlayer;
     private List<Player> players;
-    private DeckService deckService;
+    //private DeckService deckService;
     private Player winner = null;
+    private String deckId;
 
-    public Round(Deck deck, PlayingBoardService playingBoardService, List<Player> players, Player startPlayer, int nrCards){
-        this.playingBoardService = playingBoardService;
-        this.players = players;
-        this.currentPlayer = startPlayer;
-        this.nrCards = nrCards;
-        DeckService deckService = new DeckService(deck);
-        this.deckService = deckService;
-        this.startRound();
+    public Round(List < Player > players, Player startPlayer, int nrCards, Game game, CardAPIService cardAPIService){
+                this.game = game;
+                this.players = players;
+                this.currentPlayer = startPlayer;
+                this.nrCards = nrCards;
+                this.cardAPIService = cardAPIService;
     }
 
-    public Player startRound() {
+    public void setDeckId (String deckId){
+        this.deckId = deckId;
+    }
+    public void initializeRound () {
+        if (cardAPIService.drawCards(deckId, "1") == null) {
+            //cardAPIService.shuffle();
+        }
         for (Player p : players) {
-            Hand hand = new Hand(deckService.draw(nrCards));
+            String str = "" + nrCards;
+
+            Hand hand = new Hand(cardAPIService.drawCards(deckId, str));
+
             p.setHand(hand);
+            // send cards to
         }
 
-        while (isNull(winner) && nrCards != 0) {
-
-            for (int i = 0; i < 5; i++) {
-                // checker class first if any of the cards can be played otherwise lay down card
-
-                if (currentPlayer.canPlay()) {
-                    PlayerService playerService = new PlayerService(currentPlayer);
-                    Marble m = playerService.chooseMarble();
-                    Card c = playerService.chooseCard();
-                    playingBoardService.moveMarble(m, c);
-                    Hand h = currentPlayer.getHand();
-                    HandService handService = new HandService(h);
-                    handService.deleteCardFromHand(c);
-                }
-                if (currentPlayer.isWinning()) {
-                    return winner = currentPlayer;
-                }
-                currentPlayer = players.get(XY);
-
-            }
-        }// change currentPlayer clockwise -> blue, green, red, yellow
-                nrCards--;
-        return winner;
     }
 
-    public void setPlayingBoard(PlayingBoard playingBoard) {
-        this.playingBoard = playingBoard;
+    public void changeCurrentPlayer () {
+        int i = players.indexOf(currentPlayer);
+        int inext = (i + 1) % 4;
+        currentPlayer = players.get(inext);
+    }
+    public String getNameNextPlayer () {
+        int i = players.indexOf(currentPlayer);
+        int inext = (i + 1) % 4;
+        return players.get(inext).getPlayerName();
     }
 
-    public void setNrCards(int nrCards) {
-        this.nrCards = nrCards;
+
+        public void setNrCards ( int nrCards){
+            this.nrCards = nrCards;
+        }
+
+
+
+        public int getNrCards () {
+            return nrCards;
+        }
+
+        public Game getGame () {
+            return game;
+        }
+
+        public Player getCurrentPlayer () {
+            return currentPlayer;
+        }
+
+        public void setCurrentPlayer (Player currentPlayer){
+            this.currentPlayer = currentPlayer;
+        }
+
+        public void setGame (Game game){
+            this.game = game;
+        }
     }
 
-    public PlayingBoard getPlayingBoard() {
-        return playingBoard;
-    }
-
-    public int getNrCards() {
-        return nrCards;
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public Player getCurrentPlayer() {
-        return currentPlayer;
-    }
-
-    public void setCurrentPlayer(Player currentPlayer) {
-        this.currentPlayer = currentPlayer;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
-    }
-}

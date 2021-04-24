@@ -37,6 +37,9 @@ public class User implements Serializable {
     @Column(nullable = false)
     private UserStatus status;
 
+    @Column(unique = true)
+    private String sessionIdentity;
+
     public Long getId() {
         return id;
     }
@@ -83,5 +86,13 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getSessionIdentity() {
+        return sessionIdentity;
+    }
+
+    public void setSessionIdentity(String sessionIdentity) {
+        this.sessionIdentity = sessionIdentity;
     }
 }

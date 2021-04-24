@@ -9,8 +9,10 @@ public class FinishField extends Field{
     private Boolean isFinish = TRUE;
     private String fieldName;
 
+
     public FinishField(int fieldValue, Color color) {
         super(fieldValue);
         this.color = color;
     }
+
 }

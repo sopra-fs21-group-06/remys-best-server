@@ -1,7 +1,10 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.objects.Player;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.ChooseColorPlayerDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.WaitingRoomUserObjDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -28,6 +31,7 @@ public interface DTOMapper {
     User convertUserLoginPostDTOtoEntity(UserLoginPostDTO userLoginPostDTO);
 
     @Mapping(source = "token", target = "token")
+    @Mapping(source = "username", target = "username")
     UserLoginGetDTO convertEntityToUserLoginGetDTO(User user);
 
     @Mapping(source = "id", target = "id")
@@ -39,5 +43,10 @@ public interface DTOMapper {
     @Mapping(source="token", target="token")
     User convertUserLogOutPostDTOtoEntity(UserLogoutPostDTO userLogoutPostDTO);
 
+    @Mapping(source = "username", target="username")
+    WaitingRoomUserObjDTO convertUsertoWaitingRoomUserObjDTO(User user);
 
+    @Mapping(source = "playerName", target="playerName")
+    @Mapping(source = "color", target="color")
+    ChooseColorPlayerDTO convertPlayertoChooseColorPlayerDTO(Player player);
 }
