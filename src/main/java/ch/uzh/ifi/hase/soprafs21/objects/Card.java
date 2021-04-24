@@ -14,16 +14,14 @@ public class Card {
     private CardSuit cardSuit;
     private ArrayList<Integer> cardMoveValue;
     private String cardValue;
-    private String image;
     private String card_id;
     private boolean canEatWhileSkip = FALSE;
     private List<String> movesToDisplay;
     private Boolean canStart;
 
-    public Card(CardSuit suit, String value, String image, String code){
+    public Card(CardSuit suit, String value, String code){
         this.cardSuit = suit;
         this.cardValue = value;
-        this.image = image;
         this.card_id = code;
         this.changeCardValueToCardMoveValue(value);
 

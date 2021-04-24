@@ -21,7 +21,7 @@ public class CardAPIService {
     }
 
     public CardAPIDeckResponseObject createDeck(){
-        final String uri = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1";
+        final String uri = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1&jokers_enabled=true";
         RestTemplate restTemplate = new RestTemplate();
 
         return restTemplate.getForObject(uri, CardAPIDeckResponseObject.class);
@@ -38,11 +38,17 @@ public class CardAPIService {
         List<Card> drawnCards = new ArrayList<>();
 
         for (CardAPICardJson card : cardList) {
-            //drawnCards.add(new Card(cardValueMapper(card.getSuit()), card.getValue()));
+            drawnCards.add(new Card(cardValueMapper(card.getSuit()), card.getValue(), card.getCode()));
         }
-
         return drawnCards;
     }
+
+    public void shuffle(String deckID){
+        final String uri = String.format("https://deckofcardsapi.com/api/deck/%s/shuffle/", deckID);
+    }
+
+
+
 
     private CardSuit cardValueMapper(String suit){
 
@@ -55,4 +61,6 @@ public class CardAPIService {
             default -> CardSuit.DIAMONDS;
         };
     }
+
+
 }

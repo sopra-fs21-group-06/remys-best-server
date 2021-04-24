@@ -17,4 +17,7 @@ public class Hand {
     public Card getCardFromHandDeck(int i){
         return handDeck.get(i);
     }
+    public void addCardsToHand(List<Card> cardList){
+        handDeck.addAll(cardList);
+    }
 }

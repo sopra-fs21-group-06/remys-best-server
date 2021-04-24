@@ -22,6 +22,7 @@ public class Game {
     private final UUID gameID = UUID.randomUUID();
     private int roundCount = 0;
     private Round currentRound;
+    private int cardCount = 53;
     private final WebSocketService webSocketService;
 
     /**can throw nullPointerException **/
