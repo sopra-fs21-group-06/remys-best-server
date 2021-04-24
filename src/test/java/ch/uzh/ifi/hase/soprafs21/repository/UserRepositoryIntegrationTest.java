@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs21.repository;
+/*package ch.uzh.ifi.hase.soprafs21.repository;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
@@ -41,4 +41,4 @@ public class UserRepositoryIntegrationTest {
         assertEquals(found.getToken(), user.getToken());
         assertEquals(found.getStatus(), user.getStatus());
     }
-}
+}*/
