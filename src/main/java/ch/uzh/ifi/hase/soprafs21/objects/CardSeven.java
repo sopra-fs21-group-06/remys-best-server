@@ -13,7 +13,7 @@ public class CardSeven extends Card{
     private boolean canEatWhileSkip = TRUE;
 
     public CardSeven(CardSuit suit, String value, String image, String code) {
-        super(suit, value, image, code);
+        super(suit, value, code);
     }
 
     @Override

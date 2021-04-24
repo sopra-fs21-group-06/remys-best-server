@@ -9,7 +9,7 @@ public class CardJoker extends Card{
     private HashMap<Integer, ArrayList<Integer>> cardMoveValue = new HashMap<Integer, ArrayList<Integer>>();
 
     public CardJoker(CardSuit suit, String value, String image, String code) {
-        super(suit, value, image, code);
+        super(suit, value, code);
     }
 
     @Override

@@ -5,32 +5,45 @@ import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
+@Service
+@Transactional
 public class GameService {
-    private final Game game;
+    private static GameService instance;
     private CardAPIService cardAPIService;
+    private final UserService userService;
+    private final WebSocketService webSocketService;
 
     Logger log = LoggerFactory.getLogger(GameService.class);
 
-    public GameService(Game game, CardAPIService cardAPIService) {
+    @Autowired
+    public GameService(CardAPIService cardAPIService, UserService userService, WebSocketService webSocketService) {
         this.cardAPIService = cardAPIService;
-        this.game = game;
+        this.userService = userService;
+        this.webSocketService = webSocketService;
+        instance = this;
+
     }
+
+    public static GameService getInstance(){return instance;}
     // New Round initiated, then Send Card to Player and GameStats
-    public void InitiateRound(){
-        Round currentRound = new Round(game.getPlayerList(),game.getStartPlayer(),game.getNrCards(),game, cardAPIService);
+    public void InitiateRound(Game game){
+        Round currentRound = new Round(game.getPlayerList(),game.getStartPlayer(),game.getNrCards(),game, cardAPIService,webSocketService, userService);
         game.setCurrentRound(currentRound);
 
         sendHandToPlayer();
         sendCardExchange();
     }
 
-    public List<Player> getPlayers(){
+    public List<Player> getPlayers(Game game){
         return game.getPlayerList();
     }
     public void sendHandToPlayer(){
@@ -41,32 +54,32 @@ public class GameService {
         //Send currentPlayer and Card Exchange
         log.info("Card Exchange");
     }
-    public void updateRoundStats(){
+    public void updateRoundStats(Game game){
         int indexCurrent;
-        indexCurrent = this.game.getPlayerList().indexOf(this.game.getStartPlayer());
+        indexCurrent = game.getPlayerList().indexOf(game.getStartPlayer());
         int indexNext = (indexCurrent + 1) % 4;
-        this.game.setStartPlayer(this.game.getPlayerList().get(indexNext));
-        this.game.addToRoundCount();
-        this.game.changeNrCards();
+        game.setStartPlayer(game.getPlayerList().get(indexNext));
+        game.addToRoundCount();
+        game.changeNrCards();
     }
-    public void changeCardsWithTeamMate(){
+    public void changeCardsWithTeamMate(Game game){
         //Make change
         sendHandToPlayer();
         log.info("Hand Change worked");
-        triggerNewRound();
+        triggerNewRound(game);
 
     }
 
-    public Boolean triggerNewRound(){
+    public Boolean triggerNewRound(Game game){
         // send Roundnr, Active Player, next Card Amount and next Beginner
         //send CurrentPlayer if he can play
-        sendRoundStats();
+        sendRoundStats(game);
 
-        return canPlayCard(game.getStartPlayer());
+        return canPlayCard(game.getStartPlayer(), game);
 
     }
-    public Boolean canPlayCard(Player p){
-        if (p.canPlay(this.game.getPlayingBoard().getBlockedFieldsValue())) {
+    public Boolean canPlayCard(Player p, Game game){
+        if (p.canPlay(game.getPlayingBoard().getBlockedFieldsValue())) {
             log.info("Current Player can Play");
             return TRUE;
         } else {
@@ -76,13 +89,13 @@ public class GameService {
     }
 
     //Method for RoundStats
-    public void sendRoundStats(){
+    public void sendRoundStats(Game game){
         int roundNr = game.getRoundCount();
         String name = game.getCurrentRound().getCurrentPlayer().getPlayerName();
         int cardAmountNext = game.getNextCardAmount();
-        int indexCurrent = this.game.getPlayerList().indexOf(this.game.getCurrentRound().getCurrentPlayer());
+        int indexCurrent = game.getPlayerList().indexOf(game.getCurrentRound().getCurrentPlayer());
         int indexNext = (indexCurrent + 1) % 4;
-        String nameNext = this.game.getPlayerList().get(indexNext).getPlayerName();
+        String nameNext = game.getPlayerList().get(indexNext).getPlayerName();
         log.info("Roundnr" + roundNr + name + "cardamountnext" + cardAmountNext + nameNext);
     }
 
@@ -96,7 +109,7 @@ public class GameService {
     }
 
 
-    public List<Marble> getPlayableMarble(Player p, Card c, String move){
+    public List<Marble> getPlayableMarble(Player p, Card c, String move, Game game){
         List<Marble> marblesOnField = p.getMarblesOnField();
         List<Marble> marblesOnFieldAndNotFinished = p.getMarblesOnFieldAndNotFinished();
         List<Marble> marblesFinished = p.getMarblesInFinishFieldAndFinished();
@@ -108,7 +121,7 @@ public class GameService {
             return checkJack(marblesOnField,p);
         } else if (c.getCardValue() == "ACE" || c.getCardValue() == "KING" ){
             if(move.contains("Go")){
-                Boolean b = this.game.getPlayingBoard().hasMarbleOnHomeStack(p.getColor());
+                Boolean b = game.getPlayingBoard().hasMarbleOnHomeStack(p.getColor());
                 if(!b){
                     log.info("No Marbles at home to go out");
                     return null;
@@ -121,38 +134,38 @@ public class GameService {
                 if(move.contains("1")){
                     list.add(1);
                     for (Marble m : marblesOnFieldAndNotFinished) {
-                        if (checkMove(m, list)) {
+                        if (checkMove(m, list, game)) {
                             possibleMarbles.add(m);
                         }
                     }
                 } else if(move.contains("11")){
                     list.add(11);
                     for (Marble m : marblesOnField) {
-                        if (checkMove(m, list)) {
+                        if (checkMove(m, list, game)) {
                             possibleMarbles.add(m);
                         }
                     }
                 } else if(move.contains("13")){
                     list.add(13);
                     for (Marble m : marblesOnField) {
-                        if (checkMove(m, list)) {
+                        if (checkMove(m, list, game)) {
                             possibleMarbles.add(m);
                         }
                     }
                 }
             }
         } else if(c.getCardValue() == "7"){
-             checkSeven(marblesOnFieldAndNotFinished, marblesFinished, marblesOnField);
+             checkSeven(marblesOnFieldAndNotFinished, marblesFinished, marblesOnField, game);
         } else if (c.getCardValue() == "2"  || c.getCardValue() == "3" ) {
             for (Marble m : marblesOnFieldAndNotFinished) {
-                if (checkMove(m, c.getCardMoveValue())) {
+                if (checkMove(m, c.getCardMoveValue(), game)) {
                     possibleMarbles.add(m);
                 }
             }
         } else {
             for (Marble m: marblesOnField){
                 if(!m.getHome() && !m.getFinish()){
-                    if (checkMove(m ,c.getCardMoveValue())){
+                    if (checkMove(m ,c.getCardMoveValue(), game)){
                         possibleMarbles.add(m);
                     }
                 }
@@ -175,7 +188,7 @@ public class GameService {
         (dont forget: Anzahl marbles im feld noch nicht im finishfeld, je nachdem verkleinert sich die anzahl steps home
         (z.b. 2 marbles -> -1, 3 Marbles -> -3)
         */
-    private List<Marble> checkSeven(List<Marble> marblesOnFieldAndNotFinished, List<Marble> marblesFinished,List<Marble> marblesOnField ) {
+    private List<Marble> checkSeven(List<Marble> marblesOnFieldAndNotFinished, List<Marble> marblesFinished,List<Marble> marblesOnField, Game game ) {
 
         List<Marble> movableMarbles = null;
         List<Marble> movableMarblesNotHome = null;
@@ -200,7 +213,7 @@ public class GameService {
                     if (fieldValToCheck == 68) {
                         fieldValToCheck = 4;
                     }
-                    Field fieldToCheck = this.game.getPlayingBoard().getField(fieldValToCheck);
+                    Field fieldToCheck = game.getPlayingBoard().getField(fieldValToCheck);
                     if (!(fieldToCheck.getFieldStatus().equals(FieldStatus.BLOCKED) && !(fieldToCheck.getColor().equals(m.getColor())))) {
                         movableMarbles.add(m);
                         movableMarblesNotHome.add(m);
@@ -209,7 +222,7 @@ public class GameService {
             }}
             int totalCountStepsAllMarblesMovable = 0;
             for (Marble ma: movableMarbles){
-                int steps = nrStepsToNextBlock(ma.getCurrentField(), 7);
+                int steps = nrStepsToNextBlock(ma.getCurrentField(), 7, game);
                 totalCountStepsAllMarblesMovable += steps;
             }
             //Case 7 cant be played
@@ -226,7 +239,7 @@ public class GameService {
         // add all marbles who are at home and if startfield is free
         //add al marbles who can either make move 1 or/and 11 case ACE else 13
 
-        private List<Marble> checkAceAndKing(List < Marble > marblesOnFieldAndNotFinished, List < Marble > marblesAtHome, Card c){
+        private List<Marble> checkAceAndKing(List < Marble > marblesOnFieldAndNotFinished, List < Marble > marblesAtHome, Card c, Game game){
             List<Marble> possibleMarbles = null;
             Color color = null;
             for (Marble m : marblesAtHome) {
@@ -236,7 +249,7 @@ public class GameService {
                 }
             }
             for (Marble m : marblesOnFieldAndNotFinished) {
-                if (checkMove(m, c.getCardMoveValue())) {
+                if (checkMove(m, c.getCardMoveValue(), game)) {
                     possibleMarbles.add(m);
                 }
             }
@@ -287,8 +300,8 @@ public class GameService {
                 return null;
             }
         }
-        public int nrStepsToNextBlock(Field startField, int moveValue){
-            LinkedList<Field> playingFields = this.game.getPlayingBoard().getListPlayingFields();
+        public int nrStepsToNextBlock(Field startField, int moveValue, Game game){
+            LinkedList<Field> playingFields = game.getPlayingBoard().getListPlayingFields();
             Field startingField = startField;
             int fieldNrStart = startingField.getFieldValue();
             int valFieldToCheck = fieldNrStart + 1;
@@ -318,7 +331,7 @@ public class GameService {
         // if the card value is 4, set startmove Field back 4.
         // check how marble can make move: first find current field, then make as many steps as the card value. if one field is blocking no count++
         // if count is eqaul value the marble can make the move
-        public Boolean checkMove (Marble marble, List < Integer > values){
+        public Boolean checkMove (Marble marble, List < Integer > values, Game game){
             int count = 0;
             Field startingFieldMove = marble.getCurrentField();
             for (Integer v : values) {
@@ -335,9 +348,9 @@ public class GameService {
                     else {
                         newStartFieldVal = marble.getCurrentField().getFieldValue() - 4;
                     }
-                    startingFieldMove = this.game.getPlayingBoard().getField(newStartFieldVal);
+                    startingFieldMove = game.getPlayingBoard().getField(newStartFieldVal);
                 }
-                count = nrStepsToNextBlock(startingFieldMove, v);
+                count = nrStepsToNextBlock(startingFieldMove, v, game);
                 if (v == count) {
                     log.info("Marble : " + marble.getColor() + "FieldVal: " + marble.getCurrentField().getFieldValue() + "ishome: " + marble.getHome());
                     return TRUE;
@@ -346,12 +359,12 @@ public class GameService {
             log.info("Cardvalue" + values + "not playeble");
             return FALSE;
         }
-        public void makeMove(Player p, Card c, String move, Marble marble, Field endField){
+        public void makeMove(Player p, Card c, String move, Marble marble, Field endField, Game game){
             int moveInIntForward = c.changeForwardMoveToValue(move);
             //Check if distance to endfield is equal moveForward;
             if(move.contains("Forward")){
                 if (endField instanceof FinishField){
-                    int distanceToFreeFinishSpot = this.game.getPlayingBoard().distanceToNextFreeFinishSpot(marble.getColor(), marble.getCurrentField());
+                    int distanceToFreeFinishSpot = game.getPlayingBoard().distanceToNextFreeFinishSpot(marble.getColor(), marble.getCurrentField());
                     if(distanceToFreeFinishSpot < moveInIntForward){
                         log.info("you can't go home with this move");
                     }
@@ -383,43 +396,43 @@ public class GameService {
                 log.info("invalid move for this card");
                 //return exception
             }
-            if(!(getPlayableMarble(p,c,move).contains(marble))){
+            if(!(getPlayableMarble(p,c,move, game).contains(marble))){
                 log.info(("invalid move for marble "));
             }
             if(move.contains("Start")){
                 if (chekForStart(marble, endField)){
-                    eat(endField);
-                    this.game.getPlayingBoard().marbleGoesToStart(marble.getColor());
+                    eat(endField, game);
+                    game.getPlayingBoard().marbleGoesToStart(marble.getColor());
                     log.info("marble start successful");
                 }
             } else if (move.contains("Exchange")){
                 if (checkForJackMove(marble, endField, p)){
-                    this.game.getPlayingBoard().marbleMoveJack(endField, marble);
+                    game.getPlayingBoard().marbleMoveJack(endField, marble);
                     log.info("marble exchange successful");
                 }
             } else {
                 if (!(endField instanceof FinishField)){
-                    eat(endField);
-                    this.game.getPlayingBoard().makeMove(endField, marble);
+                    eat(endField, game);
+                    game.getPlayingBoard().makeMove(endField, marble);
                     log.info("marble move forward/backward successful");
-                } else if (this.game.getPlayingBoard().distanceToNextFreeFinishSpot(marble.getColor(),endField)  == 0){
-                    this.game.getPlayingBoard().makeMove(endField, marble);
+                } else if (game.getPlayingBoard().distanceToNextFreeFinishSpot(marble.getColor(),endField)  == 0){
+                    game.getPlayingBoard().makeMove(endField, marble);
                     log.info("marble move into finish sector successful");
                 } else {
-                    this.game.getPlayingBoard().makeFinishMove(endField, marble);
+                    game.getPlayingBoard().makeFinishMove(endField, marble);
                     log.info("marble finished successful");
                 }
 
             }
 
         }
-        public void endTurn(){
+        public void endTurn(Game game){
             //CHeck if player is finished if yes change marbles
-            this.game.getCurrentRound().changeCurrentPlayer();
+            game.getCurrentRound().changeCurrentPlayer();
             log.info("Turn over, next Players turn");
         }
-        public void endRound(){
-            updateRoundStats();
+        public void endRound(Game game){
+            updateRoundStats(game);
         }
 
 
@@ -440,10 +453,10 @@ public class GameService {
             log.info("Jack can be played");
             return TRUE;
         }
-        public void eat(Field endField){
+        public void eat(Field endField, Game game){
             if (endField.getFieldStatus().equals(FieldStatus.OCCUPIED)){
                 Marble marbleToEat = endField.getMarble();
-                this.game.getPlayingBoard().sendHome(marbleToEat);
+                game.getPlayingBoard().sendHome(marbleToEat);
             }
         }
 

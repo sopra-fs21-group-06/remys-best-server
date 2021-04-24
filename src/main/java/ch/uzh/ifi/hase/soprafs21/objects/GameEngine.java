@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
+import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
@@ -33,12 +34,14 @@ public class GameEngine{
     private final WaitingRoom waitingRoom;
     private final UserService userService;
     private final WebSocketService webSocketService;
+    private final GameService gameService;
     Logger log = LoggerFactory.getLogger(GameEngine.class);
 
 
     @Autowired
-    public GameEngine(WaitingRoom waitingRoom, UserService userService, WebSocketService webSocketService){
+    public GameEngine(WaitingRoom waitingRoom, UserService userService, WebSocketService webSocketService, GameService gameService){
         this.webSocketService = webSocketService;
+        this.gameService = gameService;
         this.gameSessionList= new ArrayList<GameSession>();
         this.runningGamesList= new ArrayList<Game>();
         this.gameSessionRequestList=new GameSessionRequestList();
