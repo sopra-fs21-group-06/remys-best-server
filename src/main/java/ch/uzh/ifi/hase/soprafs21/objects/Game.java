@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs21.websocket.dto.FactDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.WaitingRoomEnterDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameFactsDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameNotificationDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.RoundCurrentPlayerDTO;
 import org.springframework.stereotype.Controller;
 
 import java.beans.JavaBean;
@@ -102,6 +103,66 @@ public class Game {
         }
 
         return playerList;
+    }
+
+    public void setCardExhange(String playerName, String cardToChangeCode){
+        for(Player p: playerList){
+            if(p.getPlayerName().equals(playerName)){
+                p.setCardToChangeCode(cardToChangeCode);
+                break;
+            }
+        }
+        boolean allPlayerPerformedCardexchange = true;
+        for(Player p: playerList){
+            if (p.getCardToChangeCode() == null) {
+                allPlayerPerformedCardexchange = false;
+                break;
+            }
+        }
+        if(allPlayerPerformedCardexchange) {
+
+            for(Player p: playerList){
+                if(p.getCardToChangeCode()!= null){
+                    performCardExchange(p, p.getTeamMate());
+                }
+            }
+            currentRound.sendOutCurrentTurnDTO();
+            sendOutCurrentTurnFactsDTO();
+        }
+    }
+
+    private void performCardExchange(Player player1, Player player2){
+        String player1CardCode = player1.getCardToChangeCode();
+        String player2CardCode = player2.getCardToChangeCode();
+        Card player1Card = null;
+        Card player2Card = null;
+        int player1CardIdx = 0;
+        int player2CardIdx= 0;
+
+        for(int i = 0; i < nrCards; i++){
+            if(player1.getHand().getHandDeck().get(i).getCard_id().equals(player1CardCode)){
+                player1Card = player1.getHand().getHandDeck().get(i);
+                player1CardIdx = i;
+                player1.getHand().getHandDeck().remove(i);
+                break;
+            }
+        }
+
+        for(int i = 0; i < nrCards; i++){
+            if(player2.getHand().getHandDeck().get(i).getCard_id().equals(player2CardCode)){
+                player2Card = player2.getHand().getHandDeck().get(i);
+                player2CardIdx = i;
+                player2.getHand().getHandDeck().remove(i);
+                break;
+            }
+        }
+        player1.getHand().getHandDeck().add(player1CardIdx, player2Card);
+        player2.getHand().getHandDeck().add(player2CardIdx, player1Card);
+
+        player1.setCardToChangeCode(null);
+        player2.setCardToChangeCode(null);
+        currentRound.sendOutCardToHandDTO(player1);
+        currentRound.sendOutCardToHandDTO(player2);
     }
 
     public void setPlayerToReady(String playername) {
@@ -204,5 +265,20 @@ public class Game {
 
     public void setCardCount(int cardCount) {
         this.cardCount = cardCount;
+    }
+
+    public void sendOutCurrentTurnFactsDTO(){
+        List<FactDTO> factList = new ArrayList<>();
+        factList.add(new FactDTO(String.valueOf(roundCount), "Round"));
+        factList.add(new FactDTO(currentRound.getCurrentPlayer().getPlayerName(), "Active Player"));
+        factList.add(new FactDTO(String.valueOf(getNextCardAmount()), "Next Round Card Amount"));
+        factList.add(new FactDTO(currentRound.getNameNextPlayer(), "Next Round Beginner"));
+
+        GameFactsDTO gameFactsDTO = new GameFactsDTO();
+        gameFactsDTO.setFacts(factList);
+
+        String pathFacts = "/topic/game/%s/facts";
+
+        this.webSocketService.sendToTopic(String.format(pathFacts, gameID.toString()), gameFactsDTO);
     }
 }

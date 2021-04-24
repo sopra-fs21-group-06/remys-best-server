@@ -1,8 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming;
 
-public class GameCardExchangeObj {
+public class GameCardExchange {
     private String token;
-    private String cardCode;
+    private String code;
 
     public String getToken() {
         return token;
@@ -12,11 +12,11 @@ public class GameCardExchangeObj {
         this.token = token;
     }
 
-    public String getCardCode() {
-        return cardCode;
+    public String getCode() {
+        return code;
     }
 
-    public void setCardCode(String cardCode) {
-        this.cardCode = cardCode;
+    public void setCode(String code) {
+        this.code = code;
     }
 }

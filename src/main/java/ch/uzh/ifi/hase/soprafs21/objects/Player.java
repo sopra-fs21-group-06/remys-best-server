@@ -18,6 +18,15 @@ public class Player {
     private Player teamMate;
     private Boolean canPlay;
     private boolean isReady;
+    private String cardToChangeCode = null;
+
+    public String getCardToChangeCode() {
+        return cardToChangeCode;
+    }
+
+    public void setCardToChangeCode(String cardToChangeCode) {
+        this.cardToChangeCode = cardToChangeCode;
+    }
 
     public boolean isReady() {
         return isReady;

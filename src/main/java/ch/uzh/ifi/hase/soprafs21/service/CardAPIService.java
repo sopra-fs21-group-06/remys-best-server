@@ -27,7 +27,7 @@ public class CardAPIService {
         return restTemplate.getForObject(uri, CardAPIDeckResponseObject.class);
     }
 
-    public List<Card> drawCards(String deckID, String amountOfCards){
+    public ArrayList<Card> drawCards(String deckID, String amountOfCards){
         final String uri = String.format("https://deckofcardsapi.com/api/deck/%s/draw/?count=%s", deckID, amountOfCards);
         RestTemplate restTemplate = new RestTemplate();
 
@@ -35,7 +35,7 @@ public class CardAPIService {
         assert cardAPICardResponseObject != null;
         List<CardAPICardJson> cardList = cardAPICardResponseObject.getCards();
 
-        List<Card> drawnCards = new ArrayList<>();
+        ArrayList<Card> drawnCards = new ArrayList<>();
 
         for (CardAPICardJson card : cardList) {
             drawnCards.add(new Card(cardValueMapper(card.getSuit()), card.getValue(), card.getCode()));
