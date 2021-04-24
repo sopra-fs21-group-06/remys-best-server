@@ -96,6 +96,9 @@ public class Game {
         }
 
         if(allColorsAssigned) {
+            playerList.get(0).setTeamMate(playerList.get(1));
+            playerList.get(1).setTeamMate(playerList.get(0));
+
             WaitingRoomEnterDTO startGameObj = new WaitingRoomEnterDTO();
             startGameObj.setToken("Edouard ish de Geilst");
             String path = "/topic/game/%s/startGame";
@@ -161,8 +164,11 @@ public class Game {
 
         player1.setCardToChangeCode(null);
         player2.setCardToChangeCode(null);
-        currentRound.sendOutCardToHandDTO(player1);
-        currentRound.sendOutCardToHandDTO(player2);
+
+        assert player2Card != null;
+        currentRound.sendOutCardDifferenceHandDTO(player1, player2Card, player1CardIdx);
+        assert player1Card != null;
+        currentRound.sendOutCardDifferenceHandDTO(player2, player1Card, player2CardIdx);
     }
 
     public void setPlayerToReady(String playername) {
