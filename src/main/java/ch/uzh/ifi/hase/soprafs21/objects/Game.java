@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.FactDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameFactsDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameNotificationDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +30,8 @@ public class Game {
     private final WebSocketService webSocketService;
 
     /**can throw nullPointerException **/
-    public Game(List<User> users) {
-        webSocketService = new WebSocketService();
+    public Game(List<User> users, WebSocketService webSocketService) {
+        this.webSocketService = webSocketService;
         for(User user : users){
             playerList.add(userToPlayer(user));
         }

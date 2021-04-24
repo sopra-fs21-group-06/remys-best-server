@@ -107,11 +107,11 @@ public class Round {
             return currentPlayer;
         }
 
-        public void setCurrentPlayer (Player currentPlayer){
+        public void setCurrentPlayer(Player currentPlayer){
             this.currentPlayer = currentPlayer;
         }
 
-        public void setGame (Game game){
+        public void setGame(Game game){
             this.game = game;
         }
 
@@ -120,17 +120,9 @@ public class Round {
         }
 
         public void sendOutCardDifferenceHandDTO(Player p, Card c, int idx){
-            GameListOfCardsDTO gameListOfCardsDTO = new GameListOfCardsDTO();
-            List<GameCardDTO> cardList = new ArrayList<>();
-
-            GameCardDTO gameCardDTO = new GameCardDTO();
-            gameCardDTO.setCode(c.getCard_id());
-            gameCardDTO.setIdx(idx);
-            cardList.add(gameCardDTO);
-
-            gameListOfCardsDTO.setCards(cardList);
-
-            webSocketService.sendToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), String.format("queue/game/%s/cards", game.getGameID().toString()), gameListOfCardsDTO);
+            List<Card> cardList = new ArrayList<>();
+            cardList.add(c);
+            webSocketService.sendCardsToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), cardList, game.getGameId());
         }
 
         public void sendOutCurrentTurnDTO(){

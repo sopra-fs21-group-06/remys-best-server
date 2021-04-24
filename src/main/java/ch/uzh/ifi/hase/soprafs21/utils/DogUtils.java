@@ -33,15 +33,15 @@ public class DogUtils {
         return userService.getUserRepository().findByToken(token).getUsername();
     }
 
-    public static WaitingRoomChooseColorDTO convertPlayerListToWaitingRoomChoosecolorDTO(List<Player> playerList) {
-        return convertPlayerListToWaitingRoomChoosecolorDTO(null, playerList);
+    public static WaitingRoomChooseColorDTO convertPlayerListToWaitingRoomChoosecolorDTO(List<Player> players) {
+        return convertPlayerListToWaitingRoomChoosecolorDTO(players, null);
     }
 
-    public static WaitingRoomChooseColorDTO convertPlayerListToWaitingRoomChoosecolorDTO(UUID gameID, List<Player> playerList){
+    public static WaitingRoomChooseColorDTO convertPlayerListToWaitingRoomChoosecolorDTO(List<Player> players, UUID gameId){
         WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = new WaitingRoomChooseColorDTO();
-        waitingRoomChooseColorDTO.setGameId(gameID);
+        waitingRoomChooseColorDTO.setGameId(gameId);
         List<ChooseColorPlayerDTO> chooseColorPlayers = new ArrayList<>();
-        for(Player p: playerList) {
+        for(Player p: players) {
             chooseColorPlayers.add(DTOMapper.INSTANCE.convertPlayertoChooseColorPlayerDTO(p));
         }
         waitingRoomChooseColorDTO.setPlayers(chooseColorPlayers);

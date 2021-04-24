@@ -2,14 +2,14 @@ package ch.uzh.ifi.hase.soprafs21.service;
 
 
 import ch.uzh.ifi.hase.soprafs21.objects.Card;
+import ch.uzh.ifi.hase.soprafs21.objects.Player;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
+import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.ChooseColorPlayerDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.FactDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.WaitingRoomEnterDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameFactsDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameNotificationDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.RoundCurrentPlayerDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class WebSocketService {
     public SimpMessagingTemplate simp;
 
     private void sendToPlayer(String identity, String path, Object dto) {
-        this.simp.convertAndSendToUser("/queue" + identity, path, dto);
+        this.simp.convertAndSendToUser(identity, "/queue" + path, dto);
     }
 
     private void sendToTopic(String path, Object dto){
@@ -81,9 +81,9 @@ public class WebSocketService {
 
     public void sendNotificationMessage(String playerName, String action, String card, UUID gameId) {
         GameNotificationDTO gameNotificationDTO = new GameNotificationDTO();
-        gameNotificationDTO.setAction(playerName);
+        gameNotificationDTO.setPlayerName(playerName);
         gameNotificationDTO.setAction(action);
-        gameNotificationDTO.setAction(card);
+        gameNotificationDTO.setCard(card);
 
         String pathNotifications = "/game/%s/notification";
         sendToTopic(String.format(pathNotifications, gameId.toString()), gameNotificationDTO);
@@ -98,18 +98,28 @@ public class WebSocketService {
     }
 
     public void sendCardsToPlayer(String sessionIdentity, List<Card> cards, UUID gameId) {
-        sendCardsToPlayer(sessionIdentity, cards, null, gameId);
+        sendCardsToPlayer(sessionIdentity, cards, -1, gameId);
     }
 
-    public void sendCardsToPlayer(String sessionIdentity, List<Card> cards, int idx, UUID gameId) {
+    public void sendCardsToPlayer(String userSessionIdentity, List<Card> cards, int idx, UUID gameId) {
         GameListOfCardsDTO gameListOfCardsDTO = new GameListOfCardsDTO();
         List<GameCardDTO> cardList = new ArrayList<>();
         for(Card c : cards) {
-            cardList.add(DTOMapper.INSTANCE.convertCardtoGameCardDTO(c));
+            GameCardDTO gameCardDTO = DTOMapper.INSTANCE.convertCardtoGameCardDTO(c);
+            if(idx > -1) {
+                gameCardDTO.setIdx(idx);
+            }
+            cardList.add(gameCardDTO);
         }
         gameListOfCardsDTO.setCards(cardList);
 
         String path = "/game/%s/cards";
-        sendToPlayer(sessionIdentity, String.format(path, gameId.toString()), gameListOfCardsDTO);
+        sendToPlayer(userSessionIdentity, String.format(path, gameId.toString()), gameListOfCardsDTO);
+    }
+
+    public void sendGameAssignmentMessage(String userSessionIdentity, List<Player> players, UUID gameId) {
+        WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = DogUtils.convertPlayerListToWaitingRoomChoosecolorDTO(players, gameId);
+        String path = "/waiting-room";
+        sendToPlayer(userSessionIdentity, path, waitingRoomChooseColorDTO);
     }
 }
