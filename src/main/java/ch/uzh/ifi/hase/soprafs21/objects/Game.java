@@ -3,7 +3,9 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.FactDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.WaitingRoomEnterDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameFactsDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,10 +89,46 @@ public class Game {
             WaitingRoomEnterDTO startGameObj = new WaitingRoomEnterDTO();
             startGameObj.setToken("Edouard ish de Geilst");
             String path = "/topic/game/%s/startGame";
-                this.webSocketService.sendToTopic(String.format(path, gameID.toString()), startGameObj);
-            }
-        return playerList;
+            this.webSocketService.sendToTopic(String.format(path, gameID.toString()), startGameObj);
         }
+
+        return playerList;
+    }
+
+    public void setPlayerToReady(String playername) {
+        for(Player p: playerList){
+            if(p.getPlayerName().equals(playername)){
+                p.setReady(true);
+                break;
+            }
+        }
+
+        boolean areAllPlayersReady = true;
+        for(Player p: playerList){
+            if (!p.isReady()) {
+                areAllPlayersReady = false;
+                break;
+            }
+        }
+
+        if(areAllPlayersReady) {
+            FactDTO factDTO = new FactDTO();
+            factDTO.setTitle("Dummy Title");
+            factDTO.setSubTitle("Dummy Subtitle");
+            List<FactDTO> facts = new ArrayList<>();
+            facts.add(factDTO);
+            GameFactsDTO gameFacts = new GameFactsDTO();
+            gameFacts.setFacts(facts);
+            String path = "/topic/game/%s/facts";
+            this.webSocketService.sendToTopic(String.format(path, gameID.toString()), gameFacts);
+
+
+            // TODO send initial notification
+
+
+            // TODO send cards
+        }
+    }
 
 
 

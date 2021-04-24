@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto;
 
-public class FactsDTO {
+public class FactDTO {
     private String title;
     private String subTitle;
 

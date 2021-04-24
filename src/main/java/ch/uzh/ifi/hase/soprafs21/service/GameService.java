@@ -15,8 +15,6 @@ public class GameService {
     private final Game game;
     private CardAPIService cardAPIService;
 
-
-
     Logger log = LoggerFactory.getLogger(GameService.class);
 
     public GameService(Game game, CardAPIService cardAPIService) {

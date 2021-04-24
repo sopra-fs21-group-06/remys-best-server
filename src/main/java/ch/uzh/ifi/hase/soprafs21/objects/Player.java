@@ -17,6 +17,15 @@ public class Player {
     private List<Marble> marbleList;
     private Player teamMate;
     private Boolean canPlay;
+    private boolean isReady;
+
+    public boolean isReady() {
+        return isReady;
+    }
+
+    public void setReady(boolean ready) {
+        isReady = ready;
+    }
 
     public Player(String playerName) {
         this.playerName=playerName;
