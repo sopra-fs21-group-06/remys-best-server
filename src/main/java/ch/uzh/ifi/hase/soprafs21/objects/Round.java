@@ -4,7 +4,9 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 
 
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.FactDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameFactsDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
 
 import ch.uzh.ifi.hase.soprafs21.service.PlayingBoardService;
@@ -18,7 +20,7 @@ import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
-
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.RoundCurrentPlayerDTO;
 
 
 
@@ -144,7 +146,7 @@ public class Round {
             this.game = game;
         }
 
-        private void sendOutCardToHandDTO(Player p){
+        public void sendOutCardToHandDTO(Player p){
             GameListOfCardsDTO gameListOfCardsDTO = new GameListOfCardsDTO();
             List<GameCardDTO> cardList = new ArrayList<>();
             for(Card c : p.getHand().getHandDeck()){
@@ -153,6 +155,14 @@ public class Round {
             gameListOfCardsDTO.setCards(cardList);
 
             webSocketService.sendToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), String.format("queue/game/%s/cards", game.getGameID().toString()), gameListOfCardsDTO);
+        }
+
+        public void sendOutCurrentTurnDTO(){
+            RoundCurrentPlayerDTO roundCurrentPlayerDTO = new RoundCurrentPlayerDTO();
+            roundCurrentPlayerDTO.setPlayerName(currentPlayer.getPlayerName());
+
+            String path = "/topic/game/%s/turn";
+            this.webSocketService.sendToTopic(String.format(path, game.getGameID().toString()), roundCurrentPlayerDTO);
         }
     }
 
