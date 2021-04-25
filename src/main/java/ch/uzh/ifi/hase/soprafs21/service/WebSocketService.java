@@ -117,7 +117,6 @@ public class WebSocketService {
     }
 
     public void sendMarblesToPlayer(String sessionidentity, List<Marble> marbleList, UUID gameId){
-
         String path = "/game/%s/marble-list";
         sendToPlayer(sessionidentity, String.format(path, gameId.toString()),
                     DogUtils.genrateRoundMarblesListDTO(marbleList));

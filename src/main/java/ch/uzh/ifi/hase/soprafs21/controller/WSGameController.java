@@ -1,9 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import ch.uzh.ifi.hase.soprafs21.objects.CardMove;
-import ch.uzh.ifi.hase.soprafs21.objects.Game;
-import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
-import ch.uzh.ifi.hase.soprafs21.objects.Marble;
+import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
@@ -45,8 +42,9 @@ public class WSGameController {
     public synchronized void cardExchange(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, GameCardExchange gameCardExchange){
         log.info("Player" + getIdentity(sha) + ": Has cardExchangePerformed");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
-        currentGame.setCardExhange(DogUtils.convertTokenToUsername(gameCardExchange.getToken(), gameEngine.getUserService()), gameCardExchange.getCode());
+        currentGame.setCardExchange(DogUtils.convertTokenToUsername(gameCardExchange.getToken(), gameEngine.getUserService()), gameCardExchange.getCode());
     }
+
     @MessageMapping("/game/{gameId}/move-request")
     public synchronized void moveRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, CardMoveRequestDTO cardMoveRequestDTO){
         log.info("Player" + getIdentity(sha) + ": Has made a moverequest");
@@ -54,17 +52,16 @@ public class WSGameController {
         //process move-request and sendout via for example sendMovesToPlayer(String sessionidentity, List<CardMove>, UUID gameId) from gameservice.
         //This method is implemented in websocketservice already.
 
-        //For testing purposes
-        List<CardMove> testList= new ArrayList<>();
-        CardMove cardMove1 = new CardMove();
-        cardMove1.setMoveName("Forward");
-        CardMove cardMove2 = new CardMove();
-        cardMove2.setMoveName("Backwards");
-        testList.add(cardMove1);
-        testList.add(cardMove2);
+        Card card = new Card(cardMoveRequestDTO.getCode());
+        List<String> moveNames = currentGame.getGameService().sendCardMove(card);
+        List<CardMove> moves = new ArrayList<>();
+        for(String moveName : moveNames) {
+            CardMove cardMove = new CardMove();
+            cardMove.setMoveName(moveName);
+            moves.add(cardMove);
+        }
 
-        webSocketService.sendMovesToPlayer(getIdentity(sha), testList, gameId);
-
+        webSocketService.sendMovesToPlayer(getIdentity(sha), moves, gameId);
     }
 
     @MessageMapping("game/{gameId}/marble-request")
@@ -74,15 +71,10 @@ public class WSGameController {
         //process marble-request and sendout via for example sendMarblesToPlayer(String sessionidentity, List<Marble> marbleList, UUID gameId) from gameservice.
         //This method is implemented in the websocketservice already.
 
-        //For testing purposes
-        List<Marble> marbleList = new ArrayList<>();
-        Marble marble1 = new Marble(1);
-        Marble marble2 = new Marble(2);
 
-        marbleList.add(marble1);
-        marbleList.add(marble2);
-
-        currentGame.getWebSocketService().sendMarblesToPlayer(getIdentity(sha), marbleList,gameId);
+        Card card = new Card(moveMarbleRequestDTO.getCode());
+        List<Marble> marbleList = currentGame.getGameService().getPlayableMarble(card, moveMarbleRequestDTO.getMoveName(), currentGame);
+        currentGame.getWebSocketService().sendMarblesToPlayer(getIdentity(sha), marbleList, gameId);
     }
 
     @MessageMapping("game/{gameId}/play")

@@ -4,10 +4,6 @@ import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.FactDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameFactsDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameNotificationDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,10 +64,6 @@ public class Game {
         return new Player(user.getUsername());
     }
 
-    /** initializes Game, allows user to pick teamMates, Colors **/
-    public void initializeGame(){
-
-    }
     /*
     Thats a very informative comment. o.B.d.A. trivial.
      */
@@ -85,7 +77,8 @@ public class Game {
         return playerList;
     }
 
-    public void setCardExhange(String playerName, String cardToChangeCode){
+    public void setCardExchange(String playerName, String cardToChangeCode){
+        // TODO check if card is in player's name
         for(Player p: playerList){
             if(p.getPlayerName().equals(playerName)){
                 p.setCardToChangeCode(cardToChangeCode);
@@ -111,6 +104,25 @@ public class Game {
         }
     }
 
+    private void computeAndSetTeamMates() {
+        for(Player p : playerList) {
+            for(Player possibleTeamMate : playerList) {
+                if(p.getColor() == Color.BLUE && possibleTeamMate.getColor() == Color.RED) {
+                    p.setTeamMate(possibleTeamMate);
+                    possibleTeamMate.setTeamMate(p);
+                    p.setMarbleList(playingBoard.getBlueMarbles());
+                    possibleTeamMate.setMarbleList(playingBoard.getRedMarbles());
+                }
+                if(p.getColor() == Color.GREEN && possibleTeamMate.getColor() == Color.YELLOW) {
+                    p.setTeamMate(possibleTeamMate);
+                    possibleTeamMate.setTeamMate(p);
+                    p.setMarbleList(playingBoard.getGreenMarbles());
+                    possibleTeamMate.setMarbleList(playingBoard.getYellowMarbles());
+                }
+            }
+        }
+    }
+
     private void performCardExchange(Player player1, Player player2){
         String player1CardCode = player1.getCardToChangeCode();
         String player2CardCode = player2.getCardToChangeCode();
@@ -120,7 +132,7 @@ public class Game {
         int player2CardIdx= 0;
 
         for(int i = 0; i < nrCards; i++){
-            if(player1.getHand().getHandDeck().get(i).getCard_id().equals(player1CardCode)){
+            if(player1.getHand().getHandDeck().get(i).getCode().equals(player1CardCode)){
                 player1Card = player1.getHand().getHandDeck().get(i);
                 player1CardIdx = i;
                 player1.getHand().getHandDeck().remove(i);
@@ -129,7 +141,7 @@ public class Game {
         }
 
         for(int i = 0; i < nrCards; i++){
-            if(player2.getHand().getHandDeck().get(i).getCard_id().equals(player2CardCode)){
+            if(player2.getHand().getHandDeck().get(i).getCode().equals(player2CardCode)){
                 player2Card = player2.getHand().getHandDeck().get(i);
                 player2CardIdx = i;
                 player2.getHand().getHandDeck().remove(i);
@@ -165,6 +177,7 @@ public class Game {
         }
 
         if(areAllPlayersReady) {
+            computeAndSetTeamMates();
             gameService.initiateRound(this);
             webSocketService.sendExchangeFactsMessage(getCurrentRound().getCurrentPlayer().getPlayerName(), gameId);
         }

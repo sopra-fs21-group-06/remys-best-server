@@ -2,7 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming;
 
 public class MoveMarbleRequestDTO {
     private String token;
-    private String cardCode;
+    private String code;
     private String moveName;
 
 
@@ -14,12 +14,12 @@ public class MoveMarbleRequestDTO {
         this.token = token;
     }
 
-    public String getCardCode() {
-        return cardCode;
+    public String getCode() {
+        return code;
     }
 
-    public void setCardCode(String cardCode) {
-        this.cardCode = cardCode;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getMoveName() {

@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
@@ -118,16 +119,19 @@ public class Player {
             }
             else {
                 for (Card c : this.hand.getHandDeck()) {
+
+                    /*
                     if (c instanceof CardJoker) {
                         return TRUE;
-                    }
+                    }*/
+                    /*
                     else if (!(c instanceof CardSeven)) {
                         for (Integer i : c.getCardMoveValue()) {
                             if (i < distance) {
                                 return TRUE;
                             }
                         }
-                    }
+                    }*/
 
                 }
             }
@@ -149,8 +153,8 @@ public class Player {
     public void setTeamMate(Player teamMate) {
         this.teamMate = teamMate;
     }
-    public List<Marble> getMarblesAtHome(){
-        List<Marble> marblesOnField = null;
+    public ArrayList<Marble> getMarblesAtHome(){
+        ArrayList<Marble> marblesOnField = new ArrayList<>();
         for(Marble m: this.getMarbleList()){
             if (m.getHome()){
                 marblesOnField.add(m);
@@ -160,7 +164,7 @@ public class Player {
     }
     //returns the marbles on the field (Not home and not in finish sector)
     public List<Marble> getMarblesOnField(){
-        List<Marble> marblesOnField = null;
+        List<Marble> marblesOnField = new ArrayList<>();
         for(Marble m: this.getMarbleList()){
             if(!(m.getHome()) && !(m.getCurrentField() instanceof FinishField)){
                 marblesOnField.add(m);
@@ -170,7 +174,7 @@ public class Player {
     }
     //return marbles on Field and in finish sector but not finished. All Marbles who can still move
     public List<Marble> getMarblesOnFieldAndNotFinished(){
-        List<Marble> marblesOnFieldAndFinished = null;
+        List<Marble> marblesOnFieldAndFinished = new ArrayList<>();
         for(Marble m: this.getMarbleList()){
             if(!(m.getHome()) && !(m.getFinish())){
                 marblesOnFieldAndFinished.add(m);
@@ -180,7 +184,7 @@ public class Player {
     }
     //Marbles who are in Finish sector who cant move anymore
     public List<Marble> getMarblesInFinishFieldAndFinished(){
-        List<Marble> MarblesInFinishFieldAndFinished = null;
+        List<Marble> MarblesInFinishFieldAndFinished = new ArrayList<>();
         for(Marble m: this.getMarbleList()){
             if (m.getFinish()){
                 MarblesInFinishFieldAndFinished.add(m);
