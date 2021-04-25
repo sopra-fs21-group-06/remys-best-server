@@ -48,7 +48,7 @@ public class Card {
     // make methods setAce(),setKing() etc.
     public void changeCardValueToCardMoveValue(String value){
 
-        if (value.matches("[2-3][5-6][8-9]]")) {
+        if (value.matches("[2-3][5-6][8-9]")) {
             int number = Integer.valueOf(value);
             cardMoveValue.add(number);
             movesToDisplay.add("Forward"+number);
@@ -56,27 +56,33 @@ public class Card {
         } else if (value.matches("4")) {
             cardMoveValue.add(-4);
             cardMoveValue.add(4);
+            movesToDisplay.add("Forward 4");
+            movesToDisplay.add("Backwards 4");
+            canStart = FALSE;
         } else if (value.matches("0")){
             cardMoveValue.add(10);
-        } else if (value.matches("J")) {
-            cardMoveValue.add(15);
-        } else if   (value.matches("A")){
-            cardMoveValue.add(14);
             canStart = FALSE;
+            movesToDisplay.add("Forward 10");
         } else if (value.matches("JACK")) {
+            cardMoveValue.add(-5);
             movesToDisplay.add("Exchange");
             canStart = FALSE;
         } else if   (value.matches("ACE")){
             cardMoveValue.add(1);
             cardMoveValue.add(11);
-        } else if (value.matches("Q")){
+            movesToDisplay.add("Forward 11");
+            movesToDisplay.add("Forward 1");
+            movesToDisplay.add("Go To Start");
+            canStart = TRUE;
+        } else if (value.matches("QUEEN")){
             cardMoveValue.add(12);
-        }else if (value.matches("K")){
-            cardMoveValue.add(14);
-            movesToDisplay.add("Forward 12");
             canStart = FALSE;
+            movesToDisplay.add("Forward 12");
         }else if (value.matches("KING")){
             cardMoveValue.add(13);
+            movesToDisplay.add("Forward 13");
+            movesToDisplay.add("Go To Start");
+            canStart = TRUE;
         }
     }
     public int changeForwardMoveToValue(String move){
