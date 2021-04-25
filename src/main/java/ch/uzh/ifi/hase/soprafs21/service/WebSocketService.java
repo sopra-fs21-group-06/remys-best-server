@@ -8,10 +8,14 @@ import ch.uzh.ifi.hase.soprafs21.objects.Marble;
 import ch.uzh.ifi.hase.soprafs21.objects.Player;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
+<<<<<<< HEAD
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.*;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.WaitingRoomEnterDTO;
+=======
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.FactDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
+>>>>>>> choose color players list sent
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.*;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -43,17 +47,9 @@ public class WebSocketService {
         this.simp.convertAndSend("/topic" + path, dto);
     }
 
-    public void sendStartGameMessage(UUID gameId) {
-        WaitingRoomEnterDTO startGameObj = new WaitingRoomEnterDTO();
-        startGameObj.setToken("Edouard ish de Geilst");
-
-        String path = "/game/%s/startGame";
-        sendToTopic(String.format(path, gameId.toString()), startGameObj);
-    }
-
     public void sendExchangeFactsMessage(String roundBeginner, UUID gameId) {
-
         sendFactsMessage(DogUtils.convertRoundBeginnerToFactList(roundBeginner), gameId);
+        // "Card Exchange" will trigger a mode switch on the frontend
         sendNotificationMessage( "Card Exchange", gameId);
     }
 
@@ -108,7 +104,7 @@ public class WebSocketService {
     }
 
     public void sendGameAssignmentMessage(String userSessionIdentity, List<Player> players, UUID gameId) {
-        WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = DogUtils.convertPlayerListToWaitingRoomChoosecolorDTO(players, gameId);
+        WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = DogUtils.convertPlayersToWaitingRoomChooseColorDTO(players, gameId);
         String path = "/waiting-room";
         sendToPlayer(userSessionIdentity, path, waitingRoomChooseColorDTO);
     }
