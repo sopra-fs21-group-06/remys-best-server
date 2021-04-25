@@ -1,13 +1,13 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto;
 
 public class MarbleDTO {
-    private String id;
+    private int marbleId;
 
-    public String getId() {
-        return id;
+    public int getMarbleId() {
+        return marbleId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setMarbleId(int marbleId) {
+        this.marbleId = marbleId;
     }
 }

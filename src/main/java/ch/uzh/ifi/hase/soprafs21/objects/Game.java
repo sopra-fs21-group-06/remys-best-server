@@ -245,4 +245,12 @@ public class Game {
     public void sendOutCurrentTurnFactsDTO(){
         webSocketService.sendCurrentTurnFactsMessage(roundCount, currentRound.getCurrentPlayer().getPlayerName(), getNextCardAmount(), currentRound.getNameNextPlayer(), gameId);
     }
+
+    public GameService getGameService() {
+        return gameService;
+    }
+
+    public WebSocketService getWebSocketService() {
+        return webSocketService;
+    }
 }

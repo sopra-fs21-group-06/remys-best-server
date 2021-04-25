@@ -10,7 +10,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 public class Marble {
-    private int marbleNr;
+    private final int marbleNr;
     private Color color;
 
     private Field currentField;
@@ -29,6 +29,11 @@ public class Marble {
         }
         return FALSE;
     }
+
+    public int getMarbleNr() {
+        return marbleNr;
+    }
+
     public void setHome(Boolean home) {
         isHome = home;
     }

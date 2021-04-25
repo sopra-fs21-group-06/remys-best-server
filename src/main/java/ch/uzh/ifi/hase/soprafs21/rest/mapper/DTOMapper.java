@@ -2,11 +2,11 @@ package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.objects.Card;
+import ch.uzh.ifi.hase.soprafs21.objects.CardMove;
+import ch.uzh.ifi.hase.soprafs21.objects.Marble;
 import ch.uzh.ifi.hase.soprafs21.objects.Player;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.ChooseColorPlayerDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.WaitingRoomUserObjDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -54,4 +54,10 @@ public interface DTOMapper {
 
     @Mapping(source = "card_id", target = "code")
     GameCardDTO convertCardtoGameCardDTO(Card card);
+
+    @Mapping(source = "moveName", target = "moveName")
+    MoveDTO convertCardMovetoMoveDTO(CardMove cardMove);
+
+    @Mapping(source = "marbleNr", target = "marbleId")
+    MarbleDTO convertMarbletoMarbleDTO(Marble marble);
 }

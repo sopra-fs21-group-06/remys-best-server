@@ -6,16 +6,16 @@ import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
 import java.util.List;
 
 public class ExecutredCardDTO {
-    private String token;
+    private String username;
     private GameCardDTO card;
-    private List<MarbleExecuteCardDTO> marbleList;
+    private List<MarbleExecuteCardDTO> marbles;
 
-    public String getToken() {
-        return token;
+    public String getUsername() {
+        return username;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public GameCardDTO getCard() {
@@ -26,11 +26,11 @@ public class ExecutredCardDTO {
         this.card = card;
     }
 
-    public List<MarbleExecuteCardDTO> getMarbleList() {
-        return marbleList;
+    public List<MarbleExecuteCardDTO> getMarbles() {
+        return marbles;
     }
 
-    public void setMarbleList(List<MarbleExecuteCardDTO> marbleList) {
-        this.marbleList = marbleList;
+    public void setMarbles(List<MarbleExecuteCardDTO> marbles) {
+        this.marbles = marbles;
     }
 }
