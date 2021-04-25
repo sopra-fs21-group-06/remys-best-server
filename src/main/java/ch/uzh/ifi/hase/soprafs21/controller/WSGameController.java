@@ -1,13 +1,14 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+import ch.uzh.ifi.hase.soprafs21.objects.CardMove;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
+import ch.uzh.ifi.hase.soprafs21.objects.Marble;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.CardMoveRequestDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.*;
 
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameCardExchange;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameReadyDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -15,6 +16,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
@@ -48,7 +51,58 @@ public class WSGameController {
     public synchronized void moveRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, CardMoveRequestDTO cardMoveRequestDTO){
         log.info("Player" + getIdentity(sha) + ": Has made a moverequest");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
+        //process move-request and sendout via for example sendMovesToPlayer(String sessionidentity, List<CardMove>, UUID gameId) from gameservice.
+        //This method is implemented in websocketservice already.
+
+        //For testing purposes
+        List<CardMove> testList= new ArrayList<>();
+        CardMove cardMove1 = new CardMove();
+        cardMove1.setMoveName("Forward");
+        CardMove cardMove2 = new CardMove();
+        cardMove2.setMoveName("Backwards");
+        testList.add(cardMove1);
+        testList.add(cardMove2);
+
+        webSocketService.sendMovesToPlayer(getIdentity(sha), testList, gameId);
 
     }
+
+    @MessageMapping("game/{gameId}/marble-request")
+    public synchronized void marbleRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, MoveMarbleRequestDTO moveMarbleRequestDTO){
+        log.info("Player" + getIdentity(sha) + ":Has made marblerequest");
+        Game currentGame = gameEngine.getRunningGameByID(gameId);
+        //process marble-request and sendout via for example sendMarblesToPlayer(String sessionidentity, List<Marble> marbleList, UUID gameId) from gameservice.
+        //This method is implemented in the websocketservice already.
+
+        //For testing purposes
+        List<Marble> marbleList = new ArrayList<>();
+        Marble marble1 = new Marble(1);
+        Marble marble2 = new Marble(2);
+
+        marbleList.add(marble1);
+        marbleList.add(marble2);
+
+        currentGame.getWebSocketService().sendMarblesToPlayer(getIdentity(sha), marbleList,gameId);
+    }
+
+    @MessageMapping("game/{gameId}/play")
+    public synchronized void playMove(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, ExecutePlayCardDTO executePlayCardDTO){
+        log.info("Player" + getIdentity(sha) + ":Has played");
+        Game currentGame = gameEngine.getRunningGameByID(gameId);
+        //process marble-request and sendout via for example sendGameExecutedcard(String , UUID gameId) from gameservice.
+        //This method is implemented in the websocketservice already.
+
+        //For testing purposes
+        List<MarbleExecuteCardDTO> marbleExecuteCardDTOList = new ArrayList<>();
+        MarbleExecuteCardDTO marbleExecuteCardDTO1 = new MarbleExecuteCardDTO(1, 20);
+        MarbleExecuteCardDTO marbleExecuteCardDTO2 = new MarbleExecuteCardDTO(2, 30);
+
+        marbleExecuteCardDTOList.add(marbleExecuteCardDTO1);
+        marbleExecuteCardDTOList.add(marbleExecuteCardDTO2);
+
+        currentGame.getWebSocketService().sendGameExecutedcard("Pascal", "JJ", marbleExecuteCardDTOList,gameId);
+    }
+
+
 }
 
