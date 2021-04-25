@@ -10,6 +10,7 @@ import org.w3c.dom.Node;
 
 import javax.persistence.criteria.CriteriaBuilder;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import java.util.List;
@@ -34,7 +35,10 @@ public class PlayingBoard {
     private StartField startFieldGreen;
     private StartField startFieldRed;
     private StartField startFieldYellow;
-
+    private List<Marble> blueMarbles = new ArrayList<>();
+    private List<Marble> redMarbles = new ArrayList<>();
+    private List<Marble> greenMarbles = new ArrayList<>();
+    private List<Marble> yellowMarbles = new ArrayList<>();
 
     public PlayingBoard(){
 
@@ -115,25 +119,51 @@ public class PlayingBoard {
         Stack greenHome = new Stack();
         Stack yellowHome = new Stack();
         Stack redHome = new Stack();
-        for(int i = 0; i < 4; i++){
-            GreenMarble greenMarble = new GreenMarble(i);
-            greenMarble.setHome(TRUE);
-            greenHome.push(greenMarble);
-            RedMarble redMarble = new RedMarble(i);
-            redMarble.setHome(TRUE);
-            redHome.push(redMarble);
+
+        for(int i = 3; i >= 0; i--){
             BlueMarble blueMarble = new BlueMarble(i);
             blueMarble.setHome(TRUE);
+            blueMarble.setFinish(FALSE);
             blueHome.push(blueMarble);
-            YellowMarble yellowMarble = new YellowMarble(i);
+            blueMarbles.add(blueMarble);
+            GreenMarble greenMarble = new GreenMarble(i + 4);
+            greenMarble.setHome(TRUE);
+            greenMarble.setFinish(FALSE);
+            greenHome.push(greenMarble);
+            greenMarbles.add(greenMarble);
+            RedMarble redMarble = new RedMarble(i + 8);
+            redMarble.setHome(TRUE);
+            redMarble.setFinish(FALSE);
+            redHome.push(redMarble);
+            redMarbles.add(redMarble);
+            YellowMarble yellowMarble = new YellowMarble(i + 12);
             yellowMarble.setHome(TRUE);
+            yellowMarble.setFinish(FALSE);
             yellowHome.push(yellowMarble);
+            yellowMarbles.add(yellowMarble);
         }
         setBlueHome(blueHome);
         setGreenHome(greenHome);
         setRedHome(redHome);
         setYellowHome(yellowHome);
     }
+
+    public List<Marble> getBlueMarbles() {
+        return blueMarbles;
+    }
+
+    public List<Marble> getRedMarbles() {
+        return redMarbles;
+    }
+
+    public List<Marble> getGreenMarbles() {
+        return greenMarbles;
+    }
+
+    public List<Marble> getYellowMarbles() {
+        return yellowMarbles;
+    }
+
     public List<Integer> getBlockedFieldsValue(){
         int[] postStartField = {4,20,36,52};
         List<Integer> blockedFields = null;
@@ -180,20 +210,34 @@ public class PlayingBoard {
         }
     }
 
-
-    public Marble getFirstHomeMarble(Color color){
+    public Marble getFirstHomeMarble(Color color, boolean removeFromStack){
         Marble m = null;
+
         if(color == Color.GREEN){
             m = (Marble) greenHome.pop();
+            if(removeFromStack) {
+                greenHome.push(m);
+            }
         } else if (color == Color.RED){
             m = (Marble) redHome.pop();
+            if(removeFromStack) {
+                redHome.push(m);
+            }
         } else if (color == Color.BLUE){
             m =  (Marble) blueHome.pop();
+            if(removeFromStack) {
+                blueHome.push(m);
+            }
         } else if (color == Color.YELLOW) {
             m = (Marble) yellowHome.pop();
+            if(removeFromStack) {
+                yellowHome.push(m);
+            }
         }
+
         return m;
     }
+
     public StartField getStartFieldBlue() {
         return startFieldBlue;
     }
@@ -262,7 +306,7 @@ public class PlayingBoard {
         return null;
     }
     public void marbleGoesToStart(Color c){
-        Marble m = getFirstHomeMarble(c);
+        Marble m = getFirstHomeMarble(c, true);
         StartField field = getRightColorStartField(c);
         field.setFieldStatus(FieldStatus.BLOCKED);
         field.setMarble(m);

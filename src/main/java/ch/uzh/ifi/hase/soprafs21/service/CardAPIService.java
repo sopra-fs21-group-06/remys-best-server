@@ -38,7 +38,7 @@ public class CardAPIService {
         ArrayList<Card> drawnCards = new ArrayList<>();
 
         for (CardAPICardJson card : cardList) {
-            drawnCards.add(new Card(cardValueMapper(card.getSuit()), card.getValue(), card.getCode()));
+            drawnCards.add(new Card(card.getCode()));
         }
         return drawnCards;
     }
@@ -46,21 +46,4 @@ public class CardAPIService {
     public void shuffle(String deckID){
         final String uri = String.format("https://deckofcardsapi.com/api/deck/%s/shuffle/", deckID);
     }
-
-
-
-
-    private CardSuit cardValueMapper(String suit){
-
-        CardSuit cardsuit;
-
-        return switch (suit) {
-            case "HEARTS" -> CardSuit.HEARTS;
-            case "SPADES" -> CardSuit.SPADES;
-            case "CLUBS" -> CardSuit.CLUBS;
-            default -> CardSuit.DIAMONDS;
-        };
-    }
-
-
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import static java.lang.Boolean.FALSE;
@@ -40,7 +41,6 @@ public class GameService {
     // New Round initiated, then Send Card to Player and GameStats
     public void initiateRound(Game game){
         Round currentRound = new Round(game.getPlayerList(),game.getStartPlayer(),game.getNrCards(),game, cardAPIService,webSocketService, userService);
-
         game.setCurrentRound(currentRound);
     }
 
@@ -95,28 +95,29 @@ public class GameService {
     }
 
 
-    public List<Marble> getPlayableMarble(Player p, Card c, String move, Game game){
+    public List<Marble> getPlayableMarble(Card c, String move, Game game){
+        Player p = game.getCurrentRound().getCurrentPlayer();
         List<Marble> marblesOnField = p.getMarblesOnField();
         List<Marble> marblesOnFieldAndNotFinished = p.getMarblesOnFieldAndNotFinished();
         List<Marble> marblesFinished = p.getMarblesInFinishFieldAndFinished();
 
-        List<Marble> possibleMarbles = null;
-        if (!(p.getHand().getHandDeck().contains(c))){
-            log.info("NO card for this player");
-        } else if (c.getCardValue() == "JACK"){
+        List<Marble> possibleMarbles = new ArrayList<>();
+        String cardValue = c.getCardValue();
+        // check hand for card but with code
+        if ("J".equals(cardValue)){
             return checkJack(marblesOnField,p);
-        } else if (c.getCardValue() == "ACE" || c.getCardValue() == "KING" ){
+        } else if ("A".equals(cardValue) || "K".equals(cardValue) ){
             if(move.contains("Go")){
                 Boolean b = game.getPlayingBoard().hasMarbleOnHomeStack(p.getColor());
                 if(!b){
                     log.info("No Marbles at home to go out");
-                    return null;
+                    return possibleMarbles;
                 }
-                Marble m = new Marble(5);
+                Marble m = game.getPlayingBoard().getFirstHomeMarble(p.getColor(), false);
                 possibleMarbles.add(m);
                 return possibleMarbles;
             } else {
-                List<Integer> list = null;
+                List<Integer> list = new ArrayList<>();
                 if(move.contains("1")){
                     list.add(1);
                     for (Marble m : marblesOnFieldAndNotFinished) {
@@ -382,7 +383,7 @@ public class GameService {
                 log.info("invalid move for this card");
                 //return exception
             }
-            if(!(getPlayableMarble(p,c,move, game).contains(marble))){
+            if(!(getPlayableMarble(c, move, game).contains(marble))){
                 log.info(("invalid move for marble "));
             }
             if(move.contains("Start")){

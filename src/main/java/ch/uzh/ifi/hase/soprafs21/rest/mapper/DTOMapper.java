@@ -52,7 +52,7 @@ public interface DTOMapper {
     @Mapping(source = "color", target="color")
     ChooseColorPlayerDTO convertPlayertoChooseColorPlayerDTO(Player player);
 
-    @Mapping(source = "card_id", target = "code")
+    @Mapping(source = "code", target = "code")
     GameCardDTO convertCardtoGameCardDTO(Card card);
 
     @Mapping(source = "moveName", target = "moveName")
