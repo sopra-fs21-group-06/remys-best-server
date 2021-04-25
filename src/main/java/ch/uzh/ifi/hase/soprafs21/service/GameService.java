@@ -42,22 +42,12 @@ public class GameService {
         Round currentRound = new Round(game.getPlayerList(),game.getStartPlayer(),game.getNrCards(),game, cardAPIService,webSocketService, userService);
 
         game.setCurrentRound(currentRound);
-
-        sendHandToPlayer();
-        sendCardExchange();
     }
 
     public List<Player> getPlayers(Game game){
         return game.getPlayerList();
     }
-    public void sendHandToPlayer(){
-        // each player already has a hand!
-        log.info("Hand sent to player");
-    }
-    public void sendCardExchange(){
-        //Send currentPlayer and Card Exchange
-        log.info("Card Exchange");
-    }
+
     public void updateRoundStats(Game game){
         int indexCurrent;
         indexCurrent = game.getPlayerList().indexOf(game.getStartPlayer());
@@ -67,21 +57,12 @@ public class GameService {
         game.changeNrCards();
     }
 
-    public void changeCardsWithTeamMate(Game game){
-        //Make change
-        sendHandToPlayer();
-        log.info("Hand Change worked");
-        triggerNewRound(game);
-
-    }
 
     public Boolean triggerNewRound(Game game){
         // send Roundnr, Active Player, next Card Amount and next Beginner
         //send CurrentPlayer if he can play
-        sendRoundStats(game);
 
         return canPlayCard(game.getStartPlayer(), game);
-
     }
     public Boolean canPlayCard(Player p, Game game){
         if (p.canPlay(game.getPlayingBoard().getBlockedFieldsValue())) {
