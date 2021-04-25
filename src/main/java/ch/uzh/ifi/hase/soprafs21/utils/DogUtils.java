@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.utils;
 
-
 import ch.uzh.ifi.hase.soprafs21.objects.CardMove;
 import ch.uzh.ifi.hase.soprafs21.objects.Marble;
 import ch.uzh.ifi.hase.soprafs21.objects.Player;
@@ -34,18 +33,25 @@ public class DogUtils {
         return userService.getUserRepository().findByToken(token).getUsername();
     }
 
-    public static WaitingRoomChooseColorDTO convertPlayerListToWaitingRoomChoosecolorDTO(List<Player> players) {
-        return convertPlayerListToWaitingRoomChoosecolorDTO(players, null);
+    public static WaitingRoomChooseColorDTO convertPlayersToWaitingRoomChooseColorDTO(List<Player> players) {
+        return convertPlayersToWaitingRoomChooseColorDTO(players, null);
     }
 
-    public static WaitingRoomChooseColorDTO convertPlayerListToWaitingRoomChoosecolorDTO(List<Player> players, UUID gameId){
+    public static WaitingRoomChooseColorDTO convertPlayersToWaitingRoomChooseColorDTO(List<Player> players, UUID gameId){
         WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = new WaitingRoomChooseColorDTO();
         waitingRoomChooseColorDTO.setGameId(gameId);
+
         List<ChooseColorPlayerDTO> chooseColorPlayers = new ArrayList<>();
+        boolean areAllColorsAssigned = true;
         for(Player p: players) {
+            if (p.getColor() == null) {
+                areAllColorsAssigned = false;
+            }
             chooseColorPlayers.add(DTOMapper.INSTANCE.convertPlayertoChooseColorPlayerDTO(p));
         }
         waitingRoomChooseColorDTO.setPlayers(chooseColorPlayers);
+        waitingRoomChooseColorDTO.setStartGame(areAllColorsAssigned);
+
         return waitingRoomChooseColorDTO;
     }
 

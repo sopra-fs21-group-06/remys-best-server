@@ -38,9 +38,9 @@ public class WSChoosePlaceController {
     public synchronized WaitingRoomChooseColorDTO registerPlayer(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, GameChooseColorDTO gameChooseColorDTO) {
         log.info("Player " + getIdentity(sha) + ": Choose place (color) received");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
-        List<Player> updatedPlayerList = currentGame.updatePlayerColor(DogUtils.convertTokenToUsername(gameChooseColorDTO.getToken(), gameEngine.getUserService()), Color.fromId(gameChooseColorDTO.getColor()));
-        log.info(updatedPlayerList.toString());
-        return DogUtils.convertPlayerListToWaitingRoomChoosecolorDTO(updatedPlayerList);
+        List<Player> updatedPlayers = currentGame.updatePlayerColor(DogUtils.convertTokenToUsername(gameChooseColorDTO.getToken(), gameEngine.getUserService()), Color.fromId(gameChooseColorDTO.getColor()));
+        log.info(updatedPlayers.toString());
+        return DogUtils.convertPlayersToWaitingRoomChooseColorDTO(updatedPlayers);
     }
 }
 

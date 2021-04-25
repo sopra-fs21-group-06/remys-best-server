@@ -76,27 +76,12 @@ public class Game {
     Thats a very informative comment. o.B.d.A. trivial.
      */
     public List<Player> updatePlayerColor(String playerName, Color color){
-
         for(Player p: playerList){
             if(p.getPlayerName().equals(playerName)){
                 p.setColor(color);
                 break;
             }
         }
-        boolean allColorsAssigned = true;
-        for(Player p: playerList){
-            if (p.getColor() == null) {
-                allColorsAssigned = false;
-                break;
-            }
-        }
-
-        if(allColorsAssigned) {
-            playerList.get(0).setTeamMate(playerList.get(1));
-            playerList.get(1).setTeamMate(playerList.get(0));
-            webSocketService.sendStartGameMessage(gameId);
-        }
-
         return playerList;
     }
 
