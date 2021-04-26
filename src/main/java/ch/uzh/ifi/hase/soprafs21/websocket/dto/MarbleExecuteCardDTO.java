@@ -1,12 +1,16 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto;
 
+import ch.uzh.ifi.hase.soprafs21.constant.Color;
+
 public class MarbleExecuteCardDTO {
     private int marbleId;
     private int targetFieldId;
+    private Color targetFieldColor;
 
-    public MarbleExecuteCardDTO(int marbleId, int targetFieldId){
+    public MarbleExecuteCardDTO(int marbleId, int targetFieldId, Color color) {
         this.marbleId = marbleId;
         this.targetFieldId = targetFieldId;
+        this.targetFieldColor = color;
     }
 
     public int getMarbleId() {
@@ -23,5 +27,13 @@ public class MarbleExecuteCardDTO {
 
     public void setTargetFieldId(int targetFieldId) {
         this.targetFieldId = targetFieldId;
+    }
+
+    public Color getTargetFieldColor() {
+        return targetFieldColor;
+    }
+
+    public void setTargetFieldColor(Color targetFieldColor) {
+        this.targetFieldColor = targetFieldColor;
     }
 }

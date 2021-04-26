@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
@@ -49,8 +50,6 @@ public class WSGameController {
     public synchronized void moveRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, CardMoveRequestDTO cardMoveRequestDTO){
         log.info("Player" + getIdentity(sha) + ": Has made a moverequest");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
-        //process move-request and sendout via for example sendMovesToPlayer(String sessionidentity, List<CardMove>, UUID gameId) from gameservice.
-        //This method is implemented in websocketservice already.
 
         Card card = new Card(cardMoveRequestDTO.getCode());
         List<String> moveNames = currentGame.getGameService().sendCardMove(card);
@@ -68,13 +67,10 @@ public class WSGameController {
     public synchronized void marbleRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, MoveMarbleRequestDTO moveMarbleRequestDTO){
         log.info("Player" + getIdentity(sha) + ":Has made marblerequest");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
-        //process marble-request and sendout via for example sendMarblesToPlayer(String sessionidentity, List<Marble> marbleList, UUID gameId) from gameservice.
-        //This method is implemented in the websocketservice already.
-
 
         Card card = new Card(moveMarbleRequestDTO.getCode());
         List<Marble> marbleList = currentGame.getGameService().getPlayableMarble(card, moveMarbleRequestDTO.getMoveName(), currentGame);
-        currentGame.getWebSocketService().sendMarblesToPlayer(getIdentity(sha), marbleList, gameId);
+        webSocketService.sendMarblesToPlayer(getIdentity(sha), marbleList, gameId);
     }
 
     @MessageMapping("game/{gameId}/play")
@@ -84,17 +80,16 @@ public class WSGameController {
         //process marble-request and sendout via for example sendGameExecutedcard(String , UUID gameId) from gameservice.
         //This method is implemented in the websocketservice already.
 
+        // TODO which function??
+        // TODO where is next turn triggered?
+        // TODO target field for selected move & marble?
+
+
         //For testing purposes
         List<MarbleExecuteCardDTO> marbleExecuteCardDTOList = new ArrayList<>();
-        MarbleExecuteCardDTO marbleExecuteCardDTO1 = new MarbleExecuteCardDTO(1, 20);
-        MarbleExecuteCardDTO marbleExecuteCardDTO2 = new MarbleExecuteCardDTO(2, 30);
-
+        MarbleExecuteCardDTO marbleExecuteCardDTO1 = new MarbleExecuteCardDTO(0, 16, Color.BLUE);
         marbleExecuteCardDTOList.add(marbleExecuteCardDTO1);
-        marbleExecuteCardDTOList.add(marbleExecuteCardDTO2);
-
-        currentGame.getWebSocketService().sendGameExecutedcard("Pascal", "JJ", marbleExecuteCardDTOList,gameId);
+        webSocketService.sendGameExecutedCard("a", "AH", marbleExecuteCardDTOList, gameId);
     }
-
-
 }
 
