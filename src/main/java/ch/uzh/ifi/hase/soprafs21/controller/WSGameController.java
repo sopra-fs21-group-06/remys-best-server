@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
@@ -80,15 +81,15 @@ public class WSGameController {
         //This method is implemented in the websocketservice already.
 
         // TODO which function??
+        // TODO where is next turn triggered?
+        // TODO target field for selected move & marble?
 
 
         //For testing purposes
         List<MarbleExecuteCardDTO> marbleExecuteCardDTOList = new ArrayList<>();
-        // TODO color + targetFieldId (0, 1 ... duplicates and home fields only with color)
-        MarbleExecuteCardDTO marbleExecuteCardDTO1 = new MarbleExecuteCardDTO(0, 8);
+        MarbleExecuteCardDTO marbleExecuteCardDTO1 = new MarbleExecuteCardDTO(0, 16, Color.BLUE);
         marbleExecuteCardDTOList.add(marbleExecuteCardDTO1);
         webSocketService.sendGameExecutedCard("a", "AH", marbleExecuteCardDTOList, gameId);
-        // TODO where is next turn triggered?
     }
 }
 
