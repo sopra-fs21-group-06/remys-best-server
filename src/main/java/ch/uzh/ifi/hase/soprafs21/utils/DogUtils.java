@@ -101,13 +101,13 @@ public class DogUtils {
        return roundMarbleListDTO;
    }
 
-   public static ExecutredCardDTO generateExecutedCardDTO(String username, String cardCode, List<MarbleExecuteCardDTO> marbleExecuteCardDTOList){
-       ExecutredCardDTO executredCardDTO = new ExecutredCardDTO();
+   public static ExecutedCardDTO generateExecutedCardDTO(String playerName, String cardCode, List<MarbleExecuteCardDTO> marbleExecuteCardDTOList){
+       ExecutedCardDTO executredCardDTO = new ExecutedCardDTO();
 
        GameCardDTO gameCardDTO = new GameCardDTO();
        gameCardDTO.setCode(cardCode);
 
-       executredCardDTO.setUsername(username);
+       executredCardDTO.setPlayerName(playerName);
        executredCardDTO.setCard(gameCardDTO);
        executredCardDTO.setMarbles(marbleExecuteCardDTOList);
 

@@ -122,9 +122,9 @@ public class WebSocketService {
                     DogUtils.genrateRoundMarblesListDTO(marbleList));
     }
 
-    public void sendGameExecutedcard(String username, String cardCode, List<MarbleExecuteCardDTO> marbleExecuteCardDTOList, UUID gameId){
+    public void sendGameExecutedCard(String playerName, String cardCode, List<MarbleExecuteCardDTO> marbleExecuteCardDTOList, UUID gameId){
         String path = "/game/%s/played";
         sendToTopic(String.format(path, gameId.toString()),
-                DogUtils.generateExecutedCardDTO(username, cardCode, marbleExecuteCardDTOList));
+                DogUtils.generateExecutedCardDTO(playerName, cardCode, marbleExecuteCardDTOList));
     }
 }

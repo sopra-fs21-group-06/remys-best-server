@@ -5,17 +5,17 @@ import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
 
 import java.util.List;
 
-public class ExecutredCardDTO {
-    private String username;
+public class ExecutedCardDTO {
+    private String playerName;
     private GameCardDTO card;
     private List<MarbleExecuteCardDTO> marbles;
 
-    public String getUsername() {
-        return username;
+    public String getPlayerName() {
+        return playerName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 
     public GameCardDTO getCard() {
