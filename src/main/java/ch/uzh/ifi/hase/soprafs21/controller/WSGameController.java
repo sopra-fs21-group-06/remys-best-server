@@ -9,6 +9,7 @@ import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.util.Pair;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -73,6 +74,9 @@ public class WSGameController {
         webSocketService.sendMarblesToPlayer(getIdentity(sha), marbleList, gameId);
     }
 
+    // TODO target-field-list
+    // currentGame.getGameService().getPossibleFields()
+
     @MessageMapping("game/{gameId}/play")
     public synchronized void playMove(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, ExecutePlayCardDTO executePlayCardDTO){
         log.info("Player" + getIdentity(sha) + ":Has played");
@@ -81,15 +85,29 @@ public class WSGameController {
         //This method is implemented in the websocketservice already.
 
         // TODO which function??
-        // TODO where is next turn triggered?
         // TODO target field for selected move & marble?
-
+        // currentGame.getGameService().makeMove()
 
         //For testing purposes
         List<MarbleExecuteCardDTO> marbleExecuteCardDTOList = new ArrayList<>();
+//t
+        //Pair<int (marbleId), String (fieldKey)> pair = new Pair<>(1, "4GREEN");
+
+        // pair.getFirst(); //
+
+
+
+        /*
         MarbleExecuteCardDTO marbleExecuteCardDTO1 = new MarbleExecuteCardDTO(0, 16, Color.BLUE);
         marbleExecuteCardDTOList.add(marbleExecuteCardDTO1);
-        webSocketService.sendGameExecutedCard("a", "AH", marbleExecuteCardDTOList, gameId);
+        webSocketService.sendGameExecutedCard("a", "AH", marbleExecuteCardDTOList, gameId);*/
+        // TODO trigger next turn
+        currentGame.getCurrentRound().sendOutCurrentTurnDTO();
+        currentGame.sendOutCurrentTurnFactsDTO();
+
+
+
+
     }
 }
 

@@ -15,6 +15,10 @@ import java.util.List;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
+
+// TODO return list of targetFieldKeys (strings) getPossibleTargetFields(Marble and MoveName)
+// TODO makeMOve(FIeldKez and Marble) return (Marbleid targetfieldkey) -> new Pair( getLeft, getRight) return List<Pair>
+
 @Service
 @Transactional
 public class GameService {
