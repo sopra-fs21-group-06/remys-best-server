@@ -4,13 +4,11 @@ import ch.uzh.ifi.hase.soprafs21.constant.Color;
 
 public class MarbleExecuteCardDTO {
     private int marbleId;
-    private int targetFieldId;
-    private Color targetFieldColor;
+    private String targetFieldKey;
 
-    public MarbleExecuteCardDTO(int marbleId, int targetFieldId, Color color) {
+    public MarbleExecuteCardDTO(int marbleId, String targetFieldKey) {
         this.marbleId = marbleId;
-        this.targetFieldId = targetFieldId;
-        this.targetFieldColor = color;
+        this.targetFieldKey = targetFieldKey;
     }
 
     public int getMarbleId() {
@@ -21,19 +19,11 @@ public class MarbleExecuteCardDTO {
         this.marbleId = marbleId;
     }
 
-    public int getTargetFieldId() {
-        return targetFieldId;
+    public String getTargetFieldKey() {
+        return targetFieldKey;
     }
 
-    public void setTargetFieldId(int targetFieldId) {
-        this.targetFieldId = targetFieldId;
-    }
-
-    public Color getTargetFieldColor() {
-        return targetFieldColor;
-    }
-
-    public void setTargetFieldColor(Color targetFieldColor) {
-        this.targetFieldColor = targetFieldColor;
+    public void setTargetFieldKey(String targetFieldKey) {
+        this.targetFieldKey = targetFieldKey;
     }
 }
