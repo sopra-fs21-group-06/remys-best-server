@@ -109,5 +109,19 @@ public class WSGameController {
 
 
     }
+
+
+    @MessageMapping("game/{gameId}/target-fields-request")
+    public synchronized void targetFieldRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, GamePossibleTargetFieldRequestDTO gamePossibleTargetFieldRequestDTO){
+        log.info("Player" + getIdentity(sha) + ":Has requested TargetFieldList");
+        Game currentGame = gameEngine.getRunningGameByID(gameId);
+        currentGam
+    }
+
+
+    //target-fields-list
+
+
+    // List<String> getpossibleField(String moveName, Marble marble)
 }
 

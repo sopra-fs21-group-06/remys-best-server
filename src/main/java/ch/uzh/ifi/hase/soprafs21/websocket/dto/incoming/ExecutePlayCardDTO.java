@@ -8,7 +8,18 @@ public class ExecutePlayCardDTO {
     private String token;
     private String cardCode;
     private String moveName;
+    private String targetFieldKey;
     private List<MarbleExecuteCardDTO> marbleIdList;
+
+    public String getTargetFieldKey() {
+        return targetFieldKey;
+    }
+
+    //TODO map targetfieldkey to field
+
+    public void setTargetFieldKey(String targetFieldKey) {
+        this.targetFieldKey = targetFieldKey;
+    }
 
     public String getToken() {
         return token;
