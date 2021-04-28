@@ -75,7 +75,7 @@ public class WSGameController {
     }
 
     // TODO target-field-list
-    // currentGame.getGameService().getPossibleFields()
+    // List<String> possibleTargetFieldKeys = currentGame.getGameService().getPossibleFields(marble, moveName, game)
 
     @MessageMapping("game/{gameId}/play")
     public synchronized void playMove(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, ExecutePlayCardDTO executePlayCardDTO){
@@ -87,7 +87,7 @@ public class WSGameController {
         // TODO which function??
         // TODO target field for selected move & marble?
         // currentGame.getGameService().makeMove()
-
+      //Pair result = currentGame.getGameService().makeMove(fieldKey, marble, currentGame);
         //For testing purposes
         List<MarbleExecuteCardDTO> marbleExecuteCardDTOList = new ArrayList<>();
 //t

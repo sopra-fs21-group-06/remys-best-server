@@ -28,93 +28,55 @@ public class PlayingBoard {
     private Stack yellowHome = new Stack();
     private Stack redHome = new Stack();
     private LinkedList<Field> redFields = new LinkedList<>();
-    private LinkedList<Field> blueField = new LinkedList<>();
+    private LinkedList<Field> blueFields = new LinkedList<>();
     private LinkedList<Field> yellowFields = new LinkedList<>();
     private LinkedList<Field> greenFields = new LinkedList<>();
-    private StartField startFieldBlue;
-    private StartField startFieldGreen;
-    private StartField startFieldRed;
-    private StartField startFieldYellow;
     private List<Marble> blueMarbles = new ArrayList<>();
     private List<Marble> redMarbles = new ArrayList<>();
     private List<Marble> greenMarbles = new ArrayList<>();
     private List<Marble> yellowMarbles = new ArrayList<>();
 
     public PlayingBoard(){
+        String[] colorBoard = {"BLUE", "GREEN", "RED", "YELLOW"};
+        for(String c: colorBoard){
+            Color enumColor;
 
-        LinkedList<Field> listPlayingFields = new LinkedList<>();
+            if(c.equals("BLUE")){
+                enumColor = Color.BLUE;
+            } else if (c.equals("GREEN")){
+                enumColor = Color.GREEN;
+            } else if (c.equals("RED")){
+                enumColor = Color.RED;
+            } else {
+                enumColor = Color.YELLOW;
+            }
+            for(int i = 1; i <17; i++){
+                String s = String.valueOf(i);
+                if(i == 16){
+                    StartField startField = new StartField(i, enumColor, "c"+"s");
+                    startField.setFieldStatus(FieldStatus.FREE);
+                }
 
-        startFieldBlue = new StartField(4);
-        startFieldBlue.setColor(Color.BLUE);
-        startFieldBlue.setFieldStatus(FieldStatus.FREE);
-        listPlayingFields.add(startFieldBlue);
-        for (int i = 5; i <= 19; i++) {
-            Field field;
-            field = new Field(i);
-            listPlayingFields.add(field);
-            field.setFieldStatus(FieldStatus.FREE);
-        }
-
-        startFieldGreen = new StartField(20);
-        startFieldBlue.setColor(Color.GREEN);
-        listPlayingFields.add(startFieldGreen);
-        startFieldBlue.setFieldStatus(FieldStatus.FREE);
-        for (int i = 21; i <= 35; i++) {
-            Field field;
-            field = new Field(i);
-            listPlayingFields.add(field);
-            field.setFieldStatus(FieldStatus.FREE);
-        }
-
-        startFieldRed = new StartField(36);
-        startFieldRed.setColor(Color.RED);
-        listPlayingFields.add(startFieldRed);
-        startFieldBlue.setFieldStatus(FieldStatus.FREE);
-        for (int i = 37; i <= 51; i++) {
-            Field field;
-            field = new Field(i);
-            listPlayingFields.add(field);
-            field.setFieldStatus(FieldStatus.FREE);
-        }
-
-        startFieldYellow = new StartField(52);
-        startFieldYellow.setColor(Color.YELLOW);
-        listPlayingFields.add(startFieldYellow);
-        startFieldBlue.setFieldStatus(FieldStatus.FREE);
-        for (int i = 53; i <= 67; i++) {
-            Field field;
-            field = new Field(i);
-            listPlayingFields.add(field);
-            field.setFieldStatus(FieldStatus.FREE);
-        }
-        setListPlayingFields(listPlayingFields);
-
-
-        for (Color c: Color.values()) {
-            LinkedList<Field> finish = new LinkedList<>();
-            for (int i = 0; i <= 4; i++) {
-                FinishField finishField = new FinishField(i, c);
-                finish.add(finishField);
+                Field field = new Field(i, enumColor, "c"+"s");
+                field.setFieldStatus(FieldStatus.FREE);
+                listPlayingFields.add(field);
+            }
+            for(int j = 17; j < 21; j++){
+                String s = String.valueOf(j);
+                FinishField finishField = new FinishField(j, enumColor, "c"+"s");
                 finishField.setFieldStatus(FieldStatus.FREE);
-
-            }
-            if (c == Color.BLUE){
-                finish.add(0,startFieldBlue);
-                setBlueField(finish);
-            }
-            else if (c == Color.RED){
-                finish.add(0, startFieldRed);
-                setRedFields(finish);
-            }
-            else if (c == Color.GREEN){
-                finish.add(0,startFieldGreen);
-                setGreenFields(finish);
-            }
-            else if( c == Color.YELLOW){
-                finish.add(0,startFieldYellow);
-                setYellowFields(finish);
+                if(c.equals("BLUE")){
+                    blueFields.add(finishField);
+                } else if (c.equals("GREEN")){
+                    greenFields.add(finishField);
+                } else if (c.equals("RED")){
+                    redFields.add(finishField);
+                } else {
+                    yellowFields.add(finishField);
+                }
             }
         }
+
         Stack blueHome = new Stack();
         Stack greenHome = new Stack();
         Stack yellowHome = new Stack();
@@ -164,37 +126,14 @@ public class PlayingBoard {
         return yellowMarbles;
     }
 
-    public List<Integer> getBlockedFieldsValue(){
-        int[] postStartField = {4,20,36,52};
-        List<Integer> blockedFields = null;
-        for (int i = 0; i < 4; i++){
-            if(getField(postStartField[i]).getFieldStatus() != FieldStatus.BLOCKED){
-                blockedFields.add(postStartField[i]);
-            }
-        }
-        return blockedFields;
-    }
 
+    // Check Function if certain finishFiel is free.
     public Boolean checkFinishFieldOccupied(int i, Color color){
-        if(color == Color.GREEN){
-            if (greenFields.get(i).getFieldStatus() == FieldStatus.FREE) {
-                return TRUE;
-            }
-        } else if (color == Color.RED){
-            if (redFields.get(i).getFieldStatus() == FieldStatus.FREE) {
-                return TRUE;
-            }
-        } else if (color == Color.BLUE){
-            if (blueField.get(i).getFieldStatus() == FieldStatus.FREE) {
-                return TRUE;
-            }
-        } else if (color == Color.YELLOW) {
-            if (yellowFields.get(i).getFieldStatus() == FieldStatus.FREE) {
-                return TRUE;
-            }
-
+        if ((getField(i,color).getFieldStatus().equals(FieldStatus.FREE))){
+            return FALSE;
+        } else {
+            return TRUE;
         }
-        return FALSE;
     }
     public Boolean hasMarbleOnHomeStack(Color color){
         if(color == Color.GREEN){
@@ -238,21 +177,6 @@ public class PlayingBoard {
         return m;
     }
 
-    public StartField getStartFieldBlue() {
-        return startFieldBlue;
-    }
-
-    public StartField getStartFieldGreen() {
-        return startFieldGreen;
-    }
-
-    public StartField getStartFieldRed() {
-        return startFieldRed;
-    }
-
-    public StartField getStartFieldYellow() {
-        return startFieldYellow;
-    }
 
     public LinkedList<Field> getListPlayingFields() {
         return listPlayingFields;
@@ -278,25 +202,12 @@ public class PlayingBoard {
         this.listPlayingFields = listPlayingFields;
     }
 
-    public void setBlueField(LinkedList<Field> blueField) {
-        this.blueField = blueField;
-    }
 
-    public void setGreenFields(LinkedList<Field> greenFields) {
-        this.greenFields = greenFields;
-    }
 
-    public void setRedFields(LinkedList<Field> redFields) {
-        this.redFields = redFields;
-    }
-
-    public void setYellowFields(LinkedList<Field> yellowFields) {
-        this.yellowFields = yellowFields;
-    }
-    public Field getField(int i){
+    public Field getField(int i, Color c){
         try {
             for(Field f: listPlayingFields)
-                if(f.getFieldValue() == i){
+                if(f.getFieldValue() == i && f.getColor().equals(c)){
                     return f;
             }
         } catch(NullPointerException e){
@@ -305,6 +216,19 @@ public class PlayingBoard {
         }
         return null;
     }
+    public Field getFieldWithFieldKey(String key){
+        try {
+            for(Field f: listPlayingFields)
+                if(f.getFieldKey().equals(key)){
+                    return f;
+                }
+        } catch(NullPointerException e){
+            System.out.println("Something went wrong in getField()");
+
+        }
+        return null;
+    }
+    // Marble m is the first on the stack,
     public void marbleGoesToStart(Color c){
         Marble m = getFirstHomeMarble(c, true);
         StartField field = getRightColorStartField(c);
@@ -339,25 +263,18 @@ public class PlayingBoard {
         m.setFinish(TRUE);
     }
     public StartField getRightColorStartField(Color color)  {
-        if(color == Color.GREEN){
-            return this.getStartFieldGreen();
-        } else if (color == Color.RED){
-            return this.getStartFieldRed();
-        } else if (color == Color.BLUE){
-            return this.getStartFieldBlue();
-        } else if (color == Color.YELLOW) {
-            return this.getStartFieldYellow();
-        }
-        return null;
+        return (StartField) this.getField(16,color);
     }
-    public Boolean getHomeFieldIsNotBlocked(Color color){
-        if(color == Color.GREEN && getStartFieldGreen().getFieldStatus() != FieldStatus.BLOCKED){
+    //Takes in Color and return true if this HomeField is not blocked
+    public Boolean getStartFieldIsNotBlocked(Color color){
+        if(!( getRightColorStartField(color).equals(FieldStatus.BLOCKED) )){
             return TRUE;
-        } else if (color == Color.RED && getStartFieldRed().getFieldStatus() != FieldStatus.BLOCKED){
-            return TRUE;
-        } else if (color == Color.BLUE && getStartFieldBlue().getFieldStatus() != FieldStatus.BLOCKED){
-            return TRUE;
-        } else if (color == Color.YELLOW && getStartFieldYellow().getFieldStatus() != FieldStatus.BLOCKED){
+        } else {
+            return FALSE;
+        }
+    }
+    public Boolean getNextStartFieldIsBlocked(Color color){
+        if ( getRightColorStartField(color).equals(FieldStatus.BLOCKED) ){
             return TRUE;
         } else {
             return FALSE;
@@ -378,44 +295,15 @@ public class PlayingBoard {
             m.setHome(TRUE);
         }
     }
-    public int distanceToNextFreeFinishSpot(Color color, Field field){
-        int fieldval = field.getFieldValue();
-        int count = 0;
-        boolean condition = TRUE;
-        int valFieldToCheck = fieldval+1;
-        for (Field f : listPlayingFields) {
-            if (f.equals(field)) {
-                for (int i = fieldval; i < fieldval+63; i++) {
-                    if (valFieldToCheck > 67) {
-                        valFieldToCheck = valFieldToCheck - 67 + 3;
-                    }
-                    Field fieldToCheck = listPlayingFields.get(valFieldToCheck);
-                    if(fieldToCheck instanceof HomeField && fieldToCheck.getColor().equals(color)){
-                        List<Field> finishFields = getFinishFields(color);
-                        for (Field finishf: finishFields){
-                            if(!(finishf.getFieldStatus().equals(FieldStatus.OCCUPIED))){
-                                return count;
-                            }
-                            count++;
-                        }
 
-                    }
-                    count++;
-                }
-
-
-
-            }
-    }return count;
-    }
+    //Done
     public List<Field> getFinishFields(Color color){
-
         if(color == Color.GREEN){
             return greenFields;
         } else if (color == Color.RED){
             return redFields;
         } else if (color == Color.BLUE){
-            return blueField;
+            return blueFields;
         } else if (color == Color.YELLOW) {
             return yellowFields;
         } else {
@@ -423,7 +311,57 @@ public class PlayingBoard {
         }
 
     }
-
-
+    public Color getNextColor(Color color){
+        if(color == Color.GREEN){
+            return Color.RED;
+        } else if (color == Color.RED){
+            return Color.YELLOW;
+        } else if (color == Color.BLUE){
+            return Color.GREEN;
+        } else {
+            return Color.BLUE;
+        }
+    }
+    public Color getPreviousColor(Color color){
+        if(color == Color.GREEN){
+            return Color.BLUE;
+        } else if (color == Color.RED){
+            return Color.GREEN;
+        } else if (color == Color.BLUE){
+            return Color.YELLOW;
+        } else {
+            return Color.RED;
+        }
+    }
+    public int changeForwardMoveToValue(String move){
+        int moveInt = 0;
+        if(move.equals("Forward 1")) {
+            moveInt = 1;
+        } else if (move.equals("Forward 2")){
+            moveInt = 2;
+        } else if (move.equals("Forward 3")){
+            moveInt = 3;
+        } else if (move.equals("Forward 4")){
+            moveInt = 4;
+        } else if (move.equals("Forward 5")){
+            moveInt = 5;
+        } else if (move.equals("Forward 6")){
+            moveInt = 6;
+        }  else if (move.equals("Forward 8")){
+            moveInt = 8;
+        } else if (move.equals("Forward 9")){
+            moveInt = 9;
+        }else if (move.equals("Forward 10")){
+            moveInt = 10;
+        } else if (move.equals("Forward 11")){
+            moveInt = 11;
+        } else if (move.equals("Forward 12")){
+            moveInt = 12;
+        } else if (move.equals("Forward 13")) {
+            moveInt = 13;
+        }
+        return moveInt;
+    }
 
 }
+

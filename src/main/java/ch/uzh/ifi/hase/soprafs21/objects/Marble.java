@@ -12,7 +12,6 @@ import static java.lang.Boolean.TRUE;
 public class Marble {
     private final int marbleNr;
     private Color color;
-
     private Field currentField;
     private Boolean isHome;
     private Boolean isFinish;
@@ -67,14 +66,10 @@ public class Marble {
         this.currentField = currentField;
     }
 
-    public int nextStartFieldValue(){
-        int i = this.getCurrentField().getFieldValue();
-        int distance = 20 - (i%16);
-        return distance + i;
-    }
+
     public int distanceToNextStartField(){
         int i = this.getCurrentField().getFieldValue();
-        return 20 - (i%16);
+        return 16-i;
     }
     public Boolean getMarbleIsBlockingAndOnStart(){
         if (this.getCurrentField() instanceof StartField){
