@@ -82,33 +82,7 @@ public class Card {
             canStart = FALSE;
         }
     }
-    public int changeForwardMoveToValue(String move){
-        int moveInt = 0;
-        if(move.equals("Forward 2")){
-            moveInt = 2;
-        } else if (move.equals("Forward 3")){
-            moveInt = 3;
-        } else if (move.equals("Forward 4")){
-            moveInt = 4;
-        } else if (move.equals("Forward 5")){
-            moveInt = 5;
-        } else if (move.equals("Forward 6")){
-            moveInt = 6;
-        }  else if (move.equals("Forward 8")){
-            moveInt = 8;
-        } else if (move.equals("Forward 9")){
-            moveInt = 9;
-        }else if (move.equals("Forward 10")){
-            moveInt = 10;
-        } else if (move.equals("Forward 11")){
-            moveInt = 11;
-        } else if (move.equals("Forward 12")){
-            moveInt = 12;
-        } else if (move.equals("Forward 13")) {
-            moveInt = 13;
-        }
-        return moveInt;
-    }
+
 
     public Boolean getCanStart() {
         return canStart;
