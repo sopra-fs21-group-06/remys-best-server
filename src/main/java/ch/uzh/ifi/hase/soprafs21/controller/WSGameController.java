@@ -4,17 +4,22 @@ import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameEndDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.util.Pair;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -27,6 +32,7 @@ public class WSGameController {
 
     private final GameEngine gameEngine;
     private final WebSocketService webSocketService;
+    private SessionDisconnectEvent sessionDisconnectEvent;
 
     public WSGameController(GameEngine gameEngine, WebSocketService webSocketService) {
         this.gameEngine = gameEngine;
@@ -135,5 +141,31 @@ public class WSGameController {
 
 
     // List<String> getpossibleField(String moveName, Marble marble)
+
+    //@MessageMapping("game/{gameId}/game-end")
+    @EventListener
+    @SendTo("topic/game/{gameId}/game-end")
+    public void handleSessionDisconnect(SessionDisconnectEvent event) {
+        this.sessionDisconnectEvent = event;
+        Principal p = event.getUser();
+        if (p != null) {
+            log.info("Player " + p.getName() + ": Connection lost");
+
+            //do something with this information
+            // to-do Edouard provideGameIDGivenPlayerName()
+            //GameEndDTO gameEndDTO = new GameEndDTO();
+            //gameEndDTO.setAborted("");
+            //webSocketService.sentGameEndMessage(p.getName(), gameID, gameEndDTO);
+        }
+    }
+
+    @SendTo("topic/game/{gameId}/game-end")
+    public void sessionDisconnectEvent(@DestinationVariable UUID gameId, GameEndDTO gameEndDTO) {
+        //Game currentGame = gameEngine.getRunningGameByID(gameId);
+        Principal p = sessionDisconnectEvent.getUser();
+        gameEndDTO.setAborted(p.getName());
+        log.info(gameEndDTO.toString());
+        webSocketService.sentGameEndMessage(p.getName(),  gameId, gameEndDTO);
+    }
 }
 
