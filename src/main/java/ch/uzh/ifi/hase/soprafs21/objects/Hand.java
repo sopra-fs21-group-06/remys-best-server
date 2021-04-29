@@ -21,4 +21,6 @@ public class Hand {
     public void addCardsToHand(List<Card> cardList){
         handDeck.addAll(cardList);
     }
+
+
 }
