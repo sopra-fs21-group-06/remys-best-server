@@ -2,8 +2,8 @@ package ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming;
 
 public class GamePossibleTargetFieldRequestDTO {
     private String token;
-    private String cardCode;
-    private String marbleID;
+    private String code;
+    private int marbleId;
     private String moveName;
 
     public String getToken() {
@@ -14,20 +14,12 @@ public class GamePossibleTargetFieldRequestDTO {
         this.token = token;
     }
 
-    public String getCardCode() {
-        return cardCode;
+    public String getCode() {
+        return code;
     }
 
-    public void setCardCode(String cardCode) {
-        this.cardCode = cardCode;
-    }
-
-    public String getMarbleID() {
-        return marbleID;
-    }
-
-    public void setMarbleID(String marbleID) {
-        this.marbleID = marbleID;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getMoveName() {
@@ -36,5 +28,13 @@ public class GamePossibleTargetFieldRequestDTO {
 
     public void setMoveName(String moveName) {
         this.moveName = moveName;
+    }
+
+    public int getMarbleId() {
+        return marbleId;
+    }
+
+    public void setMarbleId(int marbleId) {
+        this.marbleId = marbleId;
     }
 }

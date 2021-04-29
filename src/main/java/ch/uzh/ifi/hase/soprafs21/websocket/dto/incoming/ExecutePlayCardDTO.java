@@ -6,20 +6,10 @@ import java.util.List;
 
 public class ExecutePlayCardDTO {
     private String token;
-    private String cardCode;
+    private String code;
     private String moveName;
-    private String targetFieldKey;
-    private List<MarbleExecuteCardDTO> marbleIdList;
-
-    public String getTargetFieldKey() {
-        return targetFieldKey;
-    }
-
-    //TODO map targetfieldkey to field
-
-    public void setTargetFieldKey(String targetFieldKey) {
-        this.targetFieldKey = targetFieldKey;
-    }
+    private List<MarbleExecuteCardDTO> marbles;
+    
 
     public String getToken() {
         return token;
@@ -29,12 +19,12 @@ public class ExecutePlayCardDTO {
         this.token = token;
     }
 
-    public String getCardCode() {
-        return cardCode;
+    public String getCode() {
+        return code;
     }
 
-    public void setCardCode(String cardCode) {
-        this.cardCode = cardCode;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getMoveName() {
@@ -45,11 +35,11 @@ public class ExecutePlayCardDTO {
         this.moveName = moveName;
     }
 
-    public List<MarbleExecuteCardDTO> getMarbleIdList() {
-        return marbleIdList;
+    public List<MarbleExecuteCardDTO> getMarbles() {
+        return marbles;
     }
 
-    public void setMarbleIdList(List<MarbleExecuteCardDTO> marbleIdList) {
-        this.marbleIdList = marbleIdList;
+    public void setMarbles(List<MarbleExecuteCardDTO> marbles) {
+        this.marbles = marbles;
     }
 }

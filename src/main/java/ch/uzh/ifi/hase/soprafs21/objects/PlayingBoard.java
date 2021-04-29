@@ -21,7 +21,7 @@ import static java.lang.Boolean.TRUE;
 
 
 public class PlayingBoard {
-    private LinkedList<Field> listPlayingFields;
+    private LinkedList<Field> listPlayingFields = new LinkedList<>();
 
     private Stack blueHome = new Stack();
     private Stack greenHome = new Stack();

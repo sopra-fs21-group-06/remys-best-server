@@ -3,13 +3,13 @@ package ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing;
 import java.util.List;
 
 public class PossibleTargetFieldKeysListDTO {
-    private List<String> possibleTargetFieldKeyList;
+    private List<String> targetFieldKeys;
 
-    public List<String> getPossibleTargetFieldKeyList() {
-        return possibleTargetFieldKeyList;
+    public List<String> getTargetFieldKeys() {
+        return targetFieldKeys;
     }
 
-    public void setPossibleTargetFieldKeyList(List<String> possibleTargetFieldKeyList) {
-        this.possibleTargetFieldKeyList = possibleTargetFieldKeyList;
+    public void setTargetFieldKeys(List<String> targetFieldKeys) {
+        this.targetFieldKeys = targetFieldKeys;
     }
 }
