@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 
-import ch.uzh.ifi.hase.soprafs21.controller.WSGameController;
 import ch.uzh.ifi.hase.soprafs21.objects.Card;
 import ch.uzh.ifi.hase.soprafs21.objects.CardMove;
 import ch.uzh.ifi.hase.soprafs21.objects.Marble;
@@ -17,6 +16,7 @@ import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,12 +119,20 @@ public class WebSocketService {
     public void sendMarblesToPlayer(String sessionidentity, List<Marble> marbleList, UUID gameId){
         String path = "/game/%s/marble-list";
         sendToPlayer(sessionidentity, String.format(path, gameId.toString()),
-                    DogUtils.genrateRoundMarblesListDTO(marbleList));
+                    DogUtils.generateRoundMarblesListDTO(marbleList));
     }
 
-    public void sendGameExecutedCard(String playerName, String cardCode, List<MarbleExecuteCardDTO> marbleExecuteCardDTOList, UUID gameId){
+    public void sendGameExecutedCard(String playerName, String cardCode, List<Pair<Integer, String>> tupleList, UUID gameId){
+
         String path = "/game/%s/played";
         sendToTopic(String.format(path, gameId.toString()),
-                DogUtils.generateExecutedCardDTO(playerName, cardCode, marbleExecuteCardDTOList));
+                DogUtils.generateExecutedCardDTO(playerName, cardCode,
+                        DogUtils.generateMarbleExecutreCardDTO(tupleList)));
+    }
+
+    public void sendTargetFieldListMessage(String sessionidentity, List<String> targetFields, UUID gameId){
+        String path = "/game/%s/target-fields-list";
+        sendToPlayer(sessionidentity, String.format(path, gameId.toString()),
+                    DogUtils.generatePossibleTargetFieldKeyListDTO(targetFields));
     }
 }

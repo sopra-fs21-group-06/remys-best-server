@@ -10,10 +10,8 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.springframework.data.util.Pair.*;
@@ -516,6 +514,21 @@ public class GameService {
             }
         }
 
+    public Marble getMarbleByGameIdMarbleIdPlayerName(Game game, String playerName, int marbleId){
+        for(Player p: game.getPlayerList()){
+            if(p.getPlayerName().equals(playerName)){
+                for(Marble m : p.getMarbleList()){
+                    if(m.getMarbleNr() == marbleId){
+                        log.info(String.valueOf(m.getMarbleNr()));
+                        return m;
+                    }
+                }
+            }
+        }
+        log.info("Not good with Marbleconversion");
+        return null;
+    }
+
 
 
         /*
@@ -694,5 +707,9 @@ public class GameService {
         }
 
          */
+
+    public UserService getUserService() {
+        return userService;
+    }
 }
 

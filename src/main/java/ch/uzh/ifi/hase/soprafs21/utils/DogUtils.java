@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.*;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.*;
+import org.springframework.data.util.Pair;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 
 import java.security.Principal;
@@ -90,7 +91,7 @@ public class DogUtils {
        return roundMoveListDTO;
    }
 
-   public static RoundMarbleListDTO genrateRoundMarblesListDTO(List<Marble> marbleList){
+   public static RoundMarbleListDTO generateRoundMarblesListDTO(List<Marble> marbleList){
        RoundMarbleListDTO roundMarbleListDTO = new RoundMarbleListDTO();
        List<MarbleDTO> marbleDTOList = new ArrayList<>();
 
@@ -113,4 +114,19 @@ public class DogUtils {
 
        return executredCardDTO;
    }
+
+   public static List<MarbleExecuteCardDTO> generateMarbleExecutreCardDTO(List<Pair<Integer, String>> tupleList){
+        List<MarbleExecuteCardDTO> marbleExecuteCardDTOList = new ArrayList<>();
+        for(Pair<Integer, String> p : tupleList){
+            marbleExecuteCardDTOList.add(new MarbleExecuteCardDTO(p.getFirst(), p.getSecond()));
+        }
+        return marbleExecuteCardDTOList;
+   }
+
+    public static PossibleTargetFieldKeysListDTO generatePossibleTargetFieldKeyListDTO(List<String> targetFields){
+        PossibleTargetFieldKeysListDTO possibleTargetFieldKeysListDTO = new PossibleTargetFieldKeysListDTO();
+        possibleTargetFieldKeysListDTO.setTargetFieldKeys(targetFields);
+
+        return possibleTargetFieldKeysListDTO;
+    }
 }

@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto;
 
-import ch.uzh.ifi.hase.soprafs21.constant.Color;
-
 public class MarbleExecuteCardDTO {
     private int marbleId;
     private String targetFieldKey;
