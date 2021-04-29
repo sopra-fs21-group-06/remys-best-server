@@ -48,13 +48,14 @@ public class WebSocketController {
 
     }*/
 
-    @EventListener
-    public void handleSessionDisconnect(SessionDisconnectEvent event) {
-        Principal p = event.getUser();
-        if (p != null) {
-            log.info("Player " + p.getName() + ": Connection lost");
-
-            //do something with this information
-        }
-    }
+//    @EventListener
+//    public void handleSessionDisconnect(SessionDisconnectEvent event) {
+//        Principal p = event.getUser();
+//        if (p != null) {
+//            log.info("Player " + p.getName() + ": Connection lost");
+//
+//            //do something with this information
+//            //
+//        }
+//    }
 }

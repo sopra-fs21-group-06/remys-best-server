@@ -135,4 +135,12 @@ public class WebSocketService {
         sendToPlayer(sessionidentity, String.format(path, gameId.toString()),
                     DogUtils.generatePossibleTargetFieldKeyListDTO(targetFields));
     }
+
+    public void sentGameEndMessage(String playName, UUID gameId, GameEndDTO gameEndDTO) {
+        String path = "/game/%s/game-end";
+        sendToTopic(String.format(path, gameId.toString()), gameEndDTO);
+        log.info(gameEndDTO.toString());
+        //to-do Edouard
+        //delete Game
+    }
 }
