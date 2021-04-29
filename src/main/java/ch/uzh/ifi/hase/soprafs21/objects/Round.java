@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
+import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
 import ch.uzh.ifi.hase.soprafs21.service.PlayingBoardService;
@@ -78,14 +79,50 @@ public class Round {
     }
 
     public void changeCurrentPlayer () {
-        int i = players.indexOf(currentPlayer);
-        int inext = (i + 1) % 4;
-        currentPlayer = players.get(inext);
+        if(players.size() == 2){
+            for(Player p: players){
+                if(!currentPlayer.equals(p)){
+                    currentPlayer = p;
+                    break;
+                }
+            }
+        }
+        for (Player p: players){
+            if(p.getPlayerName().equals(getNameNextPlayer())){
+                currentPlayer = p;
+                break;
+            }
+        }
     }
     public String getNameNextPlayer () {
-        int i = players.indexOf(currentPlayer);
-        int inext = (i + 1) % 4;
-        return players.get(inext).getPlayerName();
+        String name = "";
+        if(currentPlayer.getColor().equals(Color.BLUE)){
+            for (Player p: players){
+                if(p.getColor().equals(Color.GREEN)){
+                    name = p.getPlayerName();
+                }
+            }
+        } else if(currentPlayer.getColor().equals(Color.GREEN)){
+            for (Player p: players){
+                if(p.getColor().equals(Color.RED)){
+                    name = p.getPlayerName();
+                }
+            }
+        } else if(currentPlayer.getColor().equals(Color.RED)){
+            for (Player p: players){
+                if(p.getColor().equals(Color.YELLOW)){
+                    name = p.getPlayerName();
+                }
+            }
+        } else if(currentPlayer.getColor().equals(Color.YELLOW)){
+            for (Player p: players){
+                if(p.getColor().equals(Color.BLUE)){
+                    name = p.getPlayerName();
+                }
+            }
+        }
+        return name;
+
     }
 
 

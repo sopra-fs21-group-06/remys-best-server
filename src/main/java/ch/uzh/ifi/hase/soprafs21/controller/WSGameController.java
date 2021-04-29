@@ -93,32 +93,6 @@ public class WSGameController {
         currentGame.getCurrentRound().sendOutCurrentTurnDTO();
         currentGame.sendOutCurrentTurnFactsDTO();
 
-
-
-
-      //process marble-request and sendout via for example sendGameExecutedcard(String , UUID gameId) from gameservice.
-        //This method is implemented in the websocketservice already.
-
-        // TODO which function??
-        // TODO target field for selected move & marble?
-       /* currentGame.getGameService().makeMove()
-        Pair result = currentGame.getGameService().makeMove(fieldKey, marble, currentGame);
-        For testing purposes
-        List<MarbleExecuteCardDTO> marbleExecuteCardDTOList = new ArrayList<>();
-//t
-        Pair<int (marbleId), String (fieldKey)> pair = new Pair<>(1, "4GREEN");
-
-        pair.getFirst(); //
-
-
-
-
-        MarbleExecuteCardDTO marbleExecuteCardDTO1 = new MarbleExecuteCardDTO(0, "8RED");
-
-
-        marbleExecuteCardDTOList.add(marbleExecuteCardDTO1);
-        webSocketService.sendGameExecutedCard("a", "AH", marbleExecuteCardDTOList, gameId);
-        // TODO trigger next turn*/
     }
 
 
@@ -126,14 +100,14 @@ public class WSGameController {
     public synchronized void targetFieldRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, GamePossibleTargetFieldRequestDTO gamePossibleTargetFieldRequestDTO){
         log.info("Player" + getIdentity(sha) + ":Has requested TargetFieldList");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
-        //currentGame.sendOutTargetFieldList(gamePossibleTargetFieldRequestDTO);
-        List<String> dummyTargetField= new ArrayList<>();
+        currentGame.sendOutTargetFieldList(gamePossibleTargetFieldRequestDTO);
+        /*List<String> dummyTargetField= new ArrayList<>();
         dummyTargetField.add("4GREEN");
         dummyTargetField.add("10BLUE");
         dummyTargetField.add("14YELLOW");
         dummyTargetField.add("8RED");
         webSocketService.sendTargetFieldListMessage(getIdentity(sha),dummyTargetField, currentGame.getGameId());
-
+        */
     }
 
 
