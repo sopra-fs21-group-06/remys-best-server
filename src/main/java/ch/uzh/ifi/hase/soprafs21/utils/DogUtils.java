@@ -34,6 +34,10 @@ public class DogUtils {
         return userService.getUserRepository().findByToken(token).getUsername();
     }
 
+    public static String convertSessionIdentityToUserName(String sessionIdentity, UserService userService){
+        return userService.getUserRepository().findBySessionIdentity(sessionIdentity).getUsername();
+    }
+
     public static WaitingRoomChooseColorDTO convertPlayersToWaitingRoomChooseColorDTO(List<Player> players) {
         return convertPlayersToWaitingRoomChooseColorDTO(players, null);
     }
