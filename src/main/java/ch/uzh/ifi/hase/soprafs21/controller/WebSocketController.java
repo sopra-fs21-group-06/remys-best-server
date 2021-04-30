@@ -1,8 +1,10 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 
+import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.service.LoginService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameEndDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.WaitingRoomEnterDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +13,13 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
 import java.security.Principal;
+import java.util.Objects;
+import java.util.UUID;
 
 import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
 
@@ -47,15 +53,4 @@ public class WebSocketController {
         return answer;
 
     }*/
-
-//    @EventListener
-//    public void handleSessionDisconnect(SessionDisconnectEvent event) {
-//        Principal p = event.getUser();
-//        if (p != null) {
-//            log.info("Player " + p.getName() + ": Connection lost");
-//
-//            //do something with this information
-//            //
-//        }
-//    }
 }

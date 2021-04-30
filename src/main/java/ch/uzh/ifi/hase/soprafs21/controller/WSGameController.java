@@ -17,12 +17,13 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
 
@@ -30,6 +31,7 @@ import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
 public class WSGameController {
     Logger log = LoggerFactory.getLogger(WSGameController.class);
 
+    private final Map<String,String> gameRegistry = new ConcurrentHashMap<>();
     private final GameEngine gameEngine;
     private final WebSocketService webSocketService;
     private SessionDisconnectEvent sessionDisconnectEvent;
@@ -116,32 +118,32 @@ public class WSGameController {
 
     // List<String> getpossibleField(String moveName, Marble marble)
 
-    //@MessageMapping("game/{gameId}/game-end")
+
     @EventListener
-    @SendTo("topic/game/{gameId}/game-end")
-    public void handleSessionDisconnect(SessionDisconnectEvent event) {
-        this.sessionDisconnectEvent = event;
-        Principal p = event.getUser();
+    public synchronized void handleSessionDisconnect(SessionDisconnectEvent event) {
+        String p = Objects.requireNonNull(event.getUser()).getName();
         if (p != null) {
-            log.info("Player " + p.getName() + ": Connection lost");
-
-            //do something with this information
-            // to-do Edouard provideGameIDGivenPlayerName()
-            //GameEndDTO gameEndDTO = new GameEndDTO();
-            //gameEndDTO.setAborted("");
-            //webSocketService.sentGameEndMessage(p.getName(), gameID, gameEndDTO);
-
-            // Use this to extract usernameString username = DogUtils.convertSessionIdentityToUserName(p.getName(), gameEngine.getUserService());
+            log.info("Player " + p + ": Connection lost");
+            SimpMessageHeaderAccessor header = SimpMessageHeaderAccessor.wrap(event.getMessage());
+            String username = Objects.requireNonNull(header.getUser()).getName();
+            GameEndDTO dto = new GameEndDTO();
+            dto.setAborted(username);
+            gameEngine.deleteGameByGameID(UUID.fromString(getGameIdByString(p)));
+            log.info(String.valueOf(gameEngine.getRunningGamesList().size()));
+            webSocketService.sentGameEndMessage(getGameIdByString(p), dto);
+            log.info(getGameIdByString(p));
+            log.info(username);
         }
     }
 
-    @SendTo("topic/game/{gameId}/game-end")
-    public void sessionDisconnectEvent(@DestinationVariable UUID gameId, GameEndDTO gameEndDTO) {
-        //Game currentGame = gameEngine.getRunningGameByID(gameId);
-        Principal p = sessionDisconnectEvent.getUser();
-        gameEndDTO.setAborted(p.getName());
-        log.info(gameEndDTO.toString());
-        webSocketService.sentGameEndMessage(p.getName(),  gameId, gameEndDTO);
+    private String getGameIdByString(String p) {
+        return gameRegistry.get(p);
+    }
+
+    @MessageMapping("game/{gameId}/game-end")
+    public synchronized void handleSessionConnected(@DestinationVariable String gameId, SimpMessageHeaderAccessor sha) {
+        log.info("gameId:"+ gameId + " User: "+ getIdentity(sha));
+        gameRegistry.put(getIdentity(sha), gameId);
     }
 }
 
