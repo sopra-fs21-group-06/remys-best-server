@@ -21,6 +21,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -136,11 +137,9 @@ public class WebSocketService {
                     DogUtils.generatePossibleTargetFieldKeyListDTO(targetFields));
     }
 
-    public void sentGameEndMessage(String playName, UUID gameId, GameEndDTO gameEndDTO) {
+    public void sentGameEndMessage(String gameId, GameEndDTO gameEndDTO) {
         String path = "/game/%s/game-end";
-        sendToTopic(String.format(path, gameId.toString()), gameEndDTO);
-        log.info(gameEndDTO.toString());
-        //to-do Edouard
-        //delete Game
+        sendToTopic(String.format(path, gameId), gameEndDTO);
     }
+
 }
