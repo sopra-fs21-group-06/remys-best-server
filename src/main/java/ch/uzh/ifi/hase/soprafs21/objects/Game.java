@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameEndDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.ExecutePlayCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GamePossibleTargetFieldRequestDTO;
@@ -19,7 +20,7 @@ public class Game {
     /** should game have a Round ? such that we just instantiate a new variable of round that automatically is created with right number of cards etc?**/
     private List<Player> playerList = new ArrayList<Player>();
     private int nrCards=7;
-
+    private boolean GameIsFinished = false;
     private String deckId;
     private Player startPlayer;
     private PlayingBoard playingBoard = new PlayingBoard();
@@ -37,6 +38,18 @@ public class Game {
             playerList.add(userToPlayer(user));
         }
         this.startPlayer = playerList.get(0);
+    }
+
+    //
+    public boolean getGameIsFinished(){return GameIsFinished;}
+
+    public void setGameIsFinished(boolean gameIsFinished) {
+        GameIsFinished = gameIsFinished;
+        if(gameIsFinished){
+            GameEndDTO dto = new GameEndDTO();
+            //TO-DO defining DTO will be done once Game, Player, PlayingBoard are finished
+            webSocketService.sentGameEndMessage(this.gameId.toString(),dto);
+        }
     }
 
     private void setDeckId(String deckid){

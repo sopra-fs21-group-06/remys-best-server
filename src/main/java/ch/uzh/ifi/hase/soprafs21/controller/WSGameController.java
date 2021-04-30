@@ -25,6 +25,7 @@ import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.convertSessionIdentityToUserName;
 import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
 
 @Controller
@@ -119,14 +120,16 @@ public class WSGameController {
     // List<String> getpossibleField(String moveName, Marble marble)
 
 
+
     @EventListener
     public synchronized void handleSessionDisconnect(SessionDisconnectEvent event) {
         String p = Objects.requireNonNull(event.getUser()).getName();
         if (p != null) {
             log.info("Player " + p + ": Connection lost");
             SimpMessageHeaderAccessor header = SimpMessageHeaderAccessor.wrap(event.getMessage());
-            String username = Objects.requireNonNull(header.getUser()).getName();
+
             GameEndDTO dto = new GameEndDTO();
+            String username = convertSessionIdentityToUserName(p,gameEngine.getUserService());
             dto.setAborted(username);
             gameEngine.deleteGameByGameID(UUID.fromString(getGameIdByString(p)));
             log.info(String.valueOf(gameEngine.getRunningGamesList().size()));
