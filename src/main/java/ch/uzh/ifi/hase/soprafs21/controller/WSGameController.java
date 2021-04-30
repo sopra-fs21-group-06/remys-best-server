@@ -31,8 +31,6 @@ import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
 @Controller
 public class WSGameController {
     Logger log = LoggerFactory.getLogger(WSGameController.class);
-
-    private final Map<String,String> gameRegistry = new ConcurrentHashMap<>();
     private final GameEngine gameEngine;
     private final WebSocketService webSocketService;
     private SessionDisconnectEvent sessionDisconnectEvent;
@@ -127,26 +125,14 @@ public class WSGameController {
         if (p != null) {
             log.info("Player " + p + ": Connection lost");
             SimpMessageHeaderAccessor header = SimpMessageHeaderAccessor.wrap(event.getMessage());
-
             GameEndDTO dto = new GameEndDTO();
             String username = convertSessionIdentityToUserName(p,gameEngine.getUserService());
             dto.setAborted(username);
-            gameEngine.deleteGameByGameID(UUID.fromString(getGameIdByString(p)));
+            gameEngine.deleteGameByGameID(gameEngine.findGameIdByPlayerName(username));
             log.info(String.valueOf(gameEngine.getRunningGamesList().size()));
-            webSocketService.sentGameEndMessage(getGameIdByString(p), dto);
-            log.info(getGameIdByString(p));
+            webSocketService.sentGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);
             log.info(username);
         }
-    }
-
-    private String getGameIdByString(String p) {
-        return gameRegistry.get(p);
-    }
-
-    @MessageMapping("game/{gameId}/game-end")
-    public synchronized void handleSessionConnected(@DestinationVariable String gameId, SimpMessageHeaderAccessor sha) {
-        log.info("gameId:"+ gameId + " User: "+ getIdentity(sha));
-        gameRegistry.put(getIdentity(sha), gameId);
     }
 }
 

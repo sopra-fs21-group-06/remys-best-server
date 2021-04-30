@@ -243,6 +243,17 @@ public class GameEngine{
         }
     };
 
+    public UUID findGameIdByPlayerName(String playerName){
+        for(Game game:runningGamesList){
+            for(Player player: game.getPlayerList()){
+                if(player.getPlayerName().equals(playerName)){
+                    return game.getGameId();
+                }
+            }
+        }
+        return null;
+    }
+
     /** check needs to happen if user available before calling method **/
     public void newGameSession(User host) {
         if(host.getStatus().equals(UserStatus.FREE)){
