@@ -18,6 +18,7 @@ import java.util.Stack;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static java.util.Objects.isNull;
 
 
 public class PlayingBoard {
@@ -53,17 +54,20 @@ public class PlayingBoard {
             for(int i = 1; i <17; i++){
                 String s = String.valueOf(i);
                 if(i == 16){
-                    StartField startField = new StartField(i, enumColor, "c"+"s");
+                    StartField startField = new StartField(i, enumColor, s+c);
                     startField.setFieldStatus(FieldStatus.FREE);
+                    listPlayingFields.add(startField);
+                } else {
+                    Field field = new Field(i, enumColor, s+c);
+                    field.setFieldStatus(FieldStatus.FREE);
+                    listPlayingFields.add(field);
                 }
 
-                Field field = new Field(i, enumColor, "c"+"s");
-                field.setFieldStatus(FieldStatus.FREE);
-                listPlayingFields.add(field);
+
             }
             for(int j = 17; j < 21; j++){
                 String s = String.valueOf(j);
-                FinishField finishField = new FinishField(j, enumColor, "c"+"s");
+                FinishField finishField = new FinishField(j, enumColor, s+c);
                 finishField.setFieldStatus(FieldStatus.FREE);
                 if(c.equals("BLUE")){
                     blueFields.add(finishField);
@@ -77,37 +81,33 @@ public class PlayingBoard {
             }
         }
 
-        Stack blueHome = new Stack();
-        Stack greenHome = new Stack();
-        Stack yellowHome = new Stack();
-        Stack redHome = new Stack();
 
         for(int i = 3; i >= 0; i--){
-            BlueMarble blueMarble = new BlueMarble(i);
+            Marble blueMarble = new BlueMarble(i);
+            blueMarble.setColor(Color.BLUE);
             blueMarble.setHome(TRUE);
             blueMarble.setFinish(FALSE);
             blueHome.push(blueMarble);
             blueMarbles.add(blueMarble);
-            GreenMarble greenMarble = new GreenMarble(i + 4);
+            Marble greenMarble = new GreenMarble(i + 4);
+            greenMarble.setColor(Color.GREEN);
             greenMarble.setHome(TRUE);
             greenMarble.setFinish(FALSE);
             greenHome.push(greenMarble);
             greenMarbles.add(greenMarble);
-            RedMarble redMarble = new RedMarble(i + 8);
+            Marble redMarble = new RedMarble(i + 8);
             redMarble.setHome(TRUE);
             redMarble.setFinish(FALSE);
+            redMarble.setColor(Color.RED);
             redHome.push(redMarble);
             redMarbles.add(redMarble);
-            YellowMarble yellowMarble = new YellowMarble(i + 12);
+            Marble yellowMarble = new YellowMarble(i + 12);
             yellowMarble.setHome(TRUE);
             yellowMarble.setFinish(FALSE);
+            yellowMarble.setColor(Color.YELLOW);
             yellowHome.push(yellowMarble);
             yellowMarbles.add(yellowMarble);
         }
-        setBlueHome(blueHome);
-        setGreenHome(greenHome);
-        setRedHome(redHome);
-        setYellowHome(yellowHome);
     }
 
     public List<Marble> getBlueMarbles() {
@@ -153,27 +153,30 @@ public class PlayingBoard {
         Marble m = null;
 
         if(color == Color.GREEN){
-            m = (Marble) greenHome.pop();
             if(removeFromStack) {
-                greenHome.push(m);
+                m = (Marble) greenHome.pop();
+            } else {
+                m = (Marble) greenHome.peek();
             }
         } else if (color == Color.RED){
-            m = (Marble) redHome.pop();
             if(removeFromStack) {
-                redHome.push(m);
+                m = (Marble) redHome.pop();
+            } else {
+                m = (Marble) redHome.peek();
             }
         } else if (color == Color.BLUE){
-            m =  (Marble) blueHome.pop();
             if(removeFromStack) {
-                blueHome.push(m);
+                m = (Marble) blueHome.pop();
+            } else {
+                m = (Marble) blueHome.peek();
             }
         } else if (color == Color.YELLOW) {
-            m = (Marble) yellowHome.pop();
             if(removeFromStack) {
-                yellowHome.push(m);
+                m = (Marble) yellowHome.pop();
+            } else {
+                m = (Marble) yellowHome.peek();
             }
         }
-
         return m;
     }
 
@@ -205,28 +208,70 @@ public class PlayingBoard {
 
 
     public Field getField(int i, Color c){
-        try {
-            for(Field f: listPlayingFields)
-                if(f.getFieldValue() == i && f.getColor().equals(c)){
-                    return f;
+        Field fieldToSend = null;
+        for(Field f: listPlayingFields) {
+
+            if (f.getFieldValue() == i && f.getColor().equals(c)) {
+                fieldToSend = f;
             }
-        } catch(NullPointerException e){
-            System.out.println("Something went wrong in getField()");
-
         }
-        return null;
+        for(Field f: greenFields){
+            if (f.getFieldValue() == i && f.getColor().equals(c)) {
+                fieldToSend = f;
+            }
+        }
+        for(Field f: redFields){
+            if (f.getFieldValue() == i && f.getColor().equals(c)) {
+                fieldToSend = f;
+            }
+        }
+        for(Field f: yellowFields){
+            if (f.getFieldValue() == i && f.getColor().equals(c)) {
+                fieldToSend = f;
+            }
+        }
+        for(Field f: blueFields){
+            if (f.getFieldValue() == i && f.getColor().equals(c)) {
+                fieldToSend = f;
+            }
+        }
+        if (isNull(fieldToSend)) {
+            System.out.println("Something went wrong in getField()");
+        } else {
+            System.out.println("all ok  getField()");
+        }
+        return fieldToSend;
+
     }
-    public Field getFieldWithFieldKey(String key){
-        try {
-            for(Field f: listPlayingFields)
-                if(f.getFieldKey().equals(key)){
-                    return f;
-                }
-        } catch(NullPointerException e){
-            System.out.println("Something went wrong in getField()");
+    public Field getFieldWithFieldKey(String key) {
+        Field fieldToSend = null;
+        for (Field f : listPlayingFields) {
 
+            if (f.getFieldKey().equals(key)) {
+                fieldToSend = f;
+            }
         }
-        return null;
+        for (Field f : greenFields) {
+            if (f.getFieldKey().equals(key)) {
+                fieldToSend = f;
+            }
+        }
+        for (Field f : redFields) {
+            if (f.getFieldKey().equals(key)) {
+                fieldToSend = f;
+            }
+        }
+        for (Field f : yellowFields) {
+            if (f.getFieldKey().equals(key)) {
+                fieldToSend = f;
+            }
+        }
+        for (Field f : blueFields) {
+            if (f.getFieldKey().equals(key)) {
+                fieldToSend = f;
+            }
+        }
+        return fieldToSend;
     }
     // Marble m is the first on the stack,
     public void marbleGoesToStart(Color c){

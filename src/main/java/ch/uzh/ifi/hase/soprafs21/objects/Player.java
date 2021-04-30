@@ -15,7 +15,7 @@ public class Player {
     private Hand hand;
     private final String playerName;
     private UserStatus status;
-    private List<Marble> marbleList;
+    private List<Marble> marbleList = new ArrayList<>();
     private Player teamMate;
     private boolean isReady;
     private String cardToChangeCode = null;

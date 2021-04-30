@@ -17,6 +17,8 @@ public class Field {
         this. fieldValue = fieldValue;
         this.color = color;
         this.fieldKey = fieldKey;
+        String s = String.valueOf(fieldValue);
+        this.fieldKey = fieldKey;
     }
 
     public Boolean getFinish() {
