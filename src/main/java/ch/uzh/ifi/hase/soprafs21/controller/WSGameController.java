@@ -130,6 +130,8 @@ public class WSGameController {
             //GameEndDTO gameEndDTO = new GameEndDTO();
             //gameEndDTO.setAborted("");
             //webSocketService.sentGameEndMessage(p.getName(), gameID, gameEndDTO);
+
+            // Use this to extract usernameString username = DogUtils.convertSessionIdentityToUserName(p.getName(), gameEngine.getUserService());
         }
     }
 
