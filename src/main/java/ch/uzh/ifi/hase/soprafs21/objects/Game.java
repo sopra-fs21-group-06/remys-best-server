@@ -27,7 +27,7 @@ public class Game {
     private final UUID gameId = UUID.randomUUID();
     private int roundCount = 0;
     private Round currentRound;
-    private int cardCount = 53;
+    private int cardCount = 44;
     private final GameService gameService = GameService.getInstance();
     private final WebSocketService webSocketService;
 
@@ -40,9 +40,8 @@ public class Game {
         this.startPlayer = playerList.get(0);
     }
 
-    //
+    /*
     public boolean getGameIsFinished(){return GameIsFinished;}
-
     public void setGameIsFinished(boolean gameIsFinished) {
         GameIsFinished = gameIsFinished;
         if(gameIsFinished){
@@ -58,13 +57,14 @@ public class Game {
     private String getDeckId(){
         return this.deckId;
     }
+    public int getRoundCount() {
+        return roundCount;
+    }*/
     public void setCurrentRound(Round currentRound) {
         this.currentRound = currentRound;
     }
 
-    public int getRoundCount() {
-        return roundCount;
-    }
+
     public int getNextCardAmount(){
         if (nrCards == 2){
            return 7;
@@ -230,7 +230,7 @@ public class Game {
         return gameId;
     }
 
-    public void setNrCards(int nrCards) {
+   /* public void setNrCards(int nrCards) {
         this.nrCards = nrCards;
     }
 
@@ -240,7 +240,7 @@ public class Game {
 
     public void setPlayingBoard(PlayingBoard playingBoard) {
         this.playingBoard = playingBoard;
-    }
+    }*/
 
     public void setStartPlayer(Player startPlayer) {
         this.startPlayer = startPlayer;

@@ -69,6 +69,7 @@ public class RESTUserControllerTest {
         mockMvc.perform(getRequest).andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].username", is(user.getUsername())))
+                .andExpect(jsonPath("$[0].email", is(user.getEmail())))
                 .andExpect(jsonPath("$[0].password", is(user.getPassword())))
                 .andExpect(jsonPath("$[0].status", is(user.getStatus().toString())));
     }
@@ -101,7 +102,7 @@ public class RESTUserControllerTest {
                 //.andExpect(jsonPath("$.name", is(user.getPassword())))
                 .andExpect(jsonPath("$.token", is(user.getToken())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())));
-        //.andExpect(jsonPath("$.status", is(user.getStatus().toString())));
+                //.andExpect(jsonPath("$.status", is(user.getStatus().toString())));
     }
 
     @Test

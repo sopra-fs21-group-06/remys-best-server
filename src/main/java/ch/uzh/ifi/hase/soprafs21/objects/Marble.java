@@ -21,14 +21,14 @@ public class Marble {
         this.marbleNr = nr;
     }
 
-    public Boolean isOnFieldandNotOnStart(){
+   /* public Boolean isOnFieldandNotOnStart(){
         if(!this.isHome && !this.isFinish && (this.currentField.getFieldStatus() != FieldStatus.BLOCKED)){
             if(this.currentField.getFinish())
             return TRUE;
         }
         return FALSE;
     }
-
+*/
     public int getMarbleNr() {
         return marbleNr;
     }

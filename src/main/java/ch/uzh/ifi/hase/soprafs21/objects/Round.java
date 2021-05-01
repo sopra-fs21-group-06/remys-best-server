@@ -1,9 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
-import ch.uzh.ifi.hase.soprafs21.service.PlayingBoardService;
 import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
@@ -14,7 +11,6 @@ public class Round {
     private final CardAPIService cardAPIService;
     private Game game;
     private int nrCards;
-    private PlayingBoardService playingBoardService;
     private Player currentPlayer;
     private List<Player> players;
     //private DeckService deckService;
@@ -34,10 +30,28 @@ public class Round {
         this.userService = userService;
         initializeRound();
     }
+    /*
+          public void setCurrentPlayer(Player currentPlayer){
+            this.currentPlayer = currentPlayer;
+        }
 
+        public void setGame(Game game){
+            this.game = game;
+        }
     public void setDeckId (String deckId){
         this.deckId = deckId;
     }
+
+
+        public void setNrCards ( int nrCards){
+            this.nrCards = nrCards;
+        }
+
+
+
+        public int getNrCards () {
+            return nrCards;
+        }*/
 
 
 
@@ -77,16 +91,44 @@ public class Round {
             }
         }
     }
+    public String getNameNextPlayer () {
+        String name = "";
+        if(currentPlayer.getColor().equals(Color.BLUE)){
+            for (Player p: players){
+                if(p.getColor().equals(Color.GREEN)){
+                    name = p.getPlayerName();
+                }
+            }
+        } else if(currentPlayer.getColor().equals(Color.GREEN)){
+            for (Player p: players){
+                if(p.getColor().equals(Color.RED)){
+                    name = p.getPlayerName();
+                }
+            }
+        } else if(currentPlayer.getColor().equals(Color.RED)){
+            for (Player p: players){
+                if(p.getColor().equals(Color.YELLOW)){
+                    name = p.getPlayerName();
+                }
+            }
+        } else if(currentPlayer.getColor().equals(Color.YELLOW)){
+            for (Player p: players){
+                if(p.getColor().equals(Color.BLUE)){
+                    name = p.getPlayerName();
+                }
+            }
+        }
+        return name;
 
     public void changeCurrentPlayer () {
-       /* if(players.size() == 2){
+       if(players.size() == 2){
             for(Player p: players){
                 if(!currentPlayer.equals(p)){
                     currentPlayer = p;
                     break;
                 }
             }
-        }*/
+        }
         for (Player p: players){
             if(p.getPlayerName().equals(getNameNextPlayer())){
                 currentPlayer = p;
@@ -126,16 +168,6 @@ public class Round {
     }
 
 
-        public void setNrCards ( int nrCards){
-            this.nrCards = nrCards;
-        }
-
-
-
-        public int getNrCards () {
-            return nrCards;
-        }
-
         public Game getGame () {
             return game;
         }
@@ -144,13 +176,7 @@ public class Round {
             return currentPlayer;
         }
 
-        public void setCurrentPlayer(Player currentPlayer){
-            this.currentPlayer = currentPlayer;
-        }
 
-        public void setGame(Game game){
-            this.game = game;
-        }
 
         public void sendOutCardToHandDTO(Player p) {
             webSocketService.sendCardsToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), p.getHand().getHandDeck(), game.getGameId());

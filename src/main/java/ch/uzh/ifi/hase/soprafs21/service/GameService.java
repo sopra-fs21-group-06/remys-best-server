@@ -50,8 +50,14 @@ public class GameService {
         game.setCurrentRound(currentRound);
     }
 
-    public List<Player> getPlayers(Game game){
+    /*public List<Player> getPlayers(Game game){
         return game.getPlayerList();
+    }*/
+
+    public void updateRoundStats(Game game){
+        game.changeCurrentPlayer();
+        game.addToRoundCount();
+        game.changeNrCards();
     }
 
     public void updateRoundStats(Game game){
@@ -60,13 +66,6 @@ public class GameService {
         game.changeNrCards();
     }
 
-
-    public Boolean triggerNewRound(Game game){
-        // send Roundnr, Active Player, next Card Amount and next Beginner
-        //send CurrentPlayer if he can play
-
-        return canPlay(game.getStartPlayer(), game);
-    }
     public Boolean canPlay(Player p, Game game){
         List<Card> hand = p.getHand().getHandDeck();
         int count = 0;
@@ -115,16 +114,16 @@ public class GameService {
         }
         Field endField = game.getPlayingBoard().getFieldWithFieldKey(fieldKey);
         if(moveToDo.contains("Start")){
-            eat(endField, game);
+            //eat(endField, game);
             game.getPlayingBoard().marbleGoesToStart(marble.getColor());
             log.info("marble start successful");
             result = Pair.of(marble.getMarbleNr(), fieldKey);
-        } else if (moveToDo.contains("Exchange")){
+        } /*else if (moveToDo.contains("Exchange")){
             game.getPlayingBoard().marbleMoveJack(endField, marble);
             log.info("marble exchange successful");
             result = Pair.of(marble.getMarbleNr(), fieldKey);
         // Case forward and into finishSector
-        } else if (endField instanceof FinishField){
+        } */else if (endField instanceof FinishField){
             int distance = nrStepsToNextFreeFinishSpot(endField, game);
             // if marble filled up
             if(distance == 0){
@@ -137,7 +136,7 @@ public class GameService {
             result = Pair.of(marble.getMarbleNr(), fieldKey);
             // normal back forward
         } else {
-            eat(endField, game);
+           // eat(endField, game);
             game.getPlayingBoard().makeMove(endField, marble);
             log.info("marble move forward/backward successful");
             result = Pair.of(marble.getMarbleNr(), fieldKey);
@@ -186,14 +185,15 @@ public class GameService {
         } else if (handCount == 0){
             log.info("makeMove worked, no Player has cards in his hands, new round");
             updateRoundStats(game);
-            initiateRound(game);
+            //initiateRound(game);
         } else if(count == 0){
             log.info("makeMove worked, no Player can play but still cards in the game, new round");
             updateRoundStats(game);
-            initiateRound(game);
+            //initiateRound(game);
         }
         currentPlayer.setCurrentMove("");
         currentPlayer.setCurrentCardCode("");
+        //currentPlayer.getHand().deleteCardFromHand(c);
         return result;
     }
 
@@ -266,9 +266,9 @@ public class GameService {
                     }
                 }
             }
-        } else if(c.getCardValue().equals("7")){
+        }/*else if(c.getCardValue().equals("7")){
              checkSeven(marblesOnFieldAndNotFinished, marblesFinished, marblesOnField, game);
-        } else if (c.getCardValue().equals("2")  || c.getCardValue().equals("3") ) {
+        } */else if (c.getCardValue().equals("2")  || c.getCardValue().equals("3") ) {
             for (Marble m : marblesOnFieldAndNotFinished) {
                 if (checkMove(m, c.getCardMoveValue(), game)) {
                     possibleMarbles.add(m);
@@ -299,7 +299,7 @@ public class GameService {
         Check if totaldistance to go home is smaller 7
         (dont forget: Anzahl marbles im feld noch nicht im finishfeld, je nachdem verkleinert sich die anzahl steps home
         (z.b. 2 marbles -> -1, 3 Marbles -> -3)
-        */
+
     private List<Marble> checkSeven(List<Marble> marblesOnFieldAndNotFinished, List<Marble> marblesFinished,List<Marble> marblesOnField, Game game ) {
 
         List<Marble> movableMarbles = new ArrayList<>();
@@ -345,6 +345,8 @@ public class GameService {
             } return movableMarbles;
 
     }
+     */
+
     public int nrStepsToNextBlock(Field startingFieldMove, int moveValue, Game game){
         if(startingFieldMove instanceof FinishField){
             return nrStepsToNextFreeFinishSpot(startingFieldMove, game);
@@ -433,7 +435,7 @@ public class GameService {
                possibleTargetFieldKeys.add(targetField.getFieldKey());
            }
        // case2: jack: get all marbles from player and teammate onfield, not infinish and not blocking.
-        } else if (moveName.contains("Exchange")){
+        } /*else if (moveName.contains("Exchange")){
             List<Marble> toChangeWith = getMarblesToChangeWithJack(currentPlayer.getMarblesOnFieldAndNotFinished(), currentPlayer);
             for(Marble m: toChangeWith){
                 if(!(m.equals(marble))){
@@ -442,7 +444,7 @@ public class GameService {
             }
         //case3 Forward x: if x is smaller than the distance to next startfield, value of endfield: currentfieldval + moveToint
 
-        } else if (moveName.contains("Forward")){
+        } */else if (moveName.contains("Forward")){
             int moveToInt = game.getPlayingBoard().changeForwardMoveToValue(moveName);
             int distanceNextStartField = 16 - marble.getCurrentField().getFieldValue();
             int valueFieldNew = 0;
@@ -455,7 +457,7 @@ public class GameService {
             }
             // check if possibleEndfield is on next Part of Game -> CHange color and Value
             // Case 2 fields into home and not
-            if (marble.getCurrentField().getFieldValue() + moveToInt < 21 && marble.getCurrentField().getFieldValue() + moveToInt > 17 && marble.getCurrentField().getColor().equals(marble.getColor()) && !marble.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)){
+            if (marble.getCurrentField().getFieldValue() + moveToInt < 21 && marble.getCurrentField().getFieldValue() + moveToInt > 16 && marble.getCurrentField().getColor().equals(marble.getColor()) && !marble.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)){
                 int valueFieldNew1 = moveToInt - distanceNextStartField;
                 int valueFieldNew2 = marble.getCurrentField().getFieldValue() + moveToInt;
                 Color cFieldNew1 = game.getPlayingBoard().getNextColor(colorFieldCurrentField);
@@ -513,7 +515,7 @@ public class GameService {
     // First get all Marbles onField. Then add all Marbles who are  allowed to be changed to possible Marbles(Not on home and blocking), otherwise delete
     // then Look at size of possible Marbles (2) and marblesPlayer(1) needs at least one marbles. BOth together at least two.
     //returns list of marbles of both players
-    public List<Marble> getMarblesToChangeWithJack (List < Marble > marblesOnField, Player p){
+   /* public List<Marble> getMarblesToChangeWithJack (List < Marble > marblesOnField, Player p){
         List<Marble> marblesMate = p.getTeamMate().getMarblesOnField();
         List<Marble> marblesPlayer = marblesOnField;
         List<Marble> possibleMarbles = null;
@@ -543,8 +545,7 @@ public class GameService {
             log.info("No marble possible with this card(JACK");
             return null;
         }
-    }
-
+    }*/
         // first get the currentfield and set as start Filed of current move.
         // iterate over possible cardmovevalues and see if marble can make one of the moves return TRUE;
         // if the card value is 4, set startmove Field back 4.
@@ -593,12 +594,12 @@ public class GameService {
 
 
 
-        public void eat(Field endField, Game game){
+      /*  public void eat(Field endField, Game game){
             if (endField.getFieldStatus().equals(FieldStatus.OCCUPIED)){
                 Marble marbleToEat = endField.getMarble();
                 game.getPlayingBoard().sendHome(marbleToEat);
             }
-        }
+        }*/
 
     public Marble getMarbleByGameIdMarbleIdPlayerName(Game game, String playerName, int marbleId){
         for(Player p: game.getPlayerList()){
