@@ -20,7 +20,14 @@ public class Player {
     private boolean isReady;
     private String cardToChangeCode = null;
     private String currentMove;
+    private String currentCardCode;
+    public void setCurrentCardCode(String currentCardCode) {
+        this.currentCardCode = currentCardCode;
+    }
 
+    public String getCurrentCardCode() {
+        return currentCardCode;
+    }
     public void setCurrentMove(String currentMove) {
         this.currentMove = currentMove;
     }
@@ -143,8 +150,4 @@ public class Player {
         }
         return MarblesInFinishFieldAndFinished;
     }
-
-
-
-
 }

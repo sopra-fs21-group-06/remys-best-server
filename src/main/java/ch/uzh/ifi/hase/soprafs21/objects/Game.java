@@ -179,6 +179,10 @@ public class Game {
         currentRound.sendOutCardDifferenceHandDTO(player2, player1Card, player2CardIdx);
     }
 
+    public void setRoundCount(int roundCount) {
+        this.roundCount = roundCount;
+    }
+
     public void setPlayerToReady(String playername) {
         for(Player p: playerList){
             if(p.getPlayerName().equals(playername)){
@@ -186,6 +190,7 @@ public class Game {
                 break;
             }
         }
+
 
         boolean areAllPlayersReady = true;
         for(Player p: playerList){
@@ -268,7 +273,7 @@ public class Game {
 
         String sessionIdentity = gameService.getUserService().getUserRepository().findByToken(gamePossibleTargetFieldRequestDTO.getToken()).getSessionIdentity();
         Marble currentMarble = gameService.getMarbleByGameIdMarbleIdPlayerName(this, DogUtils.convertTokenToUsername(gamePossibleTargetFieldRequestDTO.getToken(), getGameService().getUserService()), gamePossibleTargetFieldRequestDTO.getMarbleId());
-        List<String> targetFields = gameService.getPossibleTargetFields(currentMarble, gamePossibleTargetFieldRequestDTO.getMoveName(), this);
+        List<String> targetFields = gameService.getPossibleTargetFields(currentMarble, gamePossibleTargetFieldRequestDTO.getMoveName(), gamePossibleTargetFieldRequestDTO.getCode(),this);
         webSocketService.sendTargetFieldListMessage(sessionIdentity, targetFields, gameId);
     }
 
@@ -291,5 +296,51 @@ public class Game {
 
     public WebSocketService getWebSocketService() {
         return webSocketService;
+    }
+    public void changeCurrentPlayer () {
+        if(playerList.size() == 2){
+            for(Player p: playerList){
+                if(!startPlayer.equals(p)){
+                    startPlayer = p;
+                    break;
+                }
+            }
+        }
+        for (Player p: playerList){
+            if(p.getPlayerName().equals(getNameNextPlayer())){
+                startPlayer = p;
+                break;
+            }
+        }
+    }
+    public String getNameNextPlayer () {
+        String name = "";
+        if(startPlayer.getColor().equals(Color.BLUE)){
+            for (Player p: playerList){
+                if(p.getColor().equals(Color.GREEN)){
+                    name = p.getPlayerName();
+                }
+            }
+        } else if(startPlayer.getColor().equals(Color.GREEN)){
+            for (Player p: playerList){
+                if(p.getColor().equals(Color.RED)){
+                    name = p.getPlayerName();
+                }
+            }
+        } else if(startPlayer.getColor().equals(Color.RED)){
+            for (Player p: playerList){
+                if(p.getColor().equals(Color.YELLOW)){
+                    name = p.getPlayerName();
+                }
+            }
+        } else if(startPlayer.getColor().equals(Color.YELLOW)){
+            for (Player p: playerList){
+                if(p.getColor().equals(Color.BLUE)){
+                    name = p.getPlayerName();
+                }
+            }
+        }
+        return name;
+
     }
 }
