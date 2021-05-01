@@ -69,9 +69,6 @@ public class Field {
         this.marble = marble;
     }
 
-    public void setStart(Boolean start) {
-        isStart = start;
-    }
 
     public void setColor(Color color) {
         this.color = color;
@@ -79,6 +76,10 @@ public class Field {
 
     public Color getColor() {
         return color;
+    }
+
+    public void setStart(Boolean start) {
+        isStart = start;
     }
 }
 
