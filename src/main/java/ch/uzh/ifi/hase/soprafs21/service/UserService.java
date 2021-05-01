@@ -37,6 +37,15 @@ public class UserService {
         return userRepository;
     }
 
+    public User findByToken(String token) {
+        return this.userRepository.findByToken(token);
+    }
+
+    public User findByUsername(String username) {
+        log.info("foooo");
+        return this.userRepository.findByUsername(username);
+    }
+
     public List<User> getUsers() {
         return this.userRepository.findAll();
     }

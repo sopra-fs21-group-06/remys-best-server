@@ -1,8 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming;
 
-public class CardMoveRequestDTO {
+public class GameReadyDTO {
     private String token;
-    private String code;
 
     public String getToken() {
         return token;
@@ -10,13 +9,5 @@ public class CardMoveRequestDTO {
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 }

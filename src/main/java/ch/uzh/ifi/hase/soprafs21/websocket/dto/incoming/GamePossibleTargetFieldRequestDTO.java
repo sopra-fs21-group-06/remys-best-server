@@ -1,15 +1,10 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming;
 
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
-
-import java.util.List;
-
-public class ExecutePlayCardDTO {
+public class GamePossibleTargetFieldRequestDTO {
     private String token;
     private String code;
+    private int marbleId;
     private String moveName;
-    private List<MarbleExecuteCardDTO> marbles;
-    
 
     public String getToken() {
         return token;
@@ -35,11 +30,11 @@ public class ExecutePlayCardDTO {
         this.moveName = moveName;
     }
 
-    public List<MarbleExecuteCardDTO> getMarbles() {
-        return marbles;
+    public int getMarbleId() {
+        return marbleId;
     }
 
-    public void setMarbles(List<MarbleExecuteCardDTO> marbles) {
-        this.marbles = marbles;
+    public void setMarbleId(int marbleId) {
+        this.marbleId = marbleId;
     }
 }
