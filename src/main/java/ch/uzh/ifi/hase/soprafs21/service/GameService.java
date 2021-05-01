@@ -60,12 +60,6 @@ public class GameService {
         game.changeNrCards();
     }
 
-    public void updateRoundStats(Game game){
-        game.changeCurrentPlayer();
-        game.addToRoundCount();
-        game.changeNrCards();
-    }
-
     public Boolean canPlay(Player p, Game game){
         List<Card> hand = p.getHand().getHandDeck();
         int count = 0;
