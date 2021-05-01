@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -46,10 +47,11 @@ public class WSWaitingRoomControllerTest {
     @Value("${local.server.port}")
     private int port;
 
+    /*
     @MockBean
-    private UserService userService;
+    private UserService userService;*/
 
-    //@MockBean
+    @Autowired
     private GameEngine gameEngine;
 
     @MockBean
@@ -62,9 +64,11 @@ public class WSWaitingRoomControllerTest {
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
     }
 
-    private WaitingRoomEnterDTO generateWaitingRoomEnterDTO() {
+    // TODO reset Database after the test
+
+    private WaitingRoomEnterDTO generateWaitingRoomEnterDTO(User user) {
         WaitingRoomEnterDTO waitingRoomEnterDTO = new WaitingRoomEnterDTO();
-        waitingRoomEnterDTO.setToken("1234567");
+        waitingRoomEnterDTO.setToken(user.getToken());
         return waitingRoomEnterDTO;
     }
 
@@ -201,15 +205,13 @@ public class WSWaitingRoomControllerTest {
         user.setUsername("iamsiddhantsahu");
         user.setPassword("abcd");
         user.setEmail("hello@siddhantsahu.com");
-        user.setToken("1234567");
-//
-
-        WaitingRoomEnterDTO waitingRoomSample = generateWaitingRoomEnterDTO();
-        WaitingRoomSendOutCurrentUsersDTO waitingRoomSendOutCurrentUsersDTO = generateWaitingRoomSendOutCurrentUsersDTO();
 
         //given(gameEngine.getUserService().updateUserIdentity(Mockito.any(), Mockito.any()));
         gameEngine = GameEngine.instance();
-        given(gameEngine.getUserService().createUser(user)).willReturn(user);
+        gameEngine.getUserService().createUser(user);
+        User testUser = gameEngine.getUserService().findByUsername(user.getUsername());
+        WaitingRoomEnterDTO waitingRoomSample = generateWaitingRoomEnterDTO(testUser);
+        WaitingRoomSendOutCurrentUsersDTO waitingRoomSendOutCurrentUsersDTO = generateWaitingRoomSendOutCurrentUsersDTO();
 
         StompSession session = stompClient.connect("ws://localhost:" + port + "/ws", new StompSessionHandlerAdapter() {
         }).get(1, TimeUnit.SECONDS);
@@ -229,7 +231,7 @@ public class WSWaitingRoomControllerTest {
         System.out.println("waitingRoomSample");
         session.send("/app/waiting-room/register", waitingRoomSample);
 
-        WaitingRoomSendOutCurrentUsersDTO response = bq.poll(1, TimeUnit.SECONDS);
+        WaitingRoomSendOutCurrentUsersDTO response = bq.poll(2, TimeUnit.SECONDS);
         //assertion
         System.out.println(response);
         Assertions.assertNotNull(response);
