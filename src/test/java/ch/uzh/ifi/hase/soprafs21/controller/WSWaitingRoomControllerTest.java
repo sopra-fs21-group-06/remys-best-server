@@ -65,7 +65,8 @@ public class WSWaitingRoomControllerTest {
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
     }
 
-    // TODO reset Database after the test
+    // TODO reset Database after every test!!
+    // TODO clean up game engine state after every test!!
 
     private WaitingRoomEnterDTO generateWaitingRoomEnterDTO(User user) {
         WaitingRoomEnterDTO waitingRoomEnterDTO = new WaitingRoomEnterDTO();
@@ -88,9 +89,9 @@ public class WSWaitingRoomControllerTest {
         //given
         BlockingQueue<WaitingRoomSendOutCurrentUsersDTO> bq = new LinkedBlockingDeque<>();
         User user = new User();
-        user.setUsername("iamsiddhantsahu");
+        user.setUsername("fooo");
         user.setPassword("abcd");
-        user.setEmail("hello@siddhantsahu.com");
+        user.setEmail("foooo@siddhantsahu.com");
 
         //given(gameEngine.getUserService().updateUserIdentity(Mockito.any(), Mockito.any()));
         gameEngine = GameEngine.instance();
@@ -123,6 +124,7 @@ public class WSWaitingRoomControllerTest {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCurrentUsers().get(0).getUsername(), testUser.getUsername());
         Assertions.assertFalse(response.getCurrentUsers().isEmpty());
+        session.send("/app/waiting-room/unregister", waitingRoomSample);
     }
 
     @Test
@@ -131,9 +133,9 @@ public class WSWaitingRoomControllerTest {
         //given
         BlockingQueue<WaitingRoomSendOutCurrentUsersDTO> bq = new LinkedBlockingDeque<>();
         User user = new User();
-        user.setUsername("iamsiddhantsahu");
+        user.setUsername("hahahaha");
         user.setPassword("abcd");
-        user.setEmail("hello@siddhantsahu.com");
+        user.setEmail("hahahah@siddhantsahu.com");
 
         //given(gameEngine.getUserService().updateUserIdentity(Mockito.any(), Mockito.any()));
         gameEngine = GameEngine.instance();
