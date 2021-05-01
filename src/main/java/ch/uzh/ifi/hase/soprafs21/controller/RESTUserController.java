@@ -71,7 +71,7 @@ public class RESTUserController {
     public UserLoginGetDTO createUser(@RequestBody UserRegisterPostDTO userRegisterPostDTO, HttpServletRequest request) {
         // convert API user to internal representation
         User userInput = DTOMapper.INSTANCE.convertUserRegisterPostDTOtoEntity(userRegisterPostDTO);
-
+        //System.out.println("haha");
         // create user
         User createdUser = userService.createUser(userInput);
 

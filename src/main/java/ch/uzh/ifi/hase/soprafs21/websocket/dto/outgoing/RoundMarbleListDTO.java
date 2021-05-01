@@ -5,13 +5,13 @@ import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleDTO;
 import java.util.List;
 
 public class RoundMarbleListDTO {
-    private List<MarbleDTO> marbleList;
+    private List<MarbleDTO> marbles;
 
-    public List<MarbleDTO> getMarbleList() {
-        return marbleList;
+    public List<MarbleDTO> getMarbles() {
+        return marbles;
     }
 
-    public void setMarbleList(List<MarbleDTO> marbleList) {
-        this.marbleList = marbleList;
+    public void setMarbles(List<MarbleDTO> marbles) {
+        this.marbles = marbles;
     }
 }

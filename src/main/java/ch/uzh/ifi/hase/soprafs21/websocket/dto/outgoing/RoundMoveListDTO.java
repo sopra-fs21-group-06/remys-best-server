@@ -5,13 +5,13 @@ import ch.uzh.ifi.hase.soprafs21.websocket.dto.MoveDTO;
 import java.util.List;
 
 public class RoundMoveListDTO {
-    private List<MoveDTO> moveName;
+    private List<MoveDTO> moves;
 
-    public List<MoveDTO> getMoveName() {
-        return moveName;
+    public List<MoveDTO> getMoves() {
+        return moves;
     }
 
-    public void setMoveName(List<MoveDTO> moveName) {
-        this.moveName = moveName;
+    public void setMoves(List<MoveDTO> moves) {
+        this.moves = moves;
     }
 }

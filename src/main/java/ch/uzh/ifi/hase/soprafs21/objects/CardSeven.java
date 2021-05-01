@@ -7,13 +7,14 @@ import java.util.HashMap;
 
 import static java.lang.Boolean.TRUE;
 
+/*
 public class CardSeven extends Card{
     private HashMap<Integer, ArrayList<Integer>> cardMoveValue = new HashMap<Integer, ArrayList<Integer>>();
     private int cardMoveValueFix = 7;
     private boolean canEatWhileSkip = TRUE;
 
     public CardSeven(CardSuit suit, String value, String image, String code) {
-        super(suit, value, image, code);
+        super(suit, value, code);
     }
 
     @Override
@@ -66,4 +67,4 @@ public class CardSeven extends Card{
         cardMoveValue.put(4,combis);
         combis.clear();
     }
-}
+}*/

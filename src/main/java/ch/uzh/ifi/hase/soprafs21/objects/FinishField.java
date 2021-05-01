@@ -10,9 +10,8 @@ public class FinishField extends Field{
     private String fieldName;
 
 
-    public FinishField(int fieldValue, Color color) {
-        super(fieldValue);
-        this.color = color;
+    public FinishField(int fieldValue, Color color, String fieldKey) {
+        super(fieldValue, color, fieldKey);
     }
 
 }

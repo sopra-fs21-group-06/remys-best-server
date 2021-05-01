@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming;
 
-public class CardMoveRequestDTO {
+public class GameCardExchange {
     private String token;
     private String code;
 

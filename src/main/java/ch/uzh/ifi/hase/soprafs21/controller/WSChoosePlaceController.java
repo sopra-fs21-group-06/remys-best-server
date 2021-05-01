@@ -38,22 +38,9 @@ public class WSChoosePlaceController {
     public synchronized WaitingRoomChooseColorDTO registerPlayer(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, GameChooseColorDTO gameChooseColorDTO) {
         log.info("Player " + getIdentity(sha) + ": Choose place (color) received");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
-        List<Player> updatedPlayerList = currentGame.updatePlayerColor(DogUtils.convertTokenToUsername(gameChooseColorDTO.getToken(), gameEngine.getUserService()), Color.fromId(gameChooseColorDTO.getColor()));
-        log.info(updatedPlayerList.toString());
-        return DogUtils.convertPlayerListToWaitingRoomChoosecolorDTO(updatedPlayerList);
-
-
-        // map color to enum
-        // assign color and player
-        // send
-
-        /*
-        gameEngine.addUserToWaitingRoom(gameEngine.getUserService().getUserRepository().findByToken(gameChooseColorDTO.getToken()));
-        WaitingRoomSendOutCurrentUsersDTO userToSendOut = new WaitingRoomSendOutCurrentUsersDTO();
-        WaitingRoomSendOutCurrentUsersDTO userObjDTOList = gameEngine.createWaitingRoomUserList();
-        log.info(userObjDTOList.toString());*/
-
-        //this.webSocketService.sendToPlayer(getIdentity(sha), "user/queue/register", answer2);
+        List<Player> updatedPlayers = currentGame.updatePlayerColor(DogUtils.convertTokenToUsername(gameChooseColorDTO.getToken(), gameEngine.getUserService()), Color.fromId(gameChooseColorDTO.getColor()));
+        log.info(updatedPlayers.toString());
+        return DogUtils.convertPlayersToWaitingRoomChooseColorDTO(updatedPlayers);
     }
 }
 

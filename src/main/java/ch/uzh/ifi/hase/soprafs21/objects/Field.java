@@ -11,11 +11,22 @@ public class Field {
     private Boolean isFinish;
     private Boolean isStart;
     private Color color;
+    private String fieldKey;
 
-    public Field(int fieldValue){this. fieldValue = fieldValue;}
+    public Field(int fieldValue, Color color, String fieldKey){
+        this. fieldValue = fieldValue;
+        this.color = color;
+        this.fieldKey = fieldKey;
+        String s = String.valueOf(fieldValue);
+        this.fieldKey = fieldKey;
+    }
 
     public Boolean getFinish() {
         return isFinish;
+    }
+
+    public String getFieldKey() {
+        return fieldKey;
     }
 
     public Boolean getHome() {

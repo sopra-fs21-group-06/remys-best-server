@@ -3,6 +3,8 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
+
+import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
@@ -16,6 +18,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,12 +36,14 @@ public class GameEngine{
     private final WaitingRoom waitingRoom;
     private final UserService userService;
     private final WebSocketService webSocketService;
+    private final GameService gameService;
     Logger log = LoggerFactory.getLogger(GameEngine.class);
 
 
     @Autowired
-    public GameEngine(WaitingRoom waitingRoom, UserService userService, WebSocketService webSocketService){
+    public GameEngine(WaitingRoom waitingRoom, UserService userService, WebSocketService webSocketService, GameService gameService){
         this.webSocketService = webSocketService;
+        this.gameService = gameService;
         this.gameSessionList= new ArrayList<GameSession>();
         this.runningGamesList= new ArrayList<Game>();
         this.gameSessionRequestList=new GameSessionRequestList();
@@ -56,6 +61,10 @@ public class GameEngine{
             //gameEngine = new GameEngine();*/
         //according to what I read online @Scope ("singleton") is the way to implement singleton in spring
         return gameEngine;
+    }
+
+    public GameService getGameService() {
+        return gameService;
     }
 
     public List<Game> getRunningGamesList() {
@@ -83,13 +92,9 @@ public class GameEngine{
     public void addUserToWaitingRoom(User user){
         if(waitingRoom.addUser(user)==2){
             Game createdGame = createGameFromWaitingRoom();
-
-            //Now thats a juicy one-liner isnt it..Edi? ;) <3
-            WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = DogUtils.convertPlayerListToWaitingRoomChoosecolorDTO(createdGame.getGameID(), createdGame.getPlayerList());
-
             for(User userInWaitingRoom : waitingRoom.getUserQueue()) {
                 String userIdentity = userInWaitingRoom.getSessionIdentity();
-                this.webSocketService.sendToPlayer(userIdentity, "queue/waiting-room", waitingRoomChooseColorDTO);
+                webSocketService.sendGameAssignmentMessage(userIdentity, createdGame.getPlayerList(), createdGame.getGameId());
             }
         }
     }
@@ -179,7 +184,7 @@ public class GameEngine{
     public Game getRunningGameByID(UUID id){
         try {
             for (Game game : runningGamesList) {
-                if (game.getGameID().equals(id)) {
+                if (game.getGameId().equals(id)) {
                     return game;
                 }
             }
@@ -241,6 +246,22 @@ public class GameEngine{
             runningGamesList.remove(game);
         }
     };
+
+    public UUID findGameIdByPlayerName(String playerName){
+        try {
+            for (Game game : runningGamesList) {
+                for (Player player : game.getPlayerList()) {
+                    log.info(player.getPlayerName());
+                    if (playerName.equals(player.getPlayerName())) {
+                        return game.getGameId();
+                    }
+                }
+            }
+            return null;
+        }catch(NullPointerException e){
+            return null;
+        }
+    }
 
     /** check needs to happen if user available before calling method **/
     public void newGameSession(User host) {

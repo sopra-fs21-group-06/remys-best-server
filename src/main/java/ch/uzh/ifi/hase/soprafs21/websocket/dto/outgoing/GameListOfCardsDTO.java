@@ -5,13 +5,13 @@ import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
 import java.util.List;
 
 public class GameListOfCardsDTO {
-    private List<GameCardDTO> cardHand;
+    private List<GameCardDTO> cards;
 
-    public List<GameCardDTO> getCardHand() {
-        return cardHand;
+    public List<GameCardDTO> getCards() {
+        return cards;
     }
 
-    public void setCardHand(List<GameCardDTO> cardHand) {
-        this.cardHand = cardHand;
+    public void setCards(List<GameCardDTO> cards) {
+        this.cards = cards;
     }
 }
