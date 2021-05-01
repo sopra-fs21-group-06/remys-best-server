@@ -94,6 +94,7 @@ public class GameService {
             if(card.getCode().equals(cardCodeCurrent)){
                 c = card;
             }
+
         }
 
         // marble can nicht bewegt werden resp falsche

@@ -312,6 +312,7 @@ public class PlayingBoard {
         return (StartField) this.getField(16,color);
     }
     //Takes in Color and return true if this HomeField is not blocked
+
   /*  public Boolean getStartFieldIsNotBlocked(Color color){
         if(!( getRightColorStartField(color).getFieldStatus().equals(FieldStatus.BLOCKED) )){
             return TRUE;

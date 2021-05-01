@@ -130,9 +130,9 @@ public class WSGameController {
             GameEndDTO dto = new GameEndDTO();
             String username = convertSessionIdentityToUserName(p,gameEngine.getUserService());
             dto.setAborted(username);
-            gameEngine.deleteGameByGameID(gameEngine.findGameIdByPlayerName(username));
-            log.info(String.valueOf(gameEngine.getRunningGamesList().size()));
+            log.info(username);
             webSocketService.sentGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);
+            gameEngine.deleteGameByGameID(gameEngine.findGameIdByPlayerName(username));
             log.info(username);
         }
     }
