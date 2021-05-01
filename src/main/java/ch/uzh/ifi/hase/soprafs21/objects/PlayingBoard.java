@@ -126,7 +126,7 @@ public class PlayingBoard {
         return yellowMarbles;
     }
 
-
+    /*
     // Check Function if certain finishFiel is free.
     public Boolean checkFinishFieldOccupied(int i, Color color){
         if ((getField(i,color).getFieldStatus().equals(FieldStatus.FREE))){
@@ -134,7 +134,7 @@ public class PlayingBoard {
         } else {
             return TRUE;
         }
-    }
+    }*/
     public Boolean hasMarbleOnHomeStack(Color color){
         if(color == Color.GREEN){
             return (!(greenHome.isEmpty()));
@@ -185,7 +185,7 @@ public class PlayingBoard {
         return listPlayingFields;
     }
 
-    public void setBlueHome(Stack blueHome) {
+   /* public void setBlueHome(Stack blueHome) {
         this.blueHome = blueHome;
     }
 
@@ -203,7 +203,7 @@ public class PlayingBoard {
 
     public void setListPlayingFields(LinkedList<Field> listPlayingFields) {
         this.listPlayingFields = listPlayingFields;
-    }
+    }*/
 
 
 
@@ -282,6 +282,7 @@ public class PlayingBoard {
         m.setCurrentField(field);
         m.setHome(FALSE);
     }
+    /*
     public void marbleMoveJack(Field fieldToChange, Marble m){
         Field playerField = m.getCurrentField();
         Field mate = fieldToChange;
@@ -291,7 +292,7 @@ public class PlayingBoard {
         playerField.setMarble(m);
         mate.setMarble(marbleMate);
 
-    }
+    }*/
     public void makeMove(Field fieldToChange, Marble m){
         m.getCurrentField().setFieldStatus(FieldStatus.FREE);
         m.getCurrentField().setMarble(null);
@@ -311,13 +312,13 @@ public class PlayingBoard {
         return (StartField) this.getField(16,color);
     }
     //Takes in Color and return true if this HomeField is not blocked
-    public Boolean getStartFieldIsNotBlocked(Color color){
+  /*  public Boolean getStartFieldIsNotBlocked(Color color){
         if(!( getRightColorStartField(color).getFieldStatus().equals(FieldStatus.BLOCKED) )){
             return TRUE;
         } else {
             return FALSE;
         }
-    }
+    }*/
     public Boolean getNextStartFieldIsBlocked(Color color){
         if ( getRightColorStartField(color).getFieldStatus().equals(FieldStatus.BLOCKED) ){
             return TRUE;

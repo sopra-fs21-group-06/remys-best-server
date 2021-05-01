@@ -36,10 +36,6 @@ public class Card {
         return cardMoveValue;
     }
 
-
-    public CardSuit getCardSuit() {
-        return cardSuit;
-    }
     // 15 for changing marbles, 14 for getting out homefields
     // make methods setAce(),setKing() etc.
     public void changeCardValueToCardMoveValue(String value){
