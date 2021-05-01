@@ -92,7 +92,7 @@ public class Round {
         }
     }
 
-    public void changeCurrentPlayer () {
+    public void changeCurrentPlayer() {
        if(players.size() == 2){
             for(Player p: players){
                 if(!currentPlayer.equals(p)){
@@ -108,7 +108,7 @@ public class Round {
             }
         }
     }
-    public String getNameNextPlayer () {
+    public String getNameNextPlayer() {
         String name = "";
         if(currentPlayer.getColor().equals(Color.BLUE)){
             for (Player p: players){
@@ -136,32 +136,28 @@ public class Round {
             }
         }
         return name;
-
     }
 
-
-        public Game getGame () {
-            return game;
-        }
-
-        public Player getCurrentPlayer () {
-            return currentPlayer;
-        }
-
-
-
-        public void sendOutCardToHandDTO(Player p) {
-            webSocketService.sendCardsToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), p.getHand().getHandDeck(), game.getGameId());
-        }
-
-        public void sendOutCardDifferenceHandDTO(Player p, Card c, int idx){
-            List<Card> cardList = new ArrayList<>();
-            cardList.add(c);
-            webSocketService.sendCardsToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), cardList, game.getGameId());
-        }
-
-        public void sendOutCurrentTurnDTO(){
-            webSocketService.sendCurrentTurnMessage(currentPlayer.getPlayerName(), game.getGameId());
-        }
+    public Game getGame () {
+        return game;
     }
+
+    public Player getCurrentPlayer () {
+        return currentPlayer;
+    }
+
+    public void sendOutCardToHandDTO(Player p) {
+        webSocketService.sendCardsToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), p.getHand().getHandDeck(), game.getGameId());
+    }
+
+    public void sendOutCardDifferenceHandDTO(Player p, Card c, int idx){
+        List<Card> cardList = new ArrayList<>();
+        cardList.add(c);
+        webSocketService.sendCardsToPlayer(userService.getUserRepository().findByUsername(p.getPlayerName()).getSessionIdentity(), cardList, game.getGameId());
+    }
+
+    public void sendOutCurrentTurnDTO(){
+        webSocketService.sendCurrentTurnMessage(currentPlayer.getPlayerName(), game.getGameId());
+    }
+}
 
