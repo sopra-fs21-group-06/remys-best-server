@@ -180,15 +180,15 @@ public class GameService {
         } else if (handCount == 0){
             log.info("makeMove worked, no Player has cards in his hands, new round");
             updateRoundStats(game);
-            initiateRound(game);
+            //initiateRound(game);
         } else if(count == 0){
             log.info("makeMove worked, no Player can play but still cards in the game, new round");
             updateRoundStats(game);
-            initiateRound(game);
+            //initiateRound(game);
         }
         currentPlayer.setCurrentMove("");
         currentPlayer.setCurrentCardCode("");
-        currentPlayer.getHand().deleteCardFromHand(c);
+        //currentPlayer.getHand().deleteCardFromHand(c);
         return result;
     }
 
@@ -294,7 +294,7 @@ public class GameService {
         Check if totaldistance to go home is smaller 7
         (dont forget: Anzahl marbles im feld noch nicht im finishfeld, je nachdem verkleinert sich die anzahl steps home
         (z.b. 2 marbles -> -1, 3 Marbles -> -3)
-        */
+
     private List<Marble> checkSeven(List<Marble> marblesOnFieldAndNotFinished, List<Marble> marblesFinished,List<Marble> marblesOnField, Game game ) {
 
         List<Marble> movableMarbles = new ArrayList<>();
@@ -340,6 +340,8 @@ public class GameService {
             } return movableMarbles;
 
     }
+     */
+
     public int nrStepsToNextBlock(Field startingFieldMove, int moveValue, Game game){
         if(startingFieldMove instanceof FinishField){
             return nrStepsToNextFreeFinishSpot(startingFieldMove, game);
@@ -450,7 +452,7 @@ public class GameService {
             }
             // check if possibleEndfield is on next Part of Game -> CHange color and Value
             // Case 2 fields into home and not
-            if (marble.getCurrentField().getFieldValue() + moveToInt < 21 && marble.getCurrentField().getFieldValue() + moveToInt > 17 && marble.getCurrentField().getColor().equals(marble.getColor()) && !marble.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)){
+            if (marble.getCurrentField().getFieldValue() + moveToInt < 21 && marble.getCurrentField().getFieldValue() + moveToInt > 16 && marble.getCurrentField().getColor().equals(marble.getColor()) && !marble.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)){
                 int valueFieldNew1 = moveToInt - distanceNextStartField;
                 int valueFieldNew2 = marble.getCurrentField().getFieldValue() + moveToInt;
                 Color cFieldNew1 = game.getPlayingBoard().getNextColor(colorFieldCurrentField);
