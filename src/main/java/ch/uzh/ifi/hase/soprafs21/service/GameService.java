@@ -46,6 +46,7 @@ public class GameService {
     // New Round initiated, then Send Card to Player and GameStats
     public void initiateRound(Game game){
         Round currentRound = new Round(game.getPlayerList(),game.getStartPlayer(),game.getNrCards(),game, cardAPIService,webSocketService, userService);
+        game.setRoundCount(1);
         game.setCurrentRound(currentRound);
     }
 
@@ -54,10 +55,7 @@ public class GameService {
     }
 
     public void updateRoundStats(Game game){
-        int indexCurrent;
-        indexCurrent = game.getPlayerList().indexOf(game.getStartPlayer());
-        int indexNext = (indexCurrent + 1) % 4;
-        game.setStartPlayer(game.getPlayerList().get(indexNext));
+        game.changeCurrentPlayer();
         game.addToRoundCount();
         game.changeNrCards();
     }
@@ -71,43 +69,38 @@ public class GameService {
     }
     public Boolean canPlay(Player p, Game game){
         List<Card> hand = p.getHand().getHandDeck();
+        int count = 0;
         for (Card c: hand){
             List<String> moves = c.getMovesToDisplay();
             for(String m: moves){
-                if(!(getPlayableMarble(c,m,game).isEmpty())){
-                    log.info("Current Player can Play");
-                    return TRUE;
+                if (!(getPlayableMarble(c,m,game).isEmpty())){
+                    count++;
                 }
             }
         }
-        log.info("Current Player can't Play");
-        return FALSE;
+        if(count == 0){
+            log.info("Current Player can't Play");
+            return FALSE;
+        }
+        log.info("Player can play");
+        return TRUE;
+
     }
 
-    //Method for RoundStats
-    public void sendRoundStats(Game game){
-        int roundNr = game.getRoundCount();
-        String name = game.getCurrentRound().getCurrentPlayer().getPlayerName();
-        int cardAmountNext = game.getNextCardAmount();
-        int indexCurrent = game.getPlayerList().indexOf(game.getCurrentRound().getCurrentPlayer());
-        int indexNext = (indexCurrent + 1) % 4;
-        String nameNext = game.getPlayerList().get(indexNext).getPlayerName();
-        log.info("Roundnr" + roundNr + name + "cardamountnext" + cardAmountNext + nameNext);
-    }
+
     public Pair<Integer, String> makeMove(String fieldKey, Marble marble, Game game) {
         Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
         Card c = null;
         String moveToDo = currentPlayer.getCurrentMove();
-
+        String cardCodeCurrent = currentPlayer.getCurrentCardCode();
         List<Card> hand = currentPlayer.getHand().getHandDeck();
         Pair <Integer, String> result = Pair.of(0,"");
+
         for(Card card: hand){
-            for(String movePossible : card.getMovesToDisplay()){
-                if(movePossible.equals(moveToDo)){
-                    c = card;
-                    break;
-                }
+            if(card.getCode().equals(cardCodeCurrent)){
+                c = card;
             }
+
         }
 
         // marble can nicht bewegt werden resp falsche
@@ -116,7 +109,7 @@ public class GameService {
 
         }
         // falscher endfield key
-        if (!(getPossibleTargetFields(marble, moveToDo, game).contains(fieldKey))){
+        if (!(getPossibleTargetFields(marble, moveToDo,currentPlayer.getCurrentCardCode(), game).contains(fieldKey))){
             log.info("Wrong endFieldKey (makeMOve)");
 
         }
@@ -199,11 +192,9 @@ public class GameService {
             updateRoundStats(game);
             initiateRound(game);
         }
-
         currentPlayer.setCurrentMove("");
-
+        currentPlayer.setCurrentCardCode("");
         return result;
-
     }
 
     //returns possible moves after player clicks on cards
@@ -217,12 +208,12 @@ public class GameService {
 
     // return playabe Marble for Player
     public List<Marble> getPlayableMarble(Card c, String move, Game game){
+        List<Marble> possibleMarbles = new ArrayList<>();
         Player p = game.getCurrentRound().getCurrentPlayer();
         List<Marble> marblesOnField = p.getMarblesOnField();
         List<Marble> marblesOnFieldAndNotFinished = p.getMarblesOnFieldAndNotFinished();
         List<Marble> marblesFinished = p.getMarblesInFinishFieldAndFinished();
         List<Marble> marblesOnFieldNotHomeNotOnStart = p.getmarblesOnFieldNotHomeNotOnStart();
-        List<Marble> possibleMarbles = new ArrayList<>();
         String cardValue = c.getCardValue();
         //CHeck if player actually has corresponding card to move
         List<Card> hand = game.getCurrentRound().getCurrentPlayer().getHand().getHandDeck();
@@ -369,7 +360,7 @@ public class GameService {
         LinkedList<Field> playingFields = game.getPlayingBoard().getListPlayingFields();
         Color currentColor = startingFieldMove.getColor();
         Color nextColor = game.getPlayingBoard().getNextColor(currentColor);
-        if(game.getPlayingBoard().getNextStartFieldIsBlocked(currentColor)){
+        if(game.getPlayingBoard().getNextStartFieldIsBlocked(currentColor) && !startingFieldMove.getFieldStatus().equals(FieldStatus.BLOCKED)){
             return 16 - startingFieldMove.getFieldValue();
         } else {
             return 100;
@@ -395,24 +386,26 @@ public class GameService {
     // case 3: Forward
     // case 4: Backwards
     // TO DO case 5: seven
-    public List<String> getPossibleTargetFields(Marble marble, String moveName, Game game){
+    public List<String> getPossibleTargetFields(Marble marble, String moveName, String cardCode, Game game){
         List<String> possibleTargetFieldKeys = new ArrayList<>();
         Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
         currentPlayer.setCurrentMove(moveName);
+        currentPlayer.setCurrentCardCode(cardCode);
         //If this marble is a marble of the player
         if(!(currentPlayer.getMarbleList().contains(marble))){
             log.info("Not your marble to play(getPossibleTargetFields)");
         }
         //find a card with corresponding move name and check if player has it
-        Card c = null;
+
         List<Card> hand = currentPlayer.getHand().getHandDeck();
+        Card c = null;
+
         for(Card card: hand){
-            for(String movePossible : card.getMovesToDisplay()){
-                if(movePossible.equals(moveName)){
-                    c = card;
-                    break;
-                }
+            if(card.getCode().equals(cardCode)){
+                c = card;
+                break;
             }
+
         }
         if(c.equals(null)){
             log.info("Player doesnt have Card to make this move ((getPossibleTargetFields)");
@@ -456,31 +449,44 @@ public class GameService {
             Color colorFieldCurrentField = marble.getCurrentField().getColor();
             Color colorNextField = null;
             // check if nextStartField is Blocked and distance to block is smaller than move
-            if(game.getPlayingBoard().getNextStartFieldIsBlocked(colorFieldCurrentField) && moveToInt > distanceNextStartField){
+            if(game.getPlayingBoard().getNextStartFieldIsBlocked(colorFieldCurrentField) && moveToInt > distanceNextStartField && !marble.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)){
                 log.info("Forward not possible with this move because move is bigger than distance to ext blocking startfield(getPossibleTargetFields)");
                 return null;
             }
             // check if possibleEndfield is on next Part of Game -> CHange color and Value
-            if (marble.getCurrentField().getFieldValue() + moveToInt > 16){
+            // Case 2 fields into home and not
+            if (marble.getCurrentField().getFieldValue() + moveToInt < 21 && marble.getCurrentField().getFieldValue() + moveToInt > 17 && marble.getCurrentField().getColor().equals(marble.getColor()) && !marble.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)){
+                int valueFieldNew1 = moveToInt - distanceNextStartField;
+                int valueFieldNew2 = marble.getCurrentField().getFieldValue() + moveToInt;
+                Color cFieldNew1 = game.getPlayingBoard().getNextColor(colorFieldCurrentField);
+                Color cFieldNew2 = marble.getColor();
+                Field targetField1 = game.getPlayingBoard().getField(valueFieldNew1, cFieldNew1);
+                possibleTargetFieldKeys.add(targetField1.getFieldKey());
+                Field targetField2 = game.getPlayingBoard().getField(valueFieldNew2, cFieldNew2);
+                possibleTargetFieldKeys.add(targetField2.getFieldKey());
+            } else if ( marble.getCurrentField().getFieldValue() + moveToInt > 16){
+                colorNextField= game.getPlayingBoard().getNextColor(colorFieldCurrentField);
                 valueFieldNew = moveToInt - distanceNextStartField;
-                colorNextField = game.getPlayingBoard().getNextColor(colorFieldCurrentField);
+                Field targetField = game.getPlayingBoard().getField(valueFieldNew, colorNextField);
+                possibleTargetFieldKeys.add(targetField.getFieldKey());
             } else {
                 valueFieldNew = marble.getCurrentField().getFieldValue() + moveToInt;
                 colorNextField = colorFieldCurrentField;
+                Field targetField = game.getPlayingBoard().getField(valueFieldNew, colorNextField);
+                possibleTargetFieldKeys.add(targetField.getFieldKey());
             }
             // add the field that is after oder befor next startblock anyways
-            Field targetField = game.getPlayingBoard().getField(valueFieldNew, colorNextField);
-            possibleTargetFieldKeys.add(targetField.getFieldKey());
+
             // Check if finishfield is reachable with this move(wenn eigene farbe und distance ist kleiner als moveInt), also get coresponding field in finish
             // Field startField, int moveValue, Game game)
-            Field startField = game.getPlayingBoard().getRightColorStartField(marble.getColor());
+            /*Field startField = game.getPlayingBoard().getRightColorStartField(marble.getColor());
             int distanceHomeFieldToFirstFreeFinishSpot = nrStepsToNextFreeFinishSpot(startField, game);
             int distanceCurrentFieldToFirstFreeSpot = distanceNextStartField + distanceHomeFieldToFirstFreeFinishSpot;
             // M is in right part board,  and moveInt is between distance to StartField and first finishField that is free
             if (colorFieldCurrentField.equals(marble.getColor()) && (distanceNextStartField< moveToInt && moveToInt < distanceCurrentFieldToFirstFreeSpot )){
                 Field possTargetField = game.getPlayingBoard().getField(moveToInt, marble.getColor());
                 possibleTargetFieldKeys.add(possTargetField.getFieldKey());
-            }
+            }*/
         } else if (moveName.contains("Back")){
             int fieldNr = marble.getCurrentField().getFieldValue() - 4;
             Color colorEndField = marble.getCurrentField().getColor();

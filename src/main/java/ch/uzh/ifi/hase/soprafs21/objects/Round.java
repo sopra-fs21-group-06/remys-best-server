@@ -79,14 +79,14 @@ public class Round {
     }
 
     public void changeCurrentPlayer () {
-        if(players.size() == 2){
+       /* if(players.size() == 2){
             for(Player p: players){
                 if(!currentPlayer.equals(p)){
                     currentPlayer = p;
                     break;
                 }
             }
-        }
+        }*/
         for (Player p: players){
             if(p.getPlayerName().equals(getNameNextPlayer())){
                 currentPlayer = p;

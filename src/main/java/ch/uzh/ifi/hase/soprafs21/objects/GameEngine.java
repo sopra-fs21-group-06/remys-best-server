@@ -63,6 +63,10 @@ public class GameEngine{
         return gameEngine;
     }
 
+    public GameService getGameService() {
+        return gameService;
+    }
+
     public List<Game> getRunningGamesList() {
         return runningGamesList;
     }
