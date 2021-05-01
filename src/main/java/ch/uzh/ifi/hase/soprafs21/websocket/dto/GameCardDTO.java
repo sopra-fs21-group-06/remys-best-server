@@ -1,22 +1,22 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto;
 
 public class GameCardDTO {
-    private String cardCode;
-    private String url;
+    private String code;
+    private int idx;
 
-    public String getCardCode() {
-        return cardCode;
+    public int getIdx() {
+        return idx;
     }
 
-    public void setCardCode(String cardCode) {
-        this.cardCode = cardCode;
+    public void setIdx(int idx) {
+        this.idx = idx;
     }
 
-    public String getUrl() {
-        return url;
+    public String getCode() {
+        return code;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setCode(String code) {
+        this.code = code;
     }
 }

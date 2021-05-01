@@ -8,6 +8,7 @@ import java.util.UUID;
 public class WaitingRoomChooseColorDTO {
     private UUID gameId;
     private List<ChooseColorPlayerDTO> players;
+    private boolean startGame;
 
     public UUID getGameId() {
         return gameId;
@@ -23,5 +24,13 @@ public class WaitingRoomChooseColorDTO {
 
     public void setPlayers(List<ChooseColorPlayerDTO> players) {
         this.players = players;
+    }
+
+    public boolean isStartGame() {
+        return startGame;
+    }
+
+    public void setStartGame(boolean startGame) {
+        this.startGame = startGame;
     }
 }
