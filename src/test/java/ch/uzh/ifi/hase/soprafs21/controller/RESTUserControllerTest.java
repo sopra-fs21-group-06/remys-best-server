@@ -2,9 +2,8 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserLoginGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserLoginPostDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserRegisterPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserManagment.UserLoginPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserManagment.UserRegisterPostDTO;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

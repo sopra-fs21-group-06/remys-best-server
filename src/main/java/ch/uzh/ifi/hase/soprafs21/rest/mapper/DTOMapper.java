@@ -1,11 +1,15 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
+import ch.uzh.ifi.hase.soprafs21.entity.FriendRequest;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.objects.Card;
 import ch.uzh.ifi.hase.soprafs21.objects.CardMove;
 import ch.uzh.ifi.hase.soprafs21.objects.Marble;
 import ch.uzh.ifi.hase.soprafs21.objects.Player;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.FriendDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.incoming.FriendRequestReceivedGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.incoming.FriendRequestSentGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserManagment.*;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -22,6 +26,8 @@ import org.mapstruct.factory.Mappers;
 public interface DTOMapper {
 
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
+
+    //Users
 
     @Mapping(source = "password", target = "password")
     @Mapping(source = "username", target = "username")
@@ -48,6 +54,9 @@ public interface DTOMapper {
     @Mapping(source = "username", target="username")
     WaitingRoomUserObjDTO convertUsertoWaitingRoomUserObjDTO(User user);
 
+
+    //Game
+
     @Mapping(source = "playerName", target="playerName")
     @Mapping(source = "color", target="color")
     ChooseColorPlayerDTO convertPlayertoChooseColorPlayerDTO(Player player);
@@ -60,4 +69,16 @@ public interface DTOMapper {
 
     @Mapping(source = "marbleNr", target = "marbleId")
     MarbleDTO convertMarbletoMarbleDTO(Marble marble);
+
+
+    //FriendRequests
+    @Mapping(source = "senderName", target = "senderName")
+    FriendRequestReceivedGetDTO convertFriendRequestToFriendRequestReceivedGetDTO(FriendRequest friendRequest);
+
+    @Mapping(source = "receiverName", target = "receiverName")
+    FriendRequestSentGetDTO convertFriendRequestToFriendRequestSentdGetDTO(FriendRequest friendRequest);
+
+    @Mapping(source = "status", target = "status")
+    @Mapping(source = "username",  target = "username")
+    FriendDTO convertUserToFriendDTO(User user);
 }
