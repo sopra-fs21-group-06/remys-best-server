@@ -1,29 +1,10 @@
-package ch.uzh.ifi.hase.soprafs21.rest.dto;
+package ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 
-public class UserGetDTO {
-
-    private Long id;
-    private String password;
+public class FriendDTO {
     private String username;
     private UserStatus status;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public String getUsername() {
         return username;

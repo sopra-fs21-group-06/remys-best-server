@@ -1,13 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.objects.Card;
 import ch.uzh.ifi.hase.soprafs21.objects.CardAPIDeckResponseObject;
 import ch.uzh.ifi.hase.soprafs21.objects.Deck;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserLoginGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserRegisterPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.cardAPIMapper;
-import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
@@ -33,6 +34,7 @@ public class WSWaitingRoomController {
     public synchronized WaitingRoomSendOutCurrentUsersDTO registerPlayer(SimpMessageHeaderAccessor sha, WaitingRoomEnterDTO waitingRoomEnterDTO) {
         log.info("Player " + getIdentity(sha) + ": Message received");
         userService.updateUserIdentity(getIdentity(sha), waitingRoomEnterDTO.getToken());
+        userService.updateStatus(waitingRoomEnterDTO.getToken(), UserStatus.BUSY);
         gameEngine.addUserToWaitingRoom(userService.findByToken(waitingRoomEnterDTO.getToken()));
         WaitingRoomSendOutCurrentUsersDTO userObjDTOList = gameEngine.createWaitingRoomUserList();
         log.info(userObjDTOList.toString());
@@ -44,6 +46,7 @@ public class WSWaitingRoomController {
     @SendTo("/topic/waiting-room")
     public synchronized WaitingRoomSendOutCurrentUsersDTO unregisterPlayer(SimpMessageHeaderAccessor sha, WaitingRoomEnterDTO waitingRoomEnterDTO) {
         log.info("Player " + getIdentity(sha) + ": Message received");
+        userService.updateStatus(waitingRoomEnterDTO.getToken(), UserStatus.FREE);
         gameEngine.removeUserFromWaitingRoom(gameEngine.getUserService().getUserRepository().findByToken(waitingRoomEnterDTO.getToken()));
         WaitingRoomSendOutCurrentUsersDTO userObjDTOList = gameEngine.createWaitingRoomUserList();
         log.info(userObjDTOList.toString());
