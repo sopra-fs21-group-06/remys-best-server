@@ -111,6 +111,12 @@ public class UserService {
         userRepository.flush();
     }
 
+    public void updateStatus(String token, UserStatus status){
+        User userToUpdate = userRepository.findByToken(token);
+        userToUpdate.setStatus(status);
+        userRepository.saveAndFlush(userToUpdate);
+    }
+
     private int checkIfLoginDataCorrect(User userToBeLoggedIn){
 
         String usernameOrEmail = userToBeLoggedIn.getUsername();

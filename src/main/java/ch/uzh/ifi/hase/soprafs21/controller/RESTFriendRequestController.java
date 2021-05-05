@@ -78,7 +78,7 @@ public class RESTFriendRequestController {
     }
 
 
-    @GetMapping("/friendrequests/myfriends")
+    @GetMapping("/myfriends")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public FriendListGetDTO getFriendsOfUser(HttpServletRequest request) {

@@ -136,8 +136,14 @@ public class FriendRequestService {
         if (friendRequestExists != null && friendRequestExists.getRequestStatus() == RequestStatus.PENDING) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, AlreadyExistErrorMessage);
         }
+        else if(friendRequestExists != null && friendRequestExists.getRequestStatus() == RequestStatus.ACCEPTED){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Looks like the guy is already your friend");
+        }
         else if(friendRequestExistsInverted != null && friendRequestExistsInverted.getRequestStatus() == RequestStatus.PENDING){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Looks like your friend was faster. Your friend already sent you a friendRequest");
+        }
+        else if(friendRequestExistsInverted != null && friendRequestExistsInverted.getRequestStatus() == RequestStatus.ACCEPTED){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You already accepted his/her friendrequest.");
         }
 
         return friendRequestExistsInverted == null;
