@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import ch.uzh.ifi.hase.soprafs21.constant.CardSuit;
 import ch.uzh.ifi.hase.soprafs21.objects.Card;
 import ch.uzh.ifi.hase.soprafs21.objects.CardAPICardJson;
 import ch.uzh.ifi.hase.soprafs21.objects.CardAPICardResponseObject;

@@ -1,14 +1,16 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
-import ch.uzh.ifi.hase.soprafs21.objects.*;
+import ch.uzh.ifi.hase.soprafs21.objects.Field;
+import ch.uzh.ifi.hase.soprafs21.objects.Game;
+import ch.uzh.ifi.hase.soprafs21.objects.Marble;
+import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TenForwards extends AbstractForwards {
-
-    private static final int NUMBER_TO_GO_FORWARDS = 10;
+public class EightForwards extends AbstractForwards{
+    private static final int NUMBER_TO_GO_FORWARDS = 8;
 
     @Override
     public String getName() {

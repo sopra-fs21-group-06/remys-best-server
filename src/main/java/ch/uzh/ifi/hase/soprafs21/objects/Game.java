@@ -249,10 +249,10 @@ public class Game {
         roundCount++;
     }
     public void changeNrCards(){
-        if (nrCards == 2){
-            nrCards = 7;
+        if (this.nrCards == 2){
+            this.nrCards = 7;
         } else {
-            nrCards--;
+            this.nrCards--;
         }
     }
 
@@ -269,11 +269,10 @@ public class Game {
     }
 
     public void sendOutTargetFieldList(GamePossibleTargetFieldRequestDTO gamePossibleTargetFieldRequestDTO){
-
-
         String sessionIdentity = gameService.getUserService().getUserRepository().findByToken(gamePossibleTargetFieldRequestDTO.getToken()).getSessionIdentity();
         Marble currentMarble = gameService.getMarbleByGameIdMarbleIdPlayerName(this, DogUtils.convertTokenToUsername(gamePossibleTargetFieldRequestDTO.getToken(), getGameService().getUserService()), gamePossibleTargetFieldRequestDTO.getMarbleId());
-        List<String> targetFields = gameService.getPossibleTargetFields(currentMarble, gamePossibleTargetFieldRequestDTO.getMoveName(), gamePossibleTargetFieldRequestDTO.getCode(),this);
+        Card cardToPlay = new Card(gamePossibleTargetFieldRequestDTO.getCode());
+        List<String> targetFields = gameService.getPossibleTargetFields(currentMarble, gamePossibleTargetFieldRequestDTO.getMoveName(), cardToPlay, this);
         webSocketService.sendTargetFieldListMessage(sessionIdentity, targetFields, gameId);
     }
 
@@ -282,11 +281,11 @@ public class Game {
         String cardCode = executePlayCardDTO.getCode();
         String moveName = executePlayCardDTO.getMoveName();
         List<MarbleExecuteCardDTO> tupleList = executePlayCardDTO.getMarbles();
-        List<Pair<Integer, String>> idTargetField = new ArrayList<>();
+        ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = new ArrayList<>();
 
         try {
             for(MarbleExecuteCardDTO m: tupleList) {
-                idTargetField.add(gameService.makeMove(playerName, cardCode, m.getTargetFieldKey(), m.getMarbleId(), moveName, this));
+                marbleIdsAndTargetFieldKeys.addAll(gameService.makeMove(playerName, cardCode, m.getTargetFieldKey(), m.getMarbleId(), moveName, this));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -294,7 +293,7 @@ public class Game {
             // e.getMessage();
         }
 
-        webSocketService.sendGameExecutedCard(playerName, cardCode, idTargetField, gameId);
+        webSocketService.sendGameExecutedCard(playerName, cardCode, marbleIdsAndTargetFieldKeys, gameId);
     }
 
     public GameService getGameService() {

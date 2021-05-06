@@ -1,10 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 
-import ch.uzh.ifi.hase.soprafs21.objects.Card;
-import ch.uzh.ifi.hase.soprafs21.objects.CardMove;
-import ch.uzh.ifi.hase.soprafs21.objects.Marble;
-import ch.uzh.ifi.hase.soprafs21.objects.Player;
+import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 
@@ -123,12 +120,12 @@ public class WebSocketService {
                     DogUtils.generateRoundMarblesListDTO(marbleList));
     }
 
-    public void sendGameExecutedCard(String playerName, String cardCode, List<Pair<Integer, String>> tupleList, UUID gameId){
+    public void sendGameExecutedCard(String playerName, String cardCode, ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys, UUID gameId){
 
         String path = "/game/%s/played";
         sendToTopic(String.format(path, gameId.toString()),
                 DogUtils.generateExecutedCardDTO(playerName, cardCode,
-                        DogUtils.generateMarbleExecutreCardDTO(tupleList)));
+                        DogUtils.generateMarbleExecutreCardDTO(marbleIdsAndTargetFieldKeys)));
     }
 
     public void sendTargetFieldListMessage(String sessionidentity, List<String> targetFields, UUID gameId){

@@ -17,8 +17,9 @@ public class Marble {
     private Boolean isFinish;
 
 
-    public Marble(int nr){
-        this.marbleNr = nr;
+    public Marble(int marbleId, Color color){
+        this.marbleNr = marbleId;
+        this.color = color;
     }
 
    /* public Boolean isOnFieldandNotOnStart(){
