@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TwoForwards extends AbstractForwards {
-
     private static final int NUMBER_TO_GO_FORWARDS = 2;
 
     @Override

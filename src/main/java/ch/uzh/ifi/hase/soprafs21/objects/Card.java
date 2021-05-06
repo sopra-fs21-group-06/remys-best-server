@@ -3,10 +3,6 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 import ch.uzh.ifi.hase.soprafs21.moves.*;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 
 public class Card {
     private final String code; // e.g. "2D"
@@ -45,7 +41,7 @@ public class Card {
         } else if ("0".equals(value)){
             moves.add(new TenForwards());
         } else if ("J".equals(value)){
-            //moves.add(new Exchange());
+            moves.add(new Exchange());
         } else if ("Q".equals(value)){
             moves.add(new TwelveForwards());
         } else if ("K".equals(value)){
@@ -70,7 +66,7 @@ public class Card {
             moves.add(new ElevenForwards());
             moves.add(new TwelveForwards());
             moves.add(new ThirteenForwards());
-            //moves.add(new Exchange());
+            moves.add(new Exchange());
             moves.add(new GoToStart());
         } else {
             throw new Exception(String.format("Could not init moves for card value %s", value));

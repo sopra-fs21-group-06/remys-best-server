@@ -231,7 +231,7 @@ public class PlayingBoard {
         return fieldToSend;
     }
     // Marble m is the first on the stack,
-    public String marbleGoesToStart(Color color) {
+    public String makeStartMove(Color color) {
         Marble marble = getFirstHomeMarble(color, true);
         StartField targetField = getRightColorStartField(color);
         targetField.setFieldStatus(FieldStatus.BLOCKED);
@@ -240,8 +240,8 @@ public class PlayingBoard {
         marble.setHome(FALSE);
         return targetField.getFieldKey();
     }
-    /*
-    public void marbleMoveJack(Field fieldToChange, Marble m){
+
+    public void makeJackMove(Field fieldToChange, Marble m){
         Field playerField = m.getCurrentField();
         Field mate = fieldToChange;
         Marble marbleMate = fieldToChange.getMarble();
@@ -250,7 +250,7 @@ public class PlayingBoard {
         playerField.setMarble(m);
         mate.setMarble(marbleMate);
 
-    }*/
+    }
     public void makeMove(Field fieldToChange, Marble m){
         m.getCurrentField().setFieldStatus(FieldStatus.FREE);
         m.getCurrentField().setMarble(null);

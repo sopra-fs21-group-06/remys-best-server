@@ -12,8 +12,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.*;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
+import static java.lang.Boolean.*;
+
+
 
 @Service
 @Transactional
@@ -39,7 +40,7 @@ public class GameService {
     }
 
     // New Round initiated, then Send Card to Player and GameStats
-    public void initiateRound(Game game){
+    public void initiateRound(Game game) {
         Round currentRound = new Round(game.getPlayerList(),game.getStartPlayer(),game.getNrCards(),game, cardAPIService,webSocketService, userService);
         game.setRoundCount(1);
         game.setCurrentRound(currentRound);
@@ -154,7 +155,7 @@ public class GameService {
 
     public ArrayList<MarbleIdAndTargetFieldKey> makeMove(String playerName, String cardCodeToPlay, String targetFieldKey, int marbleIdToMove, String moveName, Game game) throws Exception {
         Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
-        Marble marbleToMove = getMarbleByGameIdMarbleIdPlayerName(game, playerName, marbleIdToMove);
+        Marble marbleToMove = getMarbleByMarbleId(game, marbleIdToMove);
         Card cardToPlay = new Card(cardCodeToPlay);
 
         // will throw exception and exit if the move is invalid
@@ -173,17 +174,12 @@ public class GameService {
         }
 
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = moveToExecute.executeMove(marbleToMove, game.getPlayingBoard().getFieldByFieldKey(targetFieldKey),game);
-
+        game.getCurrentRound().getCurrentPlayer().layDownCard(cardToPlay);
         // TODO finished player checks
-
+        game.changeCurrentPlayer();
         return marbleIdsAndTargetFieldKeys;
     }
 
-    // first get the currentfield and set as start Filed of current move.
-    // iterate over possible cardmovevalues and see if marble can make one of the moves return TRUE;
-    // if the card value is 4, set startmove Field back 4.
-    // check how marble can make move: first find current field, then make as many steps as the card value. if one field is blocking no count++
-    // if count is eqaul value the marble can make the move
     public Boolean checkMoveBackward(Marble marble, int numberToGoForwards, Game game){
         Color c = marble.getCurrentField().getColor();
         List<Integer> valueToCheck = new ArrayList<>();
@@ -197,11 +193,11 @@ public class GameService {
             c = game.getPlayingBoard().getPreviousColor(c);
         }
         else {
-            newStartFieldVal = marble.getCurrentField().getFieldValue() - 4;
+            newStartFieldVal = marble.getCurrentField().getFieldValue() + numberToGoForwards;
         }
         Field startingFieldMove = game.getPlayingBoard().getField(newStartFieldVal,c);
         int count = game.getPlayingBoard().nrStepsToNextStartFieldBlock(startingFieldMove);
-        if (4 <= count) {
+        if (Math.abs(numberToGoForwards) <= count) {
             log.info("CheckMOve: Marble : " + marble.getColor() + "FieldVal: " + marble.getCurrentField().getFieldValue() + "ishome: " + marble.getHome());
             return TRUE;
         }
@@ -231,30 +227,33 @@ public class GameService {
         game.getCurrentRound().changeCurrentPlayer();
         log.info("Turn over, next Players turn");
     }
+
     public void endRound(Game game){
         updateRoundStats(game);
     }
 
-    public void eat(Field endField, Game game) {
+    public MarbleIdAndTargetFieldKey eat(Field endField, Game game) {
+        MarbleIdAndTargetFieldKey result = null;
         if (endField.getFieldStatus().equals(FieldStatus.OCCUPIED)) {
              Marble marbleToEat = endField.getMarble();
              game.getPlayingBoard().sendHome(marbleToEat);
+             String colorInString = marbleToEat.getColor().getId();
+             int newPositionFieldValue = 25 - game.getPlayingBoard().getFinishFields(marbleToEat.getColor()).size();
+             String newPositionFieldValueAsString = String.valueOf(newPositionFieldValue);
+             result = new MarbleIdAndTargetFieldKey(marbleToEat.getMarbleNr(), newPositionFieldValueAsString+colorInString);
         }
+        return result;
     }
 
-    public Marble getMarbleByGameIdMarbleIdPlayerName(Game game, String playerName,int marbleId){
-         for (Player p : game.getPlayerList()) {
-             if (p.getPlayerName().equals(playerName)) {
-                 for (Marble m : p.getMarbleList()) {
-                     if (m.getMarbleNr() == marbleId) {
-                         log.info(String.valueOf(m.getMarbleNr()));
-                         return m;
-                     }
-                 }
-             }
-         }
-         log.info("Not good with Marbleconversion");
-         return null;
+    public Marble getMarbleByMarbleId(Game game, int marbleId) throws Exception {
+        List<Marble> marbleList = game.getCurrentRound().getCurrentPlayer().getMarbleList();
+        for (Marble m : marbleList) {
+            if (m.getMarbleNr() == marbleId) {
+                log.info(String.valueOf(m.getMarbleNr()));
+                return m;
+            }
+        }
+        throw new Exception("MarbleId not in current player's marbles");
     }
 }
 

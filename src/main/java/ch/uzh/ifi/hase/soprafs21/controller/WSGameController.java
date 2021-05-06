@@ -1,31 +1,25 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.moves.IMove;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameEndDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
-import org.springframework.data.util.Pair;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import java.security.Principal;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.convertSessionIdentityToUserName;
 import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
@@ -36,7 +30,6 @@ public class WSGameController {
     private final GameEngine gameEngine;
     private final WebSocketService webSocketService;
     private final UserService userService;
-    private SessionDisconnectEvent sessionDisconnectEvent;
 
     public WSGameController(GameEngine gameEngine, WebSocketService webSocketService, UserService userService) {
         this.gameEngine = gameEngine;
