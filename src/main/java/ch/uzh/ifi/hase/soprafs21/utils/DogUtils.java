@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.utils;
 
 import ch.uzh.ifi.hase.soprafs21.objects.CardMove;
 import ch.uzh.ifi.hase.soprafs21.objects.Marble;
+import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
 import ch.uzh.ifi.hase.soprafs21.objects.Player;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
@@ -119,10 +120,10 @@ public class DogUtils {
        return executredCardDTO;
    }
 
-   public static List<MarbleExecuteCardDTO> generateMarbleExecutreCardDTO(List<Pair<Integer, String>> tupleList){
+   public static List<MarbleExecuteCardDTO> generateMarbleExecutreCardDTO(ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys){
         List<MarbleExecuteCardDTO> marbleExecuteCardDTOList = new ArrayList<>();
-        for(Pair<Integer, String> p : tupleList){
-            marbleExecuteCardDTOList.add(new MarbleExecuteCardDTO(p.getFirst(), p.getSecond()));
+        for(MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey : marbleIdsAndTargetFieldKeys){
+            marbleExecuteCardDTOList.add(new MarbleExecuteCardDTO(marbleIdAndTargetFieldKey.getMarbleId(), marbleIdAndTargetFieldKey.getFieldKey()));
         }
         return marbleExecuteCardDTOList;
    }
