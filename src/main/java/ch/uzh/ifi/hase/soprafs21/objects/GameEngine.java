@@ -289,5 +289,17 @@ public class GameEngine{
     }
 
     public boolean userIsHost(String username) {
+        for(GameSession gameSession: gameSessionList){
+            if(userInGameSession(userService.findByUsername(username),gameSession.getID())){
+                if(gameSession.isHost(username)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean userInGame(String username) {
+
     }
 }

@@ -64,20 +64,34 @@ public class WSGameController {
         if (p != null) {
             log.info("Player " + p + ": Connection lost");
             SimpMessageHeaderAccessor header = SimpMessageHeaderAccessor.wrap(event.getMessage());
-            GameEndDTO dto = new GameEndDTO();
             String username = convertSessionIdentityToUserName(p,gameEngine.getUserService());
+            //status change with users
+            //sessionIdentity null
+            //token null
             if(gameEngine.isUserInGameSession(username)){
                 if(gameEngine.userIsHost(username)){
-
+                    //deletes gameSession and redirects users
+                    //need an empty DTO
+                    DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+                }else{
+                    //deletes user from gameSession and notifies users
+                    //gameEngine.deleteUserFromSession(username);
+                    DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
                 }
             }else if(gameEngine.userInWaitingRoom(username)){
-
-            }else{
+                // user deleted from waitingRoom;
+                //send list of current waiting users
+                DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+            }else if(gameEngine.userInGame(username)) {
+                GameEndDTO dto = new GameEndDTO();
                 dto.setAborted(username);
                 log.info(username);
                 webSocketService.sentGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);
                 gameEngine.deleteGameByGameID(gameEngine.findGameIdByPlayerName(username));
                 log.info(username);
+                DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+            }else{
+                DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
             }
         }
     }

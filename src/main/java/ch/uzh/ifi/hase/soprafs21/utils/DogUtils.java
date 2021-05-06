@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.utils;
 
+import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.objects.CardMove;
 import ch.uzh.ifi.hase.soprafs21.objects.Marble;
 import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
@@ -133,5 +135,13 @@ public class DogUtils {
         possibleTargetFieldKeysListDTO.setTargetFieldKeys(targetFields);
 
         return possibleTargetFieldKeysListDTO;
+    }
+    public static void resetStatusTokenAndSessionIdentity(UserService userService, String username){
+        User user = userService.findByUsername(username);
+        user.setToken(null);
+        user.setStatus(UserStatus.OFFLINE);
+        user.setSessionIdentity(null);
+        userService.getUserRepository().saveAndFlush(user);
+
     }
 }
