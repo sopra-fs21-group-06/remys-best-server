@@ -24,7 +24,7 @@ public class CardAPIService {
         //final String uri = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1&jokers_enabled=true";
 
         //To generate only partial deck with working cards for M3
-        final String uri = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1&jokers_enabled=true";
+        final String uri = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1";
         RestTemplate restTemplate = new RestTemplate();
 
         return restTemplate.getForObject(uri, CardAPIDeckResponseObject.class);

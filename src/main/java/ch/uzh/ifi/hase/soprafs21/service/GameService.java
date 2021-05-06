@@ -40,7 +40,7 @@ public class GameService {
     }
 
     // New Round initiated, then Send Card to Player and GameStats
-    public void initiateRound(Game game){
+    public void initiateRound(Game game) {
         Round currentRound = new Round(game.getPlayerList(),game.getStartPlayer(),game.getNrCards(),game, cardAPIService,webSocketService, userService);
         game.setRoundCount(1);
         game.setCurrentRound(currentRound);
@@ -176,7 +176,7 @@ public class GameService {
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = moveToExecute.executeMove(marbleToMove, game.getPlayingBoard().getFieldByFieldKey(targetFieldKey),game);
         game.getCurrentRound().getCurrentPlayer().layDownCard(cardToPlay);
         // TODO finished player checks
-
+        game.changeCurrentPlayer();
         return marbleIdsAndTargetFieldKeys;
     }
 
@@ -238,9 +238,9 @@ public class GameService {
              Marble marbleToEat = endField.getMarble();
              game.getPlayingBoard().sendHome(marbleToEat);
              String colorInString = marbleToEat.getColor().getId();
-             int newPositionFieldValue = 24 - game.getPlayingBoard().getFinishFields(marbleToEat.getColor()).size();
+             int newPositionFieldValue = 25 - game.getPlayingBoard().getFinishFields(marbleToEat.getColor()).size();
              String newPositionFieldValueAsString = String.valueOf(newPositionFieldValue);
-             result = new MarbleIdAndTargetFieldKey(marbleToEat.getMarbleNr(), colorInString+newPositionFieldValueAsString);
+             result = new MarbleIdAndTargetFieldKey(marbleToEat.getMarbleNr(), newPositionFieldValueAsString+colorInString);
         }
         return result;
     }
