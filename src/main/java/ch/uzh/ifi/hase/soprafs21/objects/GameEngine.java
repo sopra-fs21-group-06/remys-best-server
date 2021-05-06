@@ -300,6 +300,6 @@ public class GameEngine{
     }
 
     public boolean userInGame(String username) {
-
+        return true;
     }
 }

@@ -58,13 +58,14 @@ public class WSGameController {
         currentGame.sendOutCurrentTurnFactsDTO();
     }
 
-    @EventListener
+   /* @EventListener
     public synchronized void handleSessionDisconnect(SessionDisconnectEvent event) {
         String p = Objects.requireNonNull(event.getUser()).getName();
         if (p != null) {
             log.info("Player " + p + ": Connection lost");
             SimpMessageHeaderAccessor header = SimpMessageHeaderAccessor.wrap(event.getMessage());
             String username = convertSessionIdentityToUserName(p,gameEngine.getUserService());
+
             //status change with users
             //sessionIdentity null
             //token null
@@ -84,6 +85,7 @@ public class WSGameController {
                 DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
             }else if(gameEngine.userInGame(username)) {
                 GameEndDTO dto = new GameEndDTO();
+
                 dto.setAborted(username);
                 log.info(username);
                 webSocketService.sentGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);
@@ -94,6 +96,6 @@ public class WSGameController {
                 DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
             }
         }
-    }
+    }*/
 }
 
