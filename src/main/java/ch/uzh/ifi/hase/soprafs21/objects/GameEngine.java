@@ -274,4 +274,20 @@ public class GameEngine{
             }
         }
     }
+
+    public boolean userInWaitingRoom(String username) {
+        return waitingRoom.userInHere(userService.findByUsername(username));
+    }
+
+    public boolean isUserInGameSession(String username) {
+        for(GameSession gameSession: gameSessionList){
+            if(userInGameSession(userService.findByUsername(username),gameSession.getID())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean userIsHost(String username) {
+    }
 }

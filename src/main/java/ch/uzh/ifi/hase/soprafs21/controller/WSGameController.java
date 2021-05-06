@@ -65,12 +65,20 @@ public class WSGameController {
             log.info("Player " + p + ": Connection lost");
             SimpMessageHeaderAccessor header = SimpMessageHeaderAccessor.wrap(event.getMessage());
             GameEndDTO dto = new GameEndDTO();
-            String username = convertSessionIdentityToUserName(p,userService);
-            dto.setAborted(username);
-            log.info(username);
-            webSocketService.sentGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);
-            gameEngine.deleteGameByGameID(gameEngine.findGameIdByPlayerName(username));
-            log.info(username);
+            String username = convertSessionIdentityToUserName(p,gameEngine.getUserService());
+            if(gameEngine.isUserInGameSession(username)){
+                if(gameEngine.userIsHost(username)){
+
+                }
+            }else if(gameEngine.userInWaitingRoom(username)){
+
+            }else{
+                dto.setAborted(username);
+                log.info(username);
+                webSocketService.sentGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);
+                gameEngine.deleteGameByGameID(gameEngine.findGameIdByPlayerName(username));
+                log.info(username);
+            }
         }
     }
 }
