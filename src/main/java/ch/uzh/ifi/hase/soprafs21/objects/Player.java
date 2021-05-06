@@ -20,7 +20,9 @@ public class Player {
     private boolean isReady;
     private String cardToChangeCode = null;
 
-
+    public void layDownCard(Card c){
+        hand.deleteCardFromHand(c);
+    }
     public String getCardToChangeCode() {
         return cardToChangeCode;
     }
