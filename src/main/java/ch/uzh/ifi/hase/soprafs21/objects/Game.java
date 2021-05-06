@@ -278,16 +278,23 @@ public class Game {
     }
 
     public void sendExecutedMove(ExecutePlayCardDTO executePlayCardDTO){
-        String playername = DogUtils.convertTokenToUsername(executePlayCardDTO.getToken(), gameService.getUserService());
-        String cardcode = executePlayCardDTO.getCode();
+        String playerName = DogUtils.convertTokenToUsername(executePlayCardDTO.getToken(), gameService.getUserService());
+        String cardCode = executePlayCardDTO.getCode();
+        String moveName = executePlayCardDTO.getMoveName();
         List<MarbleExecuteCardDTO> tupleList = executePlayCardDTO.getMarbles();
         List<Pair<Integer, String>> idTargetField = new ArrayList<>();
 
-        for(MarbleExecuteCardDTO m: tupleList){
-            idTargetField.add(gameService.makeMove(m.getTargetFieldKey(), gameService.getMarbleByGameIdMarbleIdPlayerName(this, DogUtils.convertTokenToUsername(executePlayCardDTO.getToken(), gameService.getUserService()), m.getMarbleId()), this));
+        try {
+            for(MarbleExecuteCardDTO m: tupleList) {
+                idTargetField.add(gameService.makeMove(playerName, cardCode, m.getTargetFieldKey(), m.getMarbleId(), moveName, this));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // TODO send error via websocket and abort, websocketService.sendPrivateError() to be implemented
+            // e.getMessage();
         }
 
-        webSocketService.sendGameExecutedCard(playername, cardcode, idTargetField, gameId);
+        webSocketService.sendGameExecutedCard(playerName, cardCode, idTargetField, gameId);
     }
 
     public GameService getGameService() {

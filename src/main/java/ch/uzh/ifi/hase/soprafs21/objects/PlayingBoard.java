@@ -243,7 +243,7 @@ public class PlayingBoard {
         return fieldToSend;
 
     }
-    public Field getFieldWithFieldKey(String key) {
+    public Field getFieldByFieldKey(String key) {
         Field fieldToSend = null;
         for (Field f : listPlayingFields) {
 
@@ -274,13 +274,14 @@ public class PlayingBoard {
         return fieldToSend;
     }
     // Marble m is the first on the stack,
-    public void marbleGoesToStart(Color c){
-        Marble m = getFirstHomeMarble(c, true);
-        StartField field = getRightColorStartField(c);
-        field.setFieldStatus(FieldStatus.BLOCKED);
-        field.setMarble(m);
-        m.setCurrentField(field);
-        m.setHome(FALSE);
+    public String marbleGoesToStart(Color color) {
+        Marble marble = getFirstHomeMarble(color, true);
+        StartField targetField = getRightColorStartField(color);
+        targetField.setFieldStatus(FieldStatus.BLOCKED);
+        targetField.setMarble(marble);
+        marble.setCurrentField(targetField);
+        marble.setHome(FALSE);
+        return targetField.getFieldKey();
     }
     /*
     public void marbleMoveJack(Field fieldToChange, Marble m){
@@ -299,6 +300,7 @@ public class PlayingBoard {
         m.setCurrentField(fieldToChange);
         fieldToChange.setMarble(m);
         fieldToChange.setFieldStatus(FieldStatus.OCCUPIED);
+        // TODO duplicated code, see below make check if really finished
     }
     public void makeFinishMove(Field fieldToChange, Marble m){
         m.getCurrentField().setFieldStatus(FieldStatus.FREE);
