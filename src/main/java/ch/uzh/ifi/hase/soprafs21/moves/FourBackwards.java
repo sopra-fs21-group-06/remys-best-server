@@ -1,8 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
-import ch.uzh.ifi.hase.soprafs21.objects.Game;
-import ch.uzh.ifi.hase.soprafs21.objects.MarbleAndTargetField;
-import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
+import ch.uzh.ifi.hase.soprafs21.objects.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +18,7 @@ public class FourBackwards implements IMove {
     }
 
     @Override
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(List<MarbleAndTargetField> marblesAndTargetFields, Game game) {
+    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Marble marbleToMove, Field targetField, Game game) {
         return null;
     }
 

@@ -1,9 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
-import ch.uzh.ifi.hase.soprafs21.objects.Game;
-import ch.uzh.ifi.hase.soprafs21.objects.Marble;
-import ch.uzh.ifi.hase.soprafs21.objects.MarbleAndTargetField;
-import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
+import ch.uzh.ifi.hase.soprafs21.objects.*;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -16,5 +13,5 @@ public interface IMove {
 
     List<String> getPossibleTargetFields(Game game); // TODO seven needs to track already selected moves List<MarbleAndTargetField>??
 
-    ArrayList<MarbleIdAndTargetFieldKey> executeMove(List<MarbleAndTargetField> marblesAndTargetFields, Game game);
+    ArrayList<MarbleIdAndTargetFieldKey> executeMove(Marble marbleToMove, Field targetField, Game game);
 }

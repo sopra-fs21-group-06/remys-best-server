@@ -1,9 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
-import ch.uzh.ifi.hase.soprafs21.objects.Game;
-import ch.uzh.ifi.hase.soprafs21.objects.Marble;
-import ch.uzh.ifi.hase.soprafs21.objects.MarbleAndTargetField;
-import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
+import ch.uzh.ifi.hase.soprafs21.objects.*;
 import org.springframework.data.util.Pair;
 
 import java.util.ArrayList;
@@ -22,7 +19,8 @@ public class GoToStart implements IMove {
     }
 
     @Override
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(List<MarbleAndTargetField> marblesAndTargetFields, Game game) {
+    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Marble marbleToMove, Field targetField, Game game) {
+        /*
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
 
         for(MarbleAndTargetField marbleAndTargetField : marblesAndTargetFields) {
@@ -31,6 +29,6 @@ public class GoToStart implements IMove {
             marbleIdAndTargetFieldKeys.add(new MarbleIdAndTargetFieldKey(marble.getMarbleNr(), targetFieldKey))
         }
 
-        return marbleIdAndTargetFieldKeys;
+        return marbleIdAndTargetFieldKeys;*/
     }
 }
