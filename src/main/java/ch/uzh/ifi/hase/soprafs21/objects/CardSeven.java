@@ -1,12 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
-import ch.uzh.ifi.hase.soprafs21.constant.CardSuit;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import static java.lang.Boolean.TRUE;
-
 /*
 public class CardSeven extends Card{
     private HashMap<Integer, ArrayList<Integer>> cardMoveValue = new HashMap<Integer, ArrayList<Integer>>();

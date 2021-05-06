@@ -38,23 +38,22 @@ public abstract class AbstractForwards implements IMove {
         Color colorFieldCurrentField = marbleToMove.getCurrentField().getColor();
         Color colorNextField = null;
         Field targetField = null;
-        // check if nextStartField is Blocked and distance to block is smaller than move
-        if(game.getPlayingBoard().getNextStartFieldIsBlocked(colorFieldCurrentField) && moveToInt > distanceNextStartField && !marbleToMove.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)){
-            log.info("Forward not possible with this move because move is bigger than distance to ext blocking startfield(getPossibleTargetFields)");
-            return null;
-        }
         // check if possibleEndfield is on next Part of Game -> CHange color and Value
         // Case 2 fields into home and not
-        if(marbleToMove.getCurrentField().getFieldValue() + moveToInt > 16) {
-            colorNextField = game.getPlayingBoard().getNextColor(colorFieldCurrentField);
+        if (marbleToMove.getCurrentField().getFieldValue() + moveToInt < 21 && marbleToMove.getCurrentField().getFieldValue() + moveToInt > 16 && marbleToMove.getCurrentField().getColor().equals(marbleToMove.getColor()) && !marbleToMove.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)){
+            int valueFieldNew1 = moveToInt - distanceNextStartField;
+            int valueFieldNew2 = marbleToMove.getCurrentField().getFieldValue() + moveToInt;
+            Color cFieldNew1 = game.getPlayingBoard().getNextColor(colorFieldCurrentField);
+            Color cFieldNew2 = marbleToMove.getColor();
+            Field targetField1 = game.getPlayingBoard().getField(valueFieldNew1, cFieldNew1);
+            possibleTargetFieldKeys.add(targetField1.getFieldKey());
+            Field targetField2 = game.getPlayingBoard().getField(valueFieldNew2, cFieldNew2);
+            possibleTargetFieldKeys.add(targetField2.getFieldKey());
+        } else if ( marbleToMove.getCurrentField().getFieldValue() + moveToInt > 16){
+            colorNextField= game.getPlayingBoard().getNextColor(colorFieldCurrentField);
             valueFieldNew = moveToInt - distanceNextStartField;
             targetField = game.getPlayingBoard().getField(valueFieldNew, colorNextField);
             possibleTargetFieldKeys.add(targetField.getFieldKey());
-            if(marbleToMove.getCurrentField().getFieldValue() + moveToInt < 21 && marbleToMove.getCurrentField().getColor().equals(marbleToMove.getColor()) && !marbleToMove.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED))
-                colorNextField = marbleToMove.getColor();
-                valueFieldNew = marbleToMove.getCurrentField().getFieldValue() + moveToInt;
-                targetField = game.getPlayingBoard().getField(valueFieldNew, colorNextField);
-                possibleTargetFieldKeys.add(targetField.getFieldKey());
         } else {
             valueFieldNew = marbleToMove.getCurrentField().getFieldValue() + moveToInt;
             colorNextField = colorFieldCurrentField;
@@ -67,15 +66,10 @@ public abstract class AbstractForwards implements IMove {
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Marble marbleToMove, Field targetField, Game game) {
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
         MarbleIdAndTargetFieldKey result = null;
-        if (targetField instanceof FinishField && game.getGameService().finishFieldIsFinishMoveField(targetField,game)){
-            game.getPlayingBoard().makeFinishMove(targetField, marbleToMove);
-            log.info("marble forward finished successful");
-        } else {
-            game.getPlayingBoard().makeMove(targetField, marbleToMove);
-            log.info("marble forward successful");
-            if(!(targetField instanceof FinishField)){
+        game.getPlayingBoard().makeMove(targetField, marbleToMove);
+        log.info("marble forward successful");
+        if(!(targetField instanceof FinishField)){
                 //game.getGameService().eat(targetField,game);
-            }
         }
         result = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleNr(), targetField.getFieldKey());
         marbleIdAndTargetFieldKeys.add(result);

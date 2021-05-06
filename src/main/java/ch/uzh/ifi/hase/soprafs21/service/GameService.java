@@ -15,9 +15,6 @@ import java.util.*;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
-
-// TODO makeMOve(FIeldKez and Marble) return (Marbleid targetfieldkey) -> new Pair( getLeft, getRight) return List<Pair>
-
 @Service
 @Transactional
 public class GameService {
@@ -58,39 +55,36 @@ public class GameService {
         game.changeNrCards();
     }
 
+    // TODO new endpoint
     public Boolean canPlay(Player p, Game game){
         List<Card> hand = p.getHand().getHandDeck();
-        int count = 0;
         for (Card c: hand){
-            List<String> moves = c.getMovesToDisplay();
-            for(String m: moves){
-                if (!(getPlayableMarble(c,m,game).isEmpty())){
-                    count++;
+            List<IMove> moves = c.getMoves();
+            for(IMove m: moves){
+                List<Marble> possibleMarbles = m.getPlayableMarbles(game,this);
+                if (!(possibleMarbles.isEmpty())){
+                    log.info("Player can play");
+                    return TRUE;
                 }
             }
         }
-        if(count == 0){
-            log.info("Current Player can't Play");
-            return FALSE;
-        }
-        log.info("Player can play");
-        return TRUE;
+        log.info("Current Player can't Play");
+        return FALSE;
     }
 
-
-    private void checkValidityOfMove(String playerName, Card cardToPlay, String targetFieldKey, Marble marbleToMove, String moveName, Player currentPlayer, Game game) throws Exception{
-        List<Card> hand = currentPlayer.getHand().getHandDeck();
-        // not your turn
+    private void checkIsYourTurn(String playerName, Player currentPlayer) throws Exception {
         if(!playerName.equals(currentPlayer.getPlayerName())) {
             throw new Exception("Invalid Move: It's not your turn");
         }
+    }
 
-        // not your marble
-        if (!(getPlayableMarble(cardToPlay, moveName,game).contains(marbleToMove))){
+    private void checkIsYourMarble(Card cardToPlay, String moveName, Game game, Marble marbleToMove) throws Exception {
+        if (!(getPlayableMarble(game.getCurrentRound().getCurrentPlayer().getPlayerName(), cardToPlay, moveName, game).contains(marbleToMove))){
             throw new Exception("Invalid Move: Not your marble");
         }
+    }
 
-        // card not in your hand
+    private void checkIsCardInYourHand(List<Card> hand, Card cardToPlay) throws Exception {
         boolean hasCardInHand = false;
         for(Card card: hand){
             if (card.getCode().equals(cardToPlay.getCode())) {
@@ -101,7 +95,9 @@ public class GameService {
         if(!hasCardInHand) {
             throw new Exception("Invalid Move: You don't have this card in your hand");
         }
-        // card does not have this move
+    }
+
+    private void checkHasCardThisMove(List<Card> hand, String moveName) throws Exception {
         boolean hasCardThisMove = false;
         for(Card card: hand){
             for(IMove move : card.getMoves()) {
@@ -114,14 +110,27 @@ public class GameService {
         if(!hasCardThisMove) {
             throw new Exception("Invalid Move: You can not execute this move with this card");
         }
-        // invalid targetFieldKey
+    }
+
+    private void checkTargetFieldValidity(Marble marbleToMove, String moveName,Card cardToPlay, Game game, String targetFieldKey) throws Exception {
         if (!(getPossibleTargetFields(marbleToMove, moveName, cardToPlay, game).contains(targetFieldKey))){
             throw new Exception("Invalid Move: This target field can not be reached with the selected marble and card");
         }
     }
-    // return playabe Marble for Player
-    public List<Marble> getPlayableMarble(Card cardToPlay, String moveName, Game game) {
-        //TODO checks card is in hand, move matches card
+
+
+    private void checkValidityOfMove(String playerName, Card cardToPlay, String targetFieldKey, Marble marbleToMove, String moveName, Player currentPlayer, Game game) throws Exception {
+        List<Card> hand = currentPlayer.getHand().getHandDeck();
+
+        checkIsYourTurn(playerName, currentPlayer);
+        checkIsYourMarble(cardToPlay, moveName, game, marbleToMove);
+        checkIsCardInYourHand(hand, cardToPlay);
+        checkHasCardThisMove(hand, moveName);
+        checkTargetFieldValidity(marbleToMove, moveName, cardToPlay, game, targetFieldKey);
+    }
+
+
+    public List<Marble> getPlayableMarble(String playerName, Card cardToPlay, String moveName, Game game) {
         IMove moveToGetPlayableMarbles = null;
         for(IMove imove : cardToPlay.getMoves()) {
             if (imove.getName().equals(moveName)) {
@@ -133,7 +142,6 @@ public class GameService {
     }
 
     public List<String> getPossibleTargetFields(Marble marbleToMove, String moveName, Card cardToPlay, Game game) {
-        //TODO checks card is in hand, move matches card,
         IMove moveToGetPlayableMarbles = null;
         for(IMove imove : cardToPlay.getMoves()) {
             if (imove.getName().equals(moveName)) {
@@ -171,73 +179,6 @@ public class GameService {
         return marbleIdsAndTargetFieldKeys;
     }
 
-    //returns possible moves after player clicks on cards
-    public List<String> sendCardMove(Card c){
-        List<String> movesToDisplay= c.getMovesToDisplay();
-        for (String s: movesToDisplay) {
-            log.info(s);
-        }
-        return movesToDisplay;
-    }
-
-
-
-
-    // return nr to next start block if the next one is blocked else return 100
-    public int nrStepsToNextStartFieldBlock(Field startingFieldMove, int numberToGoForwards, Game game){
-        Color currentColor = startingFieldMove.getColor();
-        if(game.getPlayingBoard().getNextStartFieldIsBlocked(currentColor) && !startingFieldMove.getFieldStatus().equals(FieldStatus.BLOCKED)){
-            return 16 - startingFieldMove.getFieldValue();
-        } else {
-            return 100;
-        }
-    }
-    // Start is at first HomeField if all are interesting, first check new fieldKey is bigger than old and if the field is occupierd
-    public int nrStepsToNextFreeFinishSpot(Field startField, Game game){
-        Color c = startField.getColor();
-        List<Field> finishFields = game.getPlayingBoard().getFinishFields(c);
-        int count = 0;
-        for(Field f: finishFields){
-            if(f.getFieldValue() > startField.getFieldValue()){
-                if(f.getFieldStatus().equals(FieldStatus.OCCUPIED)){
-                    return count;
-                }
-                count++;
-            }
-        }
-        return count;
-    }
-    public boolean finishFieldIsFinishMoveField(Field finishField, Game game){
-        List<Field> finishFields = game.getPlayingBoard().getFinishFields(finishField.getColor());
-        int stepsCount = nrStepsToNextFreeFinishSpot(finishField,game);
-        int positionField = 20 - finishField.getFieldValue();
-        int countMarble = 0;
-        for(Field f: finishFields) {
-            if (f.getFieldValue() > finishField.getFieldValue()) {
-                if (f.getFieldStatus().equals(FieldStatus.BLOCKED)) {
-                    countMarble++;
-                }
-            }
-        }
-        if(stepsCount == 0 && positionField == countMarble){
-            log.info("Finishfield" + finishField.getFieldKey() + "is actual finishfield in finsifieldmove");
-            return TRUE;
-        } else {
-            log.info("Finishfield" + finishField.getFieldKey() + "is not finishfield in finsifieldmove");
-            return TRUE;
-        }
-    }
-
-    public Boolean startFieldIsPossibleEndFieldMove(Field endField){
-        if(endField.getFieldStatus().equals(FieldStatus.BLOCKED)){
-            log.info("Your starting field is blocked by your own Marble");
-            return FALSE;
-        } else {
-            log.info("Your starting field is free");
-            return TRUE;
-        }
-    }
-
     // first get the currentfield and set as start Filed of current move.
     // iterate over possible cardmovevalues and see if marble can make one of the moves return TRUE;
     // if the card value is 4, set startmove Field back 4.
@@ -259,24 +200,23 @@ public class GameService {
             newStartFieldVal = marble.getCurrentField().getFieldValue() - 4;
         }
         Field startingFieldMove = game.getPlayingBoard().getField(newStartFieldVal,c);
-        int count = nrStepsToNextStartFieldBlock(startingFieldMove, numberToGoForwards, game);
+        int count = game.getPlayingBoard().nrStepsToNextStartFieldBlock(startingFieldMove);
         if (4 <= count) {
             log.info("CheckMOve: Marble : " + marble.getColor() + "FieldVal: " + marble.getCurrentField().getFieldValue() + "ishome: " + marble.getHome());
             return TRUE;
         }
         log.info("-4 not playeble checkmove");
         return FALSE;
-
     }
+
     public Boolean checkMoveForward(Marble marble, int numberToGoForwards, Game game){
         int count = 0;
         Field startingFieldMove = marble.getCurrentField();
-        Color c = marble.getCurrentField().getColor();
         // Check if marble is in finishfield, count is difference to next
         if(marble.getCurrentField() instanceof FinishField){
-            count = nrStepsToNextFreeFinishSpot(startingFieldMove,game);
+            count = game.getPlayingBoard().nrStepsToNextFreeFinishSpot(startingFieldMove);
         } else {
-            count = nrStepsToNextStartFieldBlock(startingFieldMove, numberToGoForwards, game);
+            count = game.getPlayingBoard().nrStepsToNextStartFieldBlock(startingFieldMove);
         }
         if (numberToGoForwards <= count) {
             log.info("CheckMOve: Marble : " + marble.getColor() + "FieldVal: " + marble.getCurrentField().getFieldValue() + "ishome: " + marble.getHome());
@@ -295,17 +235,14 @@ public class GameService {
         updateRoundStats(game);
     }
 
-
-
-
-     public void eat(Field endField, Game game) {
-         if (endField.getFieldStatus().equals(FieldStatus.OCCUPIED)) {
+    public void eat(Field endField, Game game) {
+        if (endField.getFieldStatus().equals(FieldStatus.OCCUPIED)) {
              Marble marbleToEat = endField.getMarble();
              game.getPlayingBoard().sendHome(marbleToEat);
-         }
-     }
+        }
+    }
 
-     public Marble getMarbleByGameIdMarbleIdPlayerName (Game game, String playerName,int marbleId){
+    public Marble getMarbleByGameIdMarbleIdPlayerName(Game game, String playerName,int marbleId){
          for (Player p : game.getPlayerList()) {
              if (p.getPlayerName().equals(playerName)) {
                  for (Marble m : p.getMarbleList()) {
@@ -318,7 +255,7 @@ public class GameService {
          }
          log.info("Not good with Marbleconversion");
          return null;
-     }
+    }
 }
 
 

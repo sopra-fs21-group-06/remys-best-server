@@ -249,10 +249,10 @@ public class Game {
         roundCount++;
     }
     public void changeNrCards(){
-        if (nrCards == 2){
-            nrCards = 7;
+        if (this.nrCards == 2){
+            this.nrCards = 7;
         } else {
-            nrCards--;
+            this.nrCards--;
         }
     }
 
