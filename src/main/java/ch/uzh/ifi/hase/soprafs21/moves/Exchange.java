@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
+import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
 import ch.uzh.ifi.hase.soprafs21.objects.Field;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.Marble;
@@ -24,10 +25,12 @@ public class Exchange implements IMove {
         List<String> possibleTargetFieldKeys = new ArrayList<>();
         List<Marble> marblesOnFieldAndNotFinishedPlayer = game.getCurrentRound().getCurrentPlayer().getMarblesOnFieldAndNotFinished();
         List<Marble> marblesOnFieldAndNotFinishedTeamMate = game.getCurrentRound().getCurrentPlayer().getTeamMate().getMarblesOnFieldAndNotFinished();
-        boolean allMarblesToChangeWith = marblesOnFieldAndNotFinishedPlayer.addAll(marblesOnFieldAndNotFinishedTeamMate);
+        marblesOnFieldAndNotFinishedPlayer.addAll(marblesOnFieldAndNotFinishedTeamMate);
         for(Marble m: marblesOnFieldAndNotFinishedPlayer){
             if(marbleToMove.getMarbleNr() != m.getMarbleNr()){
-                possibleTargetFieldKeys.add(m.getCurrentField().getFieldKey());
+                if (!(m.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED))){
+                    possibleTargetFieldKeys.add(m.getCurrentField().getFieldKey());
+                }
             }
         }
         return possibleTargetFieldKeys;
@@ -35,8 +38,14 @@ public class Exchange implements IMove {
 
     @Override
     public List<Marble> getPlayableMarbles(Game game, GameService gameService) {
+        List<Marble> possibleMarbles = new ArrayList<>();
         List<Marble> marblesOnFieldAndNotFinished = game.getCurrentRound().getCurrentPlayer().getMarblesOnFieldAndNotFinished();
-        return marblesOnFieldAndNotFinished;
+        for(Marble m: marblesOnFieldAndNotFinished) {
+            if (!(m.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED))){
+                possibleMarbles.add(m);
+            }
+        }
+        return possibleMarbles;
     }
 
     @Override

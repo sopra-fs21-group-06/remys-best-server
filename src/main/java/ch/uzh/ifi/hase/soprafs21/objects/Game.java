@@ -5,11 +5,9 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameEndDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.ExecutePlayCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GamePossibleTargetFieldRequestDTO;
-import org.springframework.data.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -270,10 +268,16 @@ public class Game {
 
     public void sendOutTargetFieldList(GamePossibleTargetFieldRequestDTO gamePossibleTargetFieldRequestDTO){
         String sessionIdentity = gameService.getUserService().getUserRepository().findByToken(gamePossibleTargetFieldRequestDTO.getToken()).getSessionIdentity();
-        Marble currentMarble = gameService.getMarbleByGameIdMarbleIdPlayerName(this, DogUtils.convertTokenToUsername(gamePossibleTargetFieldRequestDTO.getToken(), getGameService().getUserService()), gamePossibleTargetFieldRequestDTO.getMarbleId());
-        Card cardToPlay = new Card(gamePossibleTargetFieldRequestDTO.getCode());
-        List<String> targetFields = gameService.getPossibleTargetFields(currentMarble, gamePossibleTargetFieldRequestDTO.getMoveName(), cardToPlay, this);
-        webSocketService.sendTargetFieldListMessage(sessionIdentity, targetFields, gameId);
+
+        try {
+            Marble currentMarble = gameService.getMarbleByMarbleId(this, gamePossibleTargetFieldRequestDTO.getMarbleId());
+            Card cardToPlay = new Card(gamePossibleTargetFieldRequestDTO.getCode());
+            List<String> targetFields = gameService.getPossibleTargetFields(currentMarble, gamePossibleTargetFieldRequestDTO.getMoveName(), cardToPlay, this);
+            webSocketService.sendTargetFieldListMessage(sessionIdentity, targetFields, gameId);
+        }
+        catch(Exception e) {
+            // TODO handle Error by sending an exception message to frontend
+        }
     }
 
     public void sendExecutedMove(ExecutePlayCardDTO executePlayCardDTO){
