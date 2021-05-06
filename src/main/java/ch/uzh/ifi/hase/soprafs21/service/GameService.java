@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
+import ch.uzh.ifi.hase.soprafs21.moves.IMove;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +15,6 @@ import java.util.*;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static org.apache.logging.log4j.ThreadContext.isEmpty;
-import static org.springframework.data.util.Pair.*;
 
 
 // TODO makeMOve(FIeldKez and Marble) return (Marbleid targetfieldkey) -> new Pair( getLeft, getRight) return List<Pair>
@@ -77,65 +76,100 @@ public class GameService {
         }
         log.info("Player can play");
         return TRUE;
+    }
 
+    private void checkValidityOfMove(String playerName, Card cardToPlay, String targetFieldKey, Marble marbleToMove, String moveName, Player currentPlayer, Game game) throws Exception{
+        List<Card> hand = currentPlayer.getHand().getHandDeck();
+
+        // not your turn
+        if(!playerName.equals(currentPlayer.getPlayerName())) {
+            throw new Exception("Invalid Move: It's not your turn");
+        }
+
+        // not your marble
+        if (!(getPlayableMarble(cardToPlay, moveName,game).contains(marbleToMove))){
+            throw new Exception("Invalid Move: Not your marble");
+        }
+
+        // card not in your hand
+        boolean hasCardInHand = false;
+        for(Card card: hand){
+            if (card.getCode().equals(cardToPlay.getCode())) {
+                hasCardInHand = true;
+                break;
+            }
+        }
+        if(!hasCardInHand) {
+            throw new Exception("Invalid Move: You don't have this card in your hand");
+        }
+
+        // card does not have this move
+        boolean hasCardThisMove = false;
+        for(Card card: hand){
+            for(IMove move : card.getMoves()) {
+                if (move.getName().equals(moveName)) {
+                    hasCardThisMove = true;
+                    break;
+                }
+            }
+        }
+        if(!hasCardThisMove) {
+            throw new Exception("Invalid Move: You can not execute this move with this card");
+        }
+
+        // invalid targetFieldKey
+        if (!(getPossibleTargetFields(marbleToMove, moveName,currentPlayer.getCurrentCardCode(), game).contains(targetFieldKey))){
+            throw new Exception("Invalid Move: This target field can not be reached with the selected marble and card");
+        }
     }
 
 
-    public Pair<Integer, String> makeMove(String fieldKey, Marble marble, Game game) {
+    public ArrayList<MarbleIdAndTargetFieldKey> makeMove(String playerName, String cardCodeToPlay, String targetFieldKey, int marbleIdToMove, String moveName, Game game) throws Exception {
         Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
-        Card c = null;
-        String moveToDo = currentPlayer.getCurrentMove();
-        String cardCodeCurrent = currentPlayer.getCurrentCardCode();
-        List<Card> hand = currentPlayer.getHand().getHandDeck();
-        Pair <Integer, String> result = Pair.of(0,"");
+        Marble marbleToMove = getMarbleByGameIdMarbleIdPlayerName(game, playerName, marbleIdToMove);
+        Card cardToPlay = new Card(cardCodeToPlay);
+        // TODO remove currentMove & cardCodeCurrent on PLayer
+        //String moveToDo = currentPlayer.getCurrentMove();
+        //String cardCodeCurrent = currentPlayer.getCurrentCardCode();
 
-        for(Card card: hand){
-            if(card.getCode().equals(cardCodeCurrent)){
-                c = card;
+        // will throw exception and exit if the move is invalid
+        checkValidityOfMove(playerName, cardToPlay, targetFieldKey, marbleToMove, moveName, currentPlayer, game);
+
+        // execute move
+        IMove moveToExecute = null;
+        for(IMove move : cardToPlay.getMoves()) {
+            if (move.getName().equals(moveName)) {
+                moveToExecute = move;
+                break;
             }
-
+        }
+        if(moveToExecute == null) {
+            throw new Exception("Something strange happened");
         }
 
-        // marble can nicht bewegt werden resp falsche
-        if (!(getPlayableMarble(c, moveToDo,game).contains(marble))){
-            log.info("Wrong marble (makeMOve)");
+        ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = moveToExecute.executeMove();
 
-        }
-        // falscher endfield key
-        if (!(getPossibleTargetFields(marble, moveToDo,currentPlayer.getCurrentCardCode(), game).contains(fieldKey))){
-            log.info("Wrong endFieldKey (makeMOve)");
 
-        }
-        Field endField = game.getPlayingBoard().getFieldWithFieldKey(fieldKey);
-        if(moveToDo.contains("Start")){
-            //eat(endField, game);
-            game.getPlayingBoard().marbleGoesToStart(marble.getColor());
-            log.info("marble start successful");
-            result = Pair.of(marble.getMarbleNr(), fieldKey);
-        } /*else if (moveToDo.contains("Exchange")){
-            game.getPlayingBoard().marbleMoveJack(endField, marble);
-            log.info("marble exchange successful");
-            result = Pair.of(marble.getMarbleNr(), fieldKey);
-        // Case forward and into finishSector
-        } */else if (endField instanceof FinishField){
-            int distance = nrStepsToNextFreeFinishSpot(endField, game);
+
+        else if (targetField instanceof FinishField){
+            int distance = nrStepsToNextFreeFinishSpot(targetField, game);
             // if marble filled up
             if(distance == 0){
-                game.getPlayingBoard().makeFinishMove(endField, marble);
+                game.getPlayingBoard().makeFinishMove(targetField, marbleToMove);
                 log.info("marble finished successful");
             } else {
-                game.getPlayingBoard().makeMove(endField, marble);
+                game.getPlayingBoard().makeMove(targetField, marbleToMove);
                 log.info("marble moved into finished sector successful");
             }
-            result = Pair.of(marble.getMarbleNr(), fieldKey);
+            result = Pair.of(marbleToMove.getMarbleNr(), targetFieldKey);
             // normal back forward
         } else {
            // eat(endField, game);
-            game.getPlayingBoard().makeMove(endField, marble);
+            game.getPlayingBoard().makeMove(targetField, marbleToMove);
             log.info("marble move forward/backward successful");
-            result = Pair.of(marble.getMarbleNr(), fieldKey);
+            result = Pair.of(marbleToMove.getMarbleNr(), targetFieldKey);
         }
-        if(!result.getFirst().equals(marble.getMarbleNr())) {
+        if(!result.getFirst().equals(marbleToMove.getMarbleNr())) {
             log.info("makeMove didnt work, still playersTurn");
             return null;
         }
@@ -792,5 +826,126 @@ public class GameService {
     public UserService getUserService() {
         return userService;
     }
+
+
+
+
+
+
+
+
+    public Pair<Integer, String> makeMoveOLD(String fieldKey, Marble marble, Game game) {
+        Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
+        Card c = null;
+        String moveToDo = currentPlayer.getCurrentMove();
+        String cardCodeCurrent = currentPlayer.getCurrentCardCode();
+        List<Card> hand = currentPlayer.getHand().getHandDeck();
+        Pair <Integer, String> result = Pair.of(0,"");
+
+        for(Card card: hand){
+            if(card.getCode().equals(cardCodeCurrent)){
+                c = card;
+            }
+
+        }
+
+        // marble can nicht bewegt werden resp falsche
+        if (!(getPlayableMarble(c, moveToDo,game).contains(marble))){
+            log.info("Wrong marble (makeMOve)");
+
+        }
+        // falscher endfield key
+        if (!(getPossibleTargetFields(marble, moveToDo,currentPlayer.getCurrentCardCode(), game).contains(fieldKey))){
+            log.info("Wrong endFieldKey (makeMOve)");
+
+        }
+        Field targetField = game.getPlayingBoard().getFieldByFieldKey(fieldKey);
+        if(moveToDo.contains("Start")){
+            //eat(endField, game);
+            game.getPlayingBoard().marbleGoesToStart(marble.getColor());
+            log.info("marble start successful");
+            result = Pair.of(marble.getMarbleNr(), fieldKey);
+
+
+        } /*else if (moveToDo.contains("Exchange")){
+            game.getPlayingBoard().marbleMoveJack(endField, marble);
+            log.info("marble exchange successful");
+            result = Pair.of(marble.getMarbleNr(), fieldKey);
+        // Case forward and into finishSector
+        } */else if (targetField instanceof FinishField){
+            int distance = nrStepsToNextFreeFinishSpot(targetField, game);
+            // if marble filled up
+            if(distance == 0){
+                game.getPlayingBoard().makeFinishMove(targetField, marble);
+                log.info("marble finished successful");
+            } else {
+                game.getPlayingBoard().makeMove(targetField, marble);
+                log.info("marble moved into finished sector successful");
+            }
+            result = Pair.of(marble.getMarbleNr(), fieldKey);
+            // normal back forward
+        } else {
+            // eat(endField, game);
+            game.getPlayingBoard().makeMove(targetField, marble);
+            log.info("marble move forward/backward successful");
+            result = Pair.of(marble.getMarbleNr(), fieldKey);
+        }
+        if(!result.getFirst().equals(marble.getMarbleNr())) {
+            log.info("makeMove didnt work, still playersTurn");
+            return null;
+        }
+        //Check if player has all his marbles in finished if true then set marbles to teammate
+        List<Marble> playerMarble = currentPlayer.getMarbleList();
+        int countMarbleFinished = 0;
+        int countMarbleFinishedTeamMate = 0;
+        List<Marble> mateMarble = currentPlayer.getTeamMate().getMarbleList();
+        for(int i = 0; i < mateMarble.size(); i++) {
+            if(playerMarble.get(i).getFinish()){
+                countMarbleFinished++;
+            }else if(mateMarble.get(i).getFinish()){
+                countMarbleFinishedTeamMate++;
+            }
+        }
+        if(countMarbleFinishedTeamMate == mateMarble.size() && countMarbleFinished ==playerMarble.size()){
+            log.info("makeMove worked, and player and Teammate have finished");
+        }
+        if (countMarbleFinished == 4){
+            log.info("makeMove worked, and player has finished, teammate hasnt, change of marbles");
+            currentPlayer.setMarbleList(mateMarble);
+        }
+
+
+        log.info("makeMove worked, next players turn or new round");
+        //Chekck for new turn (if at least one player can play -> new turn
+        int count = 0;
+        int handCount = 0;
+        for(Player p: game.getPlayerList()){
+            if(canPlay(p, game)) {
+                count++;
+            }
+            if(!p.getHand().getHandDeck().isEmpty()){
+                handCount++;
+            }
+        }
+        if (count > 0 && handCount >0){
+            log.info("makeMove worked, next players turn");
+            game.getCurrentRound().changeCurrentPlayer();
+
+        } else if (handCount == 0){
+            log.info("makeMove worked, no Player has cards in his hands, new round");
+            updateRoundStats(game);
+            //initiateRound(game);
+        } else if(count == 0){
+            log.info("makeMove worked, no Player can play but still cards in the game, new round");
+            updateRoundStats(game);
+            //initiateRound(game);
+        }
+        currentPlayer.setCurrentMove("");
+        currentPlayer.setCurrentCardCode("");
+        //currentPlayer.getHand().deleteCardFromHand(c);
+        return result;
+    }
+
+
 }
 
