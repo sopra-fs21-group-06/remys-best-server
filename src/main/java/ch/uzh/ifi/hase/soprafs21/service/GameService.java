@@ -12,8 +12,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.*;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
+import static java.lang.Boolean.*;
+
+
 
 @Service
 @Transactional
@@ -173,7 +174,7 @@ public class GameService {
         }
 
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = moveToExecute.executeMove(marbleToMove, game.getPlayingBoard().getFieldByFieldKey(targetFieldKey),game);
-
+        game.getCurrentRound().getCurrentPlayer().layDownCard(cardToPlay);
         // TODO finished player checks
 
         return marbleIdsAndTargetFieldKeys;
@@ -225,21 +226,53 @@ public class GameService {
         log.info("Cardvalue not playeble checkmove");
         return FALSE;
     }
+    public List<Marble> getMarblesToChangeWithJack (List < Marble > marblesOnField, Player p){
+        List<Marble> marblesMate = p.getTeamMate().getMarblesOnField();
+        List<Marble> marblesPlayer = marblesOnField;
+        List<Marble> possibleMarbles = null;
+        for (int i = 0; i < 4; i++) {
+            if (!(marblesMate.get(i).getMarbleIsBlockingAndOnStart())) {
+                possibleMarbles.add(marblesMate.get(i));
+            }
+            if (!(marblesPlayer.get(i).getMarbleIsBlockingAndOnStart())) {
+                marblesPlayer.add(marblesMate.get(i));
+            }
+        }
+        if (marblesPlayer.size() > 0 && possibleMarbles.size() > 1) {
+            for (Marble m : possibleMarbles) {
+                Color color = m.getColor();
+                int i = m.getCurrentField().getFieldValue();
+                log.info("Marble C: " + color + "FieldVal" + i);
+            }
+            return possibleMarbles;
+        }
+        else {
+            log.info("No marble possible with this card(JACK");
+            return null;
+        }
+    }
 
     public void endTurn(Game game){
         //CHeck if player is finished if yes change marbles
         game.getCurrentRound().changeCurrentPlayer();
         log.info("Turn over, next Players turn");
+
     }
     public void endRound(Game game){
         updateRoundStats(game);
     }
 
-    public void eat(Field endField, Game game) {
+    public MarbleIdAndTargetFieldKey eat(Field endField, Game game) {
+        MarbleIdAndTargetFieldKey result = null;
         if (endField.getFieldStatus().equals(FieldStatus.OCCUPIED)) {
              Marble marbleToEat = endField.getMarble();
              game.getPlayingBoard().sendHome(marbleToEat);
+             String colorInString = marbleToEat.getColor().getId();
+             int newPositionFieldValue = 24 - game.getPlayingBoard().getFinishFields(marbleToEat.getColor()).size();
+             String newPositionFieldValueAsString = String.valueOf(newPositionFieldValue);
+             result = new MarbleIdAndTargetFieldKey(marbleToEat.getMarbleNr(), colorInString+newPositionFieldValueAsString);
         }
+        return result;
     }
 
     public Marble getMarbleByGameIdMarbleIdPlayerName(Game game, String playerName,int marbleId){

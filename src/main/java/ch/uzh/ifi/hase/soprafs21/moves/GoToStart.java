@@ -40,9 +40,13 @@ public class GoToStart implements IMove {
     @Override
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Marble marbleToMove, Field targetField, Game game) {
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
-        game.getPlayingBoard().marbleGoesToStart(marbleToMove.getColor());
+        game.getPlayingBoard().makeStartMove(marbleToMove.getColor());
         log.info("marble start successful");
-        MarbleIdAndTargetFieldKey result = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleNr(), targetField.getFieldKey());
+        MarbleIdAndTargetFieldKey result = game.getGameService().eat(targetField,game);
+        if(!(result == null)){
+            marbleIdAndTargetFieldKeys.add(result);
+        }
+        result = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleNr(), targetField.getFieldKey());
         marbleIdAndTargetFieldKeys.add(result);
         return marbleIdAndTargetFieldKeys;
     }

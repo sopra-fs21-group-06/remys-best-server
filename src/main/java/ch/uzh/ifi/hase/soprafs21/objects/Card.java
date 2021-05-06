@@ -70,7 +70,7 @@ public class Card {
             moves.add(new ElevenForwards());
             moves.add(new TwelveForwards());
             moves.add(new ThirteenForwards());
-            //moves.add(new Exchange());
+            moves.add(new Exchange());
             moves.add(new GoToStart());
         } else {
             throw new Exception(String.format("Could not init moves for card value %s", value));

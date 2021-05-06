@@ -22,8 +22,8 @@ public class Hand {
         handDeck.addAll(cardList);
     }
     public void deleteCardFromHand(Card c){
-        if(handDeck.contains(c)){
-            handDeck.remove(c);
+        if(this.handDeck.contains(c)){
+            this.handDeck.remove(c);
         }
 
 }}
