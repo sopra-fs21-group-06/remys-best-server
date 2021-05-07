@@ -12,6 +12,7 @@ public class GameSession {
     private final String hostName;
     private int userCount;
     private List<User> userList= new ArrayList<User>();
+    private List<User> invitedUsers = new ArrayList<>();
 
     public GameSession(User host){
         this.hostName = host.getUsername();
@@ -24,12 +25,37 @@ public class GameSession {
     public void setUserCount(int userCount){this.userCount = userCount;}
     public void setUserList(List<User> userList){this.userList = userList;}
 
+    public List<User> getInvitedUsers() {
+        return invitedUsers;
+    }
+
+    public boolean userInInvitedUsers(String userName){
+        for(User u: invitedUsers){
+            if(u.getUsername().equals(userName)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean userAlreadyExists(User user){
         if(user==null){
             return false;
         }
         for(User x: userList){if(x.equals(user)){return true;}}
         return false;
+    }
+
+    public void addInvitedUser(User user){
+        if(user != null){
+            invitedUsers.add(user);
+        }
+    }
+
+    public void deleteInvitedUser(User user){
+        if(user != null && invitedUsers.contains(user)){
+            invitedUsers.remove(user);
+        }
     }
 
     public void addUser(User user){if(user!=null){userList.add(user);userCount++;};}

@@ -99,6 +99,13 @@ public class GameEngine{
         }
     }
 
+    public void addinvitedUserToGameSession(User user, UUID gameSessionId){
+        GameSession gameSession = findGameSessionByID(gameSessionId);
+        assert gameSession != null;
+        gameSession.addInvitedUser(user);
+
+    }
+
     public void removeUserFromWaitingRoom(User user){
         waitingRoom.removeUser(user);
     }
@@ -153,7 +160,8 @@ public class GameEngine{
             this.gameSessionList.remove(findGameSessionByID(gameSessionId));
         }
     };
-    private GameSession findGameSessionByID(UUID id){
+
+    public GameSession findGameSessionByID(UUID id){
         try {
             for (GameSession gameSession : gameSessionList) {
                 if (gameSession.getID().equals(id)) {

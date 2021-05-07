@@ -10,7 +10,6 @@ import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.*;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.*;
-import org.springframework.data.util.Pair;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 
 import java.security.Principal;
@@ -37,8 +36,16 @@ public class DogUtils {
         return userService.getUserRepository().findByToken(token).getUsername();
     }
 
+    public static String convertUserNameToToken(String username, UserService userService){
+        return userService.getUserRepository().findByUsername(username).getToken();
+    }
+
     public static String convertSessionIdentityToUserName(String sessionIdentity, UserService userService){
         return userService.getUserRepository().findBySessionIdentity(sessionIdentity).getUsername();
+    }
+
+    public static String convertUserNameToSessionIdentity(String userName, UserService userService){
+        return userService.getUserRepository().findByUsername(userName).getSessionIdentity();
     }
 
     public static WaitingRoomChooseColorDTO convertPlayersToWaitingRoomChooseColorDTO(List<Player> players) {
@@ -143,5 +150,22 @@ public class DogUtils {
         user.setSessionIdentity(null);
         userService.getUserRepository().saveAndFlush(user);
 
+    }
+
+    public static GameSessionInvitedUsersDTO generateGameSessionInvitedUsersDTO(List<User> invitedUsers){
+        GameSessionInvitedUsersDTO gameSessionInvitedUsersDTO = new GameSessionInvitedUsersDTO();
+        List<WaitingRoomUserObjDTO> invitedUsersList = new ArrayList<>();
+        for(User u: invitedUsers){
+            invitedUsersList.add(DTOMapper.INSTANCE.convertUsertoWaitingRoomUserObjDTO(u));
+        }
+        gameSessionInvitedUsersDTO.setInvitedUsers(invitedUsersList);
+        return gameSessionInvitedUsersDTO;
+    }
+
+    public static RequestCountDownDTO generateRequestCountDownDTO(int currentCounter, String userName){
+        RequestCountDownDTO requestCountDownDTO = new RequestCountDownDTO();
+        requestCountDownDTO.setCurrentCounter(currentCounter);
+        requestCountDownDTO.setUserName(userName);
+        return requestCountDownDTO;
     }
 }
