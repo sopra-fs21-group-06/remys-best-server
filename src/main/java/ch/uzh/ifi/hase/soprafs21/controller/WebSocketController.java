@@ -36,6 +36,6 @@ public class WebSocketController {
     @MessageMapping("home/unregister")
     public synchronized void unregisterUser(SimpMessageHeaderAccessor sha, HomeRegisterDTO homeRegisterDTO){
         log.info("Player" + getIdentity(sha) + ": Left HomeScreen");
-        gameEngine.getUserService().updateStatus(homeRegisterDTO.getToken(), UserStatus.BUSY);
+        gameEngine.getUserService().updateStatus(homeRegisterDTO.getToken(), UserStatus.Busy);
     }
 }

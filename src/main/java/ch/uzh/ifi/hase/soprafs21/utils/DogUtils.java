@@ -143,7 +143,7 @@ public class DogUtils {
     public static void resetStatusTokenAndSessionIdentity(UserService userService, String username){
         User user = userService.findByUsername(username);
         user.setToken(null);
-        user.setStatus(UserStatus.OFFLINE);
+        user.setStatus(UserStatus.Offline);
         user.setSessionIdentity(null);
         userService.getUserRepository().saveAndFlush(user);
 

@@ -7,9 +7,7 @@ import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
-import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.WaitingRoomUserObjDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomChooseColorDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomSendOutCurrentUsersDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +16,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -273,7 +270,7 @@ public class GameEngine{
 
     /** check needs to happen if user available before calling method **/
     public void newGameSession(User host) {
-        if(host.getStatus().equals(UserStatus.FREE)){
+        if(host.getStatus().equals(UserStatus.Free)){
             GameSession gameSession = new GameSession(host);
             try {
                 gameSessionList.add(gameSession);
@@ -316,7 +313,17 @@ public class GameEngine{
         return null;
     }
 
+
     public boolean userInGame(String username) {
         return true;
+    }
+
+    public Player findPlayerbyUsername(Game game, String playerName){
+        for(Player p: game.getPlayerList()){
+            if(p.getPlayerName().equals(playerName)){
+                return p;
+            }
+        }
+        return null;
     }
 }

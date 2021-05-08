@@ -9,7 +9,6 @@ import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameRequestDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameSessionLeaveDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.HomeRegisterDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -35,40 +34,40 @@ public class WSGameSessionController {
         this.userService = userService;
     }
 
-    @MessageMapping("/gameSession/{gameSessionId}/invite")
-    public void inviteUser(@DestinationVariable UUID gameSessionId, SimpMessageHeaderAccessor sha, GameRequestDTO gameRequestDTO) {
+    @MessageMapping("/gamesession/{gamesessionId}/invite")
+    public void inviteUser(@DestinationVariable UUID gamesessionId, SimpMessageHeaderAccessor sha, GameRequestDTO gameRequestDTO) {
         try{
             log.info("Player " + getIdentity(sha) + ": Made an invitation to" + gameRequestDTO.getUsername());
             User invitedUser = userService.getUserRepository().findByUsername(gameRequestDTO.getUsername());
             String sessionIdentityInvitedUser = invitedUser.getSessionIdentity();
 
-            userService.updateStatus(DogUtils.convertUserNameToToken(invitedUser.getUsername(), userService), UserStatus.BUSY);
+            userService.updateStatus(DogUtils.convertUserNameToToken(invitedUser.getUsername(), userService), UserStatus.Busy);
 
-            GameSession currentGameSession = gameEngine.findGameSessionByID(gameSessionId);
+            GameSession currentGameSession = gameEngine.findGameSessionByID(gamesessionId);
 
-            gameEngine.addinvitedUserToGameSession(invitedUser, gameSessionId);
-            webSocketService.sendGameSessionInvitation(gameSessionId,  DogUtils.convertUserNameToSessionIdentity(gameRequestDTO.getUsername(), userService), DogUtils.convertTokenToUsername(gameRequestDTO.getToken(), userService));
-            webSocketService.sendGameSessionInvitedUserList(gameSessionId, currentGameSession.getInvitedUsers());
+            gameEngine.addinvitedUserToGameSession(invitedUser, gamesessionId);
+            webSocketService.sendGameSessionInvitation(gamesessionId,  DogUtils.convertUserNameToSessionIdentity(gameRequestDTO.getUsername(), userService), DogUtils.convertTokenToUsername(gameRequestDTO.getToken(), userService));
+            webSocketService.sendGameSessionInvitedUserList(gamesessionId, currentGameSession.getInvitedUsers());
             webSocketService.sendGameSessionInvitedUserCounter(currentGameSession, invitedUser.getUsername(), sessionIdentityInvitedUser);}
         catch (Exception e){
             log.info(e.toString());
         }
     }
 
-    @MessageMapping("/gameSession/{gameSessionId}/leave")
-    public synchronized void userLeavesGameSession(@DestinationVariable UUID gameSessionId, SimpMessageHeaderAccessor sha, GameSessionLeaveDTO gameSessionLeaveDTO){
+    @MessageMapping("/gamesession/{gamesessionId}/leave")
+    public synchronized void userLeavesGameSession(@DestinationVariable UUID gamesessionId, SimpMessageHeaderAccessor sha, GameSessionLeaveDTO gameSessionLeaveDTO){
         log.info("Player " + getIdentity(sha) + ": Left the gameSession");
-        GameSession currentGameSession = gameEngine.findGameSessionByID(gameSessionId);
+        GameSession currentGameSession = gameEngine.findGameSessionByID(gamesessionId);
         User userLeaver = userService.getUserRepository().findByToken(gameSessionLeaveDTO.getToken());
         if(gameEngine.userIsHost(userLeaver.getUsername())){
-            webSocketService.sentGameSessionEndMessage(gameSessionId.toString(), userLeaver.getUsername());
+            webSocketService.sentGameSessionEndMessage(gamesessionId.toString(), userLeaver.getUsername());
             for(User u: currentGameSession.getUserList()){
-                userService.updateStatus(u.getToken(), UserStatus.FREE);
+                userService.updateStatus(u.getToken(), UserStatus.Free);
             }
-            gameEngine.deleteGameSession(gameSessionId);
+            gameEngine.deleteGameSession(gamesessionId);
         }
         else{
-            userService.updateStatus(userLeaver.getToken(), UserStatus.FREE);
+            userService.updateStatus(userLeaver.getToken(), UserStatus.Free);
             currentGameSession.deleteUser(userLeaver);
             //webSocketService.sendCurrentUserListOutAgain
         }

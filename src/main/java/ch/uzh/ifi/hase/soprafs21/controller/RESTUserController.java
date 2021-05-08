@@ -29,11 +29,8 @@ public class RESTUserController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<UserGetDTO> getAllUsers() {
-        // fetch all users in the internal representation
         List<User> users = userService.getUsers();
         List<UserGetDTO> userGetDTOs = new ArrayList<>();
-
-        // convert each user to the API representation
         for (User user : users) {
             userGetDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
         }
@@ -44,13 +41,8 @@ public class RESTUserController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ResponseBody
     public UserLoginGetDTO loginUser(@RequestBody UserLoginPostDTO userLoginPostDTO){
-        // convert API user to internal representation
         User userInput = DTOMapper.INSTANCE.convertUserLoginPostDTOtoEntity(userLoginPostDTO);
-
-        //update user
         User loggedInUser = userService.logInUser(userInput);
-
-        // return UserGetDTO
         return DTOMapper.INSTANCE.convertEntityToUserLoginGetDTO(loggedInUser);
     }
 
@@ -58,10 +50,7 @@ public class RESTUserController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void logoutUser(@RequestBody UserLogoutPostDTO userLogoutPostDTO){
-        // convert API user to internal representation
         User userInput = DTOMapper.INSTANCE.convertUserLogOutPostDTOtoEntity(userLogoutPostDTO);
-
-        //update user
         userService.logOutUser(userInput);
     }
 
@@ -69,12 +58,8 @@ public class RESTUserController {
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public UserLoginGetDTO createUser(@RequestBody UserRegisterPostDTO userRegisterPostDTO, HttpServletRequest request) {
-        // convert API user to internal representation
         User userInput = DTOMapper.INSTANCE.convertUserRegisterPostDTOtoEntity(userRegisterPostDTO);
-        //System.out.println("haha");
-        // create user
         User createdUser = userService.createUser(userInput);
-
         return DTOMapper.INSTANCE.convertEntityToUserLoginGetDTO(createdUser);
     }
 }

@@ -100,21 +100,24 @@ public class RESTFriendRequestController {
     @PostMapping("/friendrequests")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public void createFriendRequest(@RequestBody FriendRequestCreatePostDTO friendRequestCreatePostDTO){
-        friendRequestService.createFriendRequest(friendRequestCreatePostDTO);
+    public void createFriendRequest(@RequestBody FriendRequestCreatePostDTO friendRequestCreatePostDTO, HttpServletRequest request){
+        String token = request.getHeader("Authorization");
+        friendRequestService.createFriendRequest(friendRequestCreatePostDTO, token);
     }
 
     @PostMapping("/friendrequests/decline")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public void declineFriendRequest(@RequestBody FriendRequestResponsePostDTO friendRequestResponsePostDTO){
-        friendRequestService.processResponseFriendRequest(friendRequestResponsePostDTO, RequestStatus.DECLINED);
+    public void declineFriendRequest(@RequestBody FriendRequestResponsePostDTO friendRequestResponsePostDTO, HttpServletRequest request){
+        String token = request.getHeader("Authorization");
+        friendRequestService.processResponseFriendRequest(friendRequestResponsePostDTO, RequestStatus.DECLINED, token);
     }
 
     @PostMapping("/friendrequests/accept")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public void acceptFriendRequest(@RequestBody FriendRequestResponsePostDTO friendRequestResponsePostDTO){
-        friendRequestService.processResponseFriendRequest(friendRequestResponsePostDTO, RequestStatus.ACCEPTED);
+    public void acceptFriendRequest(@RequestBody FriendRequestResponsePostDTO friendRequestResponsePostDTO, HttpServletRequest request){
+        String token = request.getHeader("Authorization");
+        friendRequestService.processResponseFriendRequest(friendRequestResponsePostDTO, RequestStatus.ACCEPTED, token);
     }
 }

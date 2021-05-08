@@ -18,7 +18,6 @@ public class RESTCreateGameController {
     Logger log = LoggerFactory.getLogger(WSGameController.class);
     private final GameEngine gameEngine;
     private final UserService userService;
-    private
 
     RESTCreateGameController(GameEngine gameEngine, UserService userService) {
         this.gameEngine = gameEngine;
@@ -34,7 +33,7 @@ public class RESTCreateGameController {
 
         gameEngine.newGameSession(newHost);
 
-        newHost.setStatus(UserStatus.BUSY);
+        newHost.setStatus(UserStatus.Busy);
         userService.getUserRepository().saveAndFlush(newHost);
 
         GameSession gameSession = gameEngine.findGameSessionByHostName(newHost.getUsername());
