@@ -89,15 +89,14 @@ public class WSGameController {
                 GameEndDTO dto = new GameEndDTO();
 
                 dto.setAborted(username);
-                log.info(username);
                 webSocketService.sentGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);
                 gameEngine.deleteGameByGameID(gameEngine.findGameIdByPlayerName(username));
-                log.info(username);
                 DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
             }else{
                 DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
             }
         }
     }*/
+
 }
 

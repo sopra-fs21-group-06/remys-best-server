@@ -42,7 +42,6 @@ public class UserService {
     }
 
     public User findByUsername(String username) {
-        log.info("foooo");
         return this.userRepository.findByUsername(username);
     }
 
