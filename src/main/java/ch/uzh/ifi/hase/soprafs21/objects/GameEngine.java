@@ -307,6 +307,15 @@ public class GameEngine{
         return false;
     }
 
+    public GameSession findGameSessionByHostName(String hostName){
+        for(GameSession gs: gameSessionList){
+            if(gs.getHostName().equals(hostName)){
+                return gs;
+            }
+        }
+        return null;
+    }
+
     public boolean userInGame(String username) {
         return true;
     }

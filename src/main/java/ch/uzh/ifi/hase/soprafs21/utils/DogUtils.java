@@ -2,10 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.utils;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.objects.CardMove;
-import ch.uzh.ifi.hase.soprafs21.objects.Marble;
-import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
-import ch.uzh.ifi.hase.soprafs21.objects.Player;
+import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.*;
@@ -167,5 +164,11 @@ public class DogUtils {
         requestCountDownDTO.setCurrentCounter(currentCounter);
         requestCountDownDTO.setUserName(userName);
         return requestCountDownDTO;
+    }
+
+    public static GameSessionHostLeftDTO generateGameSessionHostLeftDTO(String hostName){
+        GameSessionHostLeftDTO gameSessionHostLeftDTO = new GameSessionHostLeftDTO();
+        gameSessionHostLeftDTO.setHostName(hostName);
+        return gameSessionHostLeftDTO;
     }
 }

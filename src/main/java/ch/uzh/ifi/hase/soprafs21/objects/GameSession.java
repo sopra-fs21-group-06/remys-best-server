@@ -19,6 +19,10 @@ public class GameSession {
         userList.add(host);
     }
 
+    public String getHostName() {
+        return hostName;
+    }
+
     public UUID getID(){return GameSessionId;}
     public int getUserCount(){return userCount;}
     public List<User> getUserList(){return userList;}
