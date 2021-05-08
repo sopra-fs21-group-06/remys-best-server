@@ -5,11 +5,8 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameEndDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.ExecutePlayCardDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GamePossibleTargetFieldRequestDTO;
-import org.springframework.data.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -249,10 +246,10 @@ public class Game {
         roundCount++;
     }
     public void changeNrCards(){
-        if (nrCards == 2){
-            nrCards = 7;
+        if (this.nrCards == 2){
+            this.nrCards = 7;
         } else {
-            nrCards--;
+            this.nrCards--;
         }
     }
 
@@ -268,26 +265,24 @@ public class Game {
         webSocketService.sendCurrentTurnFactsMessage(roundCount, currentRound.getCurrentPlayer().getPlayerName(), getNextCardAmount(), currentRound.getNameNextPlayer(), gameId);
     }
 
-    public void sendOutTargetFieldList(GamePossibleTargetFieldRequestDTO gamePossibleTargetFieldRequestDTO){
-
-
-        String sessionIdentity = gameService.getUserService().getUserRepository().findByToken(gamePossibleTargetFieldRequestDTO.getToken()).getSessionIdentity();
-        Marble currentMarble = gameService.getMarbleByGameIdMarbleIdPlayerName(this, DogUtils.convertTokenToUsername(gamePossibleTargetFieldRequestDTO.getToken(), getGameService().getUserService()), gamePossibleTargetFieldRequestDTO.getMarbleId());
-        List<String> targetFields = gameService.getPossibleTargetFields(currentMarble, gamePossibleTargetFieldRequestDTO.getMoveName(), gamePossibleTargetFieldRequestDTO.getCode(),this);
-        webSocketService.sendTargetFieldListMessage(sessionIdentity, targetFields, gameId);
-    }
-
     public void sendExecutedMove(ExecutePlayCardDTO executePlayCardDTO){
-        String playername = DogUtils.convertTokenToUsername(executePlayCardDTO.getToken(), gameService.getUserService());
-        String cardcode = executePlayCardDTO.getCode();
+        String playerName = DogUtils.convertTokenToUsername(executePlayCardDTO.getToken(), gameService.getUserService());
+        String cardCode = executePlayCardDTO.getCode();
+        String moveName = executePlayCardDTO.getMoveName();
         List<MarbleExecuteCardDTO> tupleList = executePlayCardDTO.getMarbles();
-        List<Pair<Integer, String>> idTargetField = new ArrayList<>();
+        ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = new ArrayList<>();
 
-        for(MarbleExecuteCardDTO m: tupleList){
-            idTargetField.add(gameService.makeMove(m.getTargetFieldKey(), gameService.getMarbleByGameIdMarbleIdPlayerName(this, DogUtils.convertTokenToUsername(executePlayCardDTO.getToken(), gameService.getUserService()), m.getMarbleId()), this));
+        try {
+            for(MarbleExecuteCardDTO m: tupleList) {
+                marbleIdsAndTargetFieldKeys.addAll(gameService.makeMove(playerName, cardCode, m.getTargetFieldKey(), m.getMarbleId(), moveName, this));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // TODO send error via websocket and abort, websocketService.sendPrivateError() to be implemented
+            // e.getMessage();
         }
 
-        webSocketService.sendGameExecutedCard(playername, cardcode, idTargetField, gameId);
+        webSocketService.sendGameExecutedCard(playerName, cardCode, marbleIdsAndTargetFieldKeys, gameId);
     }
 
     public GameService getGameService() {

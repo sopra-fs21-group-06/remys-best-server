@@ -13,12 +13,10 @@ public class Field {
     private Color color;
     private String fieldKey;
 
-    public Field(int fieldValue, Color color, String fieldKey){
-        this. fieldValue = fieldValue;
+    public Field(int fieldValue, Color color){
+        this.fieldValue = fieldValue;
         this.color = color;
-        this.fieldKey = fieldKey;
-        String s = String.valueOf(fieldValue);
-        this.fieldKey = fieldKey;
+        this.fieldKey = String.valueOf(fieldValue).concat(color.getId());
     }
 
     public Boolean getFinish() {

@@ -2,8 +2,8 @@
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserRegisterPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserManagment.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserManagment.UserRegisterPostDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -19,23 +19,10 @@ public class Player {
     private Player teamMate;
     private boolean isReady;
     private String cardToChangeCode = null;
-    private String currentMove;
-    private String currentCardCode;
-    public void setCurrentCardCode(String currentCardCode) {
-        this.currentCardCode = currentCardCode;
-    }
 
-    public String getCurrentCardCode() {
-        return currentCardCode;
+    public void layDownCard(Card c){
+        hand.deleteCardFromHand(c);
     }
-    public void setCurrentMove(String currentMove) {
-        this.currentMove = currentMove;
-    }
-
-    public String getCurrentMove() {
-        return currentMove;
-    }
-
     public String getCardToChangeCode() {
         return cardToChangeCode;
     }
