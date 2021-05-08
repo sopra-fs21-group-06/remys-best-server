@@ -1,15 +1,15 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing;
 
 public class RequestCountDownDTO {
-    private String userName;
+    private String username;
     private int currentCounter;
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public int getCurrentCounter() {

@@ -95,6 +95,8 @@ public class RESTFriendRequestController {
     }
 
 
+    //TODO Token from header
+
     @PostMapping("/friendrequests")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody

@@ -47,6 +47,7 @@ public class WSGameSessionController {
             GameSession currentGameSession = gameEngine.findGameSessionByID(gameSessionId);
 
             gameEngine.addinvitedUserToGameSession(invitedUser, gameSessionId);
+            webSocketService.sendGameSessionInvitation(gameSessionId,  DogUtils.convertUserNameToSessionIdentity(gameRequestDTO.getUsername(), userService), DogUtils.convertTokenToUsername(gameRequestDTO.getToken(), userService));
             webSocketService.sendGameSessionInvitedUserList(gameSessionId, currentGameSession.getInvitedUsers());
             webSocketService.sendGameSessionInvitedUserCounter(currentGameSession, invitedUser.getUsername(), sessionIdentityInvitedUser);}
         catch (Exception e){
@@ -55,7 +56,7 @@ public class WSGameSessionController {
     }
 
     @MessageMapping("/gameSession/{gameSessionId}/leave")
-    public void userLeavesGameSession(@DestinationVariable UUID gameSessionId, SimpMessageHeaderAccessor sha, GameSessionLeaveDTO gameSessionLeaveDTO){
+    public synchronized void userLeavesGameSession(@DestinationVariable UUID gameSessionId, SimpMessageHeaderAccessor sha, GameSessionLeaveDTO gameSessionLeaveDTO){
         log.info("Player " + getIdentity(sha) + ": Left the gameSession");
         GameSession currentGameSession = gameEngine.findGameSessionByID(gameSessionId);
         User userLeaver = userService.getUserRepository().findByToken(gameSessionLeaveDTO.getToken());

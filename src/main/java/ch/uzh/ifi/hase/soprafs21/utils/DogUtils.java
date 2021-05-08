@@ -162,7 +162,7 @@ public class DogUtils {
     public static RequestCountDownDTO generateRequestCountDownDTO(int currentCounter, String userName){
         RequestCountDownDTO requestCountDownDTO = new RequestCountDownDTO();
         requestCountDownDTO.setCurrentCounter(currentCounter);
-        requestCountDownDTO.setUserName(userName);
+        requestCountDownDTO.setUsername(userName);
         return requestCountDownDTO;
     }
 
@@ -170,5 +170,12 @@ public class DogUtils {
         GameSessionHostLeftDTO gameSessionHostLeftDTO = new GameSessionHostLeftDTO();
         gameSessionHostLeftDTO.setHostName(hostName);
         return gameSessionHostLeftDTO;
+    }
+
+    public static GameSessionInviteUserDTO generateGameSessoinInviteUserDTO(UUID gameSessionIdentity, String hostName){
+        GameSessionInviteUserDTO gameSessionInviteUserDTO = new GameSessionInviteUserDTO();
+        gameSessionInviteUserDTO.setGameSessionId(gameSessionIdentity);
+        gameSessionInviteUserDTO.setHostName(hostName);
+        return gameSessionInviteUserDTO;
     }
 }

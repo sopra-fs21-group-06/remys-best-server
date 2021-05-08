@@ -131,7 +131,7 @@ public class WebSocketService {
     }
 
     public void sendGameSessionInvitedUserList(UUID gameSessionId, List<User> invitedUserList){
-        String path = "/gamesession/%s/invitedUser";
+        String path = "/gamesession/%s/invited-user";
         sendToTopic(String.format(path, gameSessionId.toString()),
                 DogUtils.generateGameSessionInvitedUsersDTO(invitedUserList));
 
@@ -168,10 +168,15 @@ public class WebSocketService {
     }
 
     private void sendRequestCountdown(String sessionIdentity, RequestCountDownDTO requestCountDownDTO){
-        String path = "/countdown";
+        String path = "gamesession/countdown";
         sendToPlayer(sessionIdentity, path,
                     requestCountDownDTO);
 
+    }
+
+    public void sendGameSessionInvitation(UUID gameSessionId, String sessionIdentityOfInvitedUser, String hostName){
+        String path = "/gamesession/invitation";
+        sendToPlayer(sessionIdentityOfInvitedUser, path, DogUtils.generateGameSessoinInviteUserDTO(gameSessionId, hostName));
     }
 
 }

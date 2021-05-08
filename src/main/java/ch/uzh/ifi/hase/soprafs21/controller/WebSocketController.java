@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 
 
+import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.HomeRegisterDTO;
 import org.slf4j.Logger;
@@ -27,10 +28,14 @@ public class WebSocketController {
     }
 
 
-    @MessageMapping("/register")
-    public synchronized void registerPlayer(SimpMessageHeaderAccessor sha, HomeRegisterDTO homeRegisterDTO) {
-        log.info("Player " + getIdentity(sha) + ": Message received");
+    @MessageMapping("/home/register")
+    public synchronized void registerUser(SimpMessageHeaderAccessor sha, HomeRegisterDTO homeRegisterDTO) {
+        log.info("Player " + getIdentity(sha) + ": Entered HomeScreen");
         gameEngine.getUserService().updateUserIdentity(getIdentity(sha), homeRegisterDTO.getToken());
-
+    }
+    @MessageMapping("home/unregister")
+    public synchronized void unregisterUser(SimpMessageHeaderAccessor sha, HomeRegisterDTO homeRegisterDTO){
+        log.info("Player" + getIdentity(sha) + ": Left HomeScreen");
+        gameEngine.getUserService().updateStatus(homeRegisterDTO.getToken(), UserStatus.BUSY);
     }
 }
