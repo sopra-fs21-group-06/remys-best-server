@@ -19,9 +19,7 @@ public class Card {
 
     private void initMoves(String code) throws Exception {
         String value = code.substring(0, 1);
-        if("1".equals(value)) {
-            moves.add(new OneForwards());
-        } else if ("2".equals(value)) {
+        if ("2".equals(value)) {
             moves.add(new TwoForwards());
         } else if ("3".equals(value)){
             moves.add(new ThreeForwards());
