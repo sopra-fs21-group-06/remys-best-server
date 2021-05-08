@@ -1,7 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import ch.uzh.ifi.hase.soprafs21.moves.IMove;
-import ch.uzh.ifi.hase.soprafs21.objects.*;
+import ch.uzh.ifi.hase.soprafs21.objects.Game;
+import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
@@ -16,8 +16,6 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -49,42 +47,6 @@ public class WSGameController {
         log.info("Player" + getIdentity(sha) + ": Has cardExchangePerformed");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
         currentGame.setCardExchange(DogUtils.convertTokenToUsername(gameCardExchange.getToken(), userService), gameCardExchange.getCode());
-    }
-
-    @MessageMapping("/game/{gameId}/move-request")
-    public synchronized void moveRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, CardMoveRequestDTO cardMoveRequestDTO){
-        log.info("Player" + getIdentity(sha) + ": Has made a moverequest");
-        Game currentGame = gameEngine.getRunningGameByID(gameId);
-        Player p = currentGame.getCurrentRound().getCurrentPlayer();
-
-        Card card = new Card(cardMoveRequestDTO.getCode());
-        List<CardMove> moves = new ArrayList<>();
-        for(IMove move : card.getMoves()) {
-            CardMove cardMove = new CardMove();
-            cardMove.setMoveName(move.getName());
-            moves.add(cardMove);
-        }
-
-        webSocketService.sendMovesToPlayer(getIdentity(sha), moves, gameId);
-    }
-
-    @MessageMapping("game/{gameId}/marble-request")
-    public synchronized void marbleRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, MoveMarbleRequestDTO moveMarbleRequestDTO){
-        log.info("Player" + getIdentity(sha) + ":Has made marblerequest");
-        Game currentGame = gameEngine.getRunningGameByID(gameId);
-
-        Card card = new Card(moveMarbleRequestDTO.getCode());
-        String playerName = DogUtils.convertTokenToUsername(moveMarbleRequestDTO.getToken(), userService);
-
-        List<Marble> marbleList = currentGame.getGameService().getPlayableMarble(playerName, card, moveMarbleRequestDTO.getMoveName(), currentGame);
-        webSocketService.sendMarblesToPlayer(getIdentity(sha), marbleList, gameId);
-    }
-
-    @MessageMapping("game/{gameId}/target-fields-request")
-    public synchronized void targetFieldRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, GamePossibleTargetFieldRequestDTO gamePossibleTargetFieldRequestDTO){
-        log.info("Player" + getIdentity(sha) + ":Has requested TargetFieldList");
-        Game currentGame = gameEngine.getRunningGameByID(gameId);
-        currentGame.sendOutTargetFieldList(gamePossibleTargetFieldRequestDTO);
     }
 
     @MessageMapping("game/{gameId}/play")
