@@ -89,6 +89,5 @@ public class RESTGameController {
         Game currentGame = gameEngine.getRunningGameByID(gameId);
         Player player = gameEngine.findPlayerbyUsername(gameEngine.getRunningGameByID(gameId), DogUtils.convertTokenToUsername(token, userService));
         return gameEngine.getGameService().canPlay(player, currentGame);
-
     }
 }

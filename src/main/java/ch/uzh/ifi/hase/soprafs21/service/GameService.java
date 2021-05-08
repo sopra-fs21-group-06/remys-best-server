@@ -80,6 +80,7 @@ public class GameService {
             }
         }
         log.info("Current Player can't Play");
+        p.getHand().throwAwayHand();
         return null;
     }
 
@@ -265,6 +266,8 @@ public class GameService {
         }
         throw new Exception("MarbleId not in current player's marbles");
     }
+
+
 }
 
 
