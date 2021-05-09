@@ -59,29 +59,22 @@ public class GameService {
     }
 
     // TODO new endpoint
-    public CanPlayGetDTO canPlay(Player p, Game game){
+    public List<String> canPlay(Player p, Game game){
         List<Card> hand = p.getHand().getHandDeck();
+        List<String> cardCodes = new ArrayList<>();
         for (Card c: hand){
             List<IMove> moves = c.getMoves();
             for(IMove m: moves){
                 List<Marble> possibleMarbles = m.getPlayableMarbles(game,this);
                 if (!(possibleMarbles.isEmpty())){
-                    log.info("Player can play");
-                    CanPlayGetDTO canPlayGetDTO = new CanPlayGetDTO();
-                    canPlayGetDTO.setCardCode(c.getCode());
-                    List<Integer> marbles = new ArrayList<>();
-                    for(Marble mr: possibleMarbles){
-                        marbles.add(mr.getMarbleNr());
-                    }
-                    canPlayGetDTO.setMarbles(marbles);
-                    canPlayGetDTO.setMoveName(m.getName());
-                    return canPlayGetDTO;
+                    cardCodes.add(c.getCode());
                 }
             }
         }
-        log.info("Current Player can't Play");
-        p.getHand().throwAwayHand();
-        return null;
+        if(cardCodes.isEmpty()) {
+            p.getHand().throwAwayHand();
+        }
+        return cardCodes;
     }
 
     private void checkIsYourTurn(String playerName, Player currentPlayer) throws Exception {
