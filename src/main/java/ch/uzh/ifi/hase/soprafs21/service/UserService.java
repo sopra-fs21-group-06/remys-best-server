@@ -42,7 +42,6 @@ public class UserService {
     }
 
     public User findByUsername(String username) {
-        log.info("foooo");
         return this.userRepository.findByUsername(username);
     }
 
@@ -52,7 +51,7 @@ public class UserService {
 
     public User createUser(User newUser) {
         newUser.setToken(UUID.randomUUID().toString());
-        newUser.setStatus(UserStatus.FREE);
+        newUser.setStatus(UserStatus.Free);
 
         checkIfUserExists(newUser);
 
@@ -95,7 +94,7 @@ public class UserService {
         // 0 means user logged in with emailadress, 1 means user logged in with username
         User userToUpdate = usernameOrEmail == 0 ? userRepository.findByEmail(user.getUsername()): userRepository.findByUsername(user.getUsername());
         userToUpdate.setToken(UUID.randomUUID().toString());
-        userToUpdate.setStatus(UserStatus.FREE);
+        userToUpdate.setStatus(UserStatus.Free);
 
         userToUpdate = userRepository.save(userToUpdate);
         userRepository.flush();
@@ -151,7 +150,7 @@ public class UserService {
 
         User userToUpdate = userRepository.getOne(userRepository.findByToken(user.getToken()).getId());
         userToUpdate.setToken(null);
-        userToUpdate.setStatus(UserStatus.OFFLINE);
+        userToUpdate.setStatus(UserStatus.Offline);
 
         userRepository.save(userToUpdate);
         userRepository.flush();

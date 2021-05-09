@@ -1,12 +1,13 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameEndDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.*;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameEndDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -15,6 +16,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+
 
 import java.util.Objects;
 import java.util.UUID;
@@ -57,21 +59,44 @@ public class WSGameController {
         currentGame.getCurrentRound().sendOutCurrentTurnDTO();
         currentGame.sendOutCurrentTurnFactsDTO();
     }
-
-    @EventListener
+/*
+   @EventListener
     public synchronized void handleSessionDisconnect(SessionDisconnectEvent event) {
         String p = Objects.requireNonNull(event.getUser()).getName();
         if (p != null) {
             log.info("Player " + p + ": Connection lost");
             SimpMessageHeaderAccessor header = SimpMessageHeaderAccessor.wrap(event.getMessage());
-            GameEndDTO dto = new GameEndDTO();
-            String username = convertSessionIdentityToUserName(p,userService);
-            dto.setAborted(username);
-            log.info(username);
-            webSocketService.sentGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);
-            gameEngine.deleteGameByGameID(gameEngine.findGameIdByPlayerName(username));
-            log.info(username);
+            String username = convertSessionIdentityToUserName(p,gameEngine.getUserService());
+
+            //status change with users
+            //sessionIdentity null
+            //token null
+            if(gameEngine.isUserInGameSession(username)){
+                if(gameEngine.userIsHost(username)){
+                    //deletes gameSession and redirects users
+                    //need an empty DTO
+                    DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+                }else{
+                    //deletes user from gameSession and notifies users
+                    //gameEngine.deleteUserFromSession(username);
+                    DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+                }
+            }else if(gameEngine.userInWaitingRoom(username)){
+                // user deleted from waitingRoom;
+                //send list of current waiting users
+                DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+            }else if(gameEngine.userInGame(username)) {
+                GameEndDTO dto = new GameEndDTO();
+
+                dto.setAborted(username);
+                webSocketService.sentGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);
+                gameEngine.deleteGameByGameID(gameEngine.findGameIdByPlayerName(username));
+                DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+            }else{
+                DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+            }
         }
-    }
+    }*/
+
 }
 

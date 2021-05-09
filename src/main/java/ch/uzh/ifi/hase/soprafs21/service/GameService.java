@@ -4,11 +4,13 @@ import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
 import ch.uzh.ifi.hase.soprafs21.moves.IMove;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GameManagement.CanPlayGetDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.transaction.Transactional;
 import java.util.*;
 
@@ -57,7 +59,7 @@ public class GameService {
     }
 
     // TODO new endpoint
-    public Boolean canPlay(Player p, Game game){
+    public CanPlayGetDTO canPlay(Player p, Game game){
         List<Card> hand = p.getHand().getHandDeck();
         for (Card c: hand){
             List<IMove> moves = c.getMoves();
@@ -65,12 +67,21 @@ public class GameService {
                 List<Marble> possibleMarbles = m.getPlayableMarbles(game,this);
                 if (!(possibleMarbles.isEmpty())){
                     log.info("Player can play");
-                    return TRUE;
+                    CanPlayGetDTO canPlayGetDTO = new CanPlayGetDTO();
+                    canPlayGetDTO.setCardCode(c.getCode());
+                    List<Integer> marbles = new ArrayList<>();
+                    for(Marble mr: possibleMarbles){
+                        marbles.add(mr.getMarbleNr());
+                    }
+                    canPlayGetDTO.setMarbles(marbles);
+                    canPlayGetDTO.setMoveName(m.getName());
+                    return canPlayGetDTO;
                 }
             }
         }
         log.info("Current Player can't Play");
-        return FALSE;
+        p.getHand().throwAwayHand();
+        return null;
     }
 
     private void checkIsYourTurn(String playerName, Player currentPlayer) throws Exception {
@@ -255,6 +266,8 @@ public class GameService {
         }
         throw new Exception("MarbleId not in current player's marbles");
     }
+
+
 }
 
 

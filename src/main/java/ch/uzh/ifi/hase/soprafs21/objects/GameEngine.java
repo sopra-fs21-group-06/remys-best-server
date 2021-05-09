@@ -7,9 +7,7 @@ import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
-import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.WaitingRoomUserObjDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomChooseColorDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomSendOutCurrentUsersDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +16,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -99,6 +96,13 @@ public class GameEngine{
         }
     }
 
+    public void addinvitedUserToGameSession(User user, UUID gameSessionId){
+        GameSession gameSession = findGameSessionByID(gameSessionId);
+        assert gameSession != null;
+        gameSession.addInvitedUser(user);
+
+    }
+
     public void removeUserFromWaitingRoom(User user){
         waitingRoom.removeUser(user);
     }
@@ -153,7 +157,8 @@ public class GameEngine{
             this.gameSessionList.remove(findGameSessionByID(gameSessionId));
         }
     };
-    private GameSession findGameSessionByID(UUID id){
+
+    public GameSession findGameSessionByID(UUID id){
         try {
             for (GameSession gameSession : gameSessionList) {
                 if (gameSession.getID().equals(id)) {
@@ -265,7 +270,7 @@ public class GameEngine{
 
     /** check needs to happen if user available before calling method **/
     public void newGameSession(User host) {
-        if(host.getStatus().equals(UserStatus.FREE)){
+        if(host.getStatus().equals(UserStatus.Free)){
             GameSession gameSession = new GameSession(host);
             try {
                 gameSessionList.add(gameSession);
@@ -273,5 +278,52 @@ public class GameEngine{
                 System.out.println("Something went wrong in newGameSession");
             }
         }
+    }
+
+    public boolean userInWaitingRoom(String username) {
+        return waitingRoom.userInHere(userService.findByUsername(username));
+    }
+
+    public boolean isUserInGameSession(String username) {
+        for(GameSession gameSession: gameSessionList){
+            if(userInGameSession(userService.findByUsername(username),gameSession.getID())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean userIsHost(String username) {
+        for(GameSession gameSession: gameSessionList){
+            if(userInGameSession(userService.findByUsername(username),gameSession.getID())){
+                if(gameSession.isHost(username)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public GameSession findGameSessionByHostName(String hostName){
+        for(GameSession gs: gameSessionList){
+            if(gs.getHostName().equals(hostName)){
+                return gs;
+            }
+        }
+        return null;
+    }
+
+
+    public boolean userInGame(String username) {
+        return true;
+    }
+
+    public Player findPlayerbyUsername(Game game, String playerName){
+        for(Player p: game.getPlayerList()){
+            if(p.getPlayerName().equals(playerName)){
+                return p;
+            }
+        }
+        return null;
     }
 }

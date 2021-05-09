@@ -34,7 +34,7 @@ public class WSWaitingRoomController {
     public synchronized WaitingRoomSendOutCurrentUsersDTO registerPlayer(SimpMessageHeaderAccessor sha, WaitingRoomEnterDTO waitingRoomEnterDTO) {
         log.info("Player " + getIdentity(sha) + ": Message received");
         userService.updateUserIdentity(getIdentity(sha), waitingRoomEnterDTO.getToken());
-        userService.updateStatus(waitingRoomEnterDTO.getToken(), UserStatus.BUSY);
+        userService.updateStatus(waitingRoomEnterDTO.getToken(), UserStatus.Busy);
         gameEngine.addUserToWaitingRoom(userService.findByToken(waitingRoomEnterDTO.getToken()));
         WaitingRoomSendOutCurrentUsersDTO userObjDTOList = gameEngine.createWaitingRoomUserList();
         log.info(userObjDTOList.toString());
@@ -46,7 +46,7 @@ public class WSWaitingRoomController {
     @SendTo("/topic/waiting-room")
     public synchronized WaitingRoomSendOutCurrentUsersDTO unregisterPlayer(SimpMessageHeaderAccessor sha, WaitingRoomEnterDTO waitingRoomEnterDTO) {
         log.info("Player " + getIdentity(sha) + ": Message received");
-        userService.updateStatus(waitingRoomEnterDTO.getToken(), UserStatus.FREE);
+        userService.updateStatus(waitingRoomEnterDTO.getToken(), UserStatus.Free);
         gameEngine.removeUserFromWaitingRoom(gameEngine.getUserService().getUserRepository().findByToken(waitingRoomEnterDTO.getToken()));
         WaitingRoomSendOutCurrentUsersDTO userObjDTOList = gameEngine.createWaitingRoomUserList();
         log.info(userObjDTOList.toString());

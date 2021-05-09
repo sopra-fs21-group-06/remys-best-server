@@ -4,15 +4,14 @@ package ch.uzh.ifi.hase.soprafs21.service;
 import ch.uzh.ifi.hase.soprafs21.objects.Card;
 import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
 import ch.uzh.ifi.hase.soprafs21.objects.Player;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
+
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.FactDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameEndDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameFactsDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameListOfCardsDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.RoundCurrentPlayerDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomChooseColorDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -117,6 +121,62 @@ public class WebSocketService {
     public void sentGameEndMessage(String gameId, GameEndDTO gameEndDTO) {
         String path = "/game/%s/game-end";
         sendToTopic(String.format(path, gameId), gameEndDTO);
+    }
+
+    public void sentGameSessionEndMessage(String gameSessionId, String hostName) {
+
+        String path = "/gamesession/%s/gamesession-end";
+        sendToTopic(String.format(path, gameSessionId),
+                    DogUtils.generateGameSessionHostLeftDTO(hostName));
+    }
+
+    public void sendGameSessionInvitedUserList(UUID gameSessionId, List<User> invitedUserList){
+        String path = "/gamesession/%s/invited-user";
+        sendToTopic(String.format(path, gameSessionId.toString()),
+                DogUtils.generateGameSessionInvitedUsersDTO(invitedUserList));
+
+    }
+
+    public void sendGameSessionInvitedUserCounter(GameSession gameSession, String userName, String sessionIdentity) throws InterruptedException {
+
+        final int[] counter = {15};
+        TimerTask task = new TimerTask() {
+            public void run() {
+                RequestCountDownDTO requestCountDownDTO = DogUtils.generateRequestCountDownDTO(counter[0], userName);
+                broadCastRequestCountdown(gameSession.getID(),requestCountDownDTO );
+                sendRequestCountdown(sessionIdentity, requestCountDownDTO);
+                counter[0]--;
+                if(counter[0] < 0 || gameSession.userInInvitedUsers(userName)){
+                    cancel();
+                }
+            }
+        };
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        long delay = 1000L;
+        long period = 1000L;
+        executor.scheduleAtFixedRate(task, delay, period, TimeUnit.MILLISECONDS);
+        Thread.sleep(1000L*15);
+        executor.shutdown();
+
+    }
+
+    private void broadCastRequestCountdown(UUID gameSessionId, RequestCountDownDTO requestCountDownDTO){
+        String path = "/gamesession/%s/countdown";
+        sendToTopic(String.format(path, gameSessionId.toString()),
+                    requestCountDownDTO);
+    }
+
+    private void sendRequestCountdown(String sessionIdentity, RequestCountDownDTO requestCountDownDTO){
+        String path = "gamesession/countdown";
+        sendToPlayer(sessionIdentity, path,
+                    requestCountDownDTO);
+
+    }
+
+    public void sendGameSessionInvitation(UUID gameSessionId, String sessionIdentityOfInvitedUser, String hostName){
+        String path = "/gamesession/invitation";
+        sendToPlayer(sessionIdentityOfInvitedUser, path, DogUtils.generateGameSessoinInviteUserDTO(gameSessionId, hostName));
     }
 
 }

@@ -11,15 +11,19 @@ import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.RoundMoveListDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import ch.uzh.ifi.hase.soprafs21.objects.Card;
+import ch.uzh.ifi.hase.soprafs21.objects.Game;
+import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
+import ch.uzh.ifi.hase.soprafs21.objects.Player;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GameManagement.CanPlayGetDTO;
 
-@Controller
+@RestController
+
 public class RESTGameController {
     Logger log = LoggerFactory.getLogger(WSGameController.class);
     private final GameEngine gameEngine;
@@ -75,5 +79,15 @@ public class RESTGameController {
         Card cardToPlay = new Card(code);
         List<String> targetFields = gameService.getPossibleTargetFields(currentMarble, moveName, cardToPlay, currentGame);
         return DogUtils.generatePossibleTargetFieldKeyListDTO(targetFields);
+    }
+
+    @GetMapping("/game/{gameId}/throw-away")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseBody
+    public CanPlayGetDTO loginUser(@PathVariable UUID gameId, HttpServletRequest request){
+        String token = request.getHeader("Authorization");
+        Game currentGame = gameEngine.getRunningGameByID(gameId);
+        Player player = gameEngine.findPlayerbyUsername(gameEngine.getRunningGameByID(gameId), DogUtils.convertTokenToUsername(token, userService));
+        return gameEngine.getGameService().canPlay(player, currentGame);
     }
 }
