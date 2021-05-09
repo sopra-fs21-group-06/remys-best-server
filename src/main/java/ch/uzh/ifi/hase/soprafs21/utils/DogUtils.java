@@ -83,15 +83,17 @@ public class DogUtils {
 
         return factList;
     }
-   public static GameNotificationDTO generateGameNotificatoinDTO(String playerName, String action, String card) {
+   public static GameNotificationDTO generateGameNotificatoinDTO(String playerName, String action, String cardCode) {
        GameNotificationDTO gameNotificationDTO = new GameNotificationDTO();
        gameNotificationDTO.setPlayerName(playerName);
        gameNotificationDTO.setAction(action);
-       gameNotificationDTO.setCard(card);
+       if(cardCode != null) {
+           gameNotificationDTO.setCard(Card.convertCardCodeToCardName(cardCode));
+       }
        return gameNotificationDTO;
    }
 
-   public static RoundMoveListDTO generateRoundMoveListDTO(List<CardMove> moveList){
+    public static RoundMoveListDTO generateRoundMoveListDTO(List<CardMove> moveList){
        RoundMoveListDTO roundMoveListDTO = new RoundMoveListDTO();
        List<MoveDTO> moveListDTO = new ArrayList<>();
 
