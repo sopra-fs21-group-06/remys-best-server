@@ -78,6 +78,59 @@ public class Card {
     public ArrayList<IMove> getMoves() {
         return new ArrayList<>(moves);
     }
+
+    public static String convertCardCodeToCardName(String cardCode) {
+        String value = cardCode.substring(0, 1);
+
+        if("X".equals(value)) {
+            return "Joker";
+        }
+
+        String suit = cardCode.substring(1, 2);
+        String suitName = "";
+        if ("H".equals(suit)) {
+            suitName += "Hearts";
+        } else if ("D".equals(suit)){
+            suitName += "Diamonds";
+        } else if ("C".equals(suit)){
+            suitName += "Clubs";
+        } else {
+            suitName += "Spades";
+        }
+
+        String cardName = "";
+        if ("2".equals(value)) {
+            cardName += "Two";
+        } else if ("3".equals(value)){
+            cardName += "Three";
+        } else if ("4".equals(value)){
+            cardName += "Four";
+        } else if ("5".equals(value)){
+            cardName += "Five";
+        } else if ("6".equals(value)) {
+            cardName += "Six";
+        } else if ("7".equals(value)){
+            cardName += "Seven";
+        } else if ("8".equals(value)){
+            cardName += "Eight";
+        } else if ("9".equals(value)){
+            cardName += "Nine";
+        } else if ("0".equals(value)){
+            cardName += "Ten";
+        } else if ("J".equals(value)){
+            cardName += "Jack";
+        } else if ("Q".equals(value)){
+            cardName += "Queen";
+        } else if ("K".equals(value)){
+            cardName += "King";
+        } else if ("A".equals(value)){
+            cardName += "Ace";
+        } else {
+            cardName += "Card";
+        }
+
+        return suitName + " " + cardName;
+    }
 }
 
 

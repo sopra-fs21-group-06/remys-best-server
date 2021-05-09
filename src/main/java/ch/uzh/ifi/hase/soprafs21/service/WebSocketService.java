@@ -71,10 +71,10 @@ public class WebSocketService {
         sendNotificationMessage(null, action, null, gameId);
     }
 
-    public void sendNotificationMessage(String playerName, String action, String card, UUID gameId) {
+    public void sendNotificationMessage(String playerName, String action, String cardCode, UUID gameId) {
         String pathNotifications = "/game/%s/notification";
         sendToTopic(String.format(pathNotifications, gameId.toString()),
-                    DogUtils.generateGameNotificatoinDTO(playerName, action, card));
+                    DogUtils.generateGameNotificatoinDTO(playerName, action, cardCode));
     }
 
     public void sendCurrentTurnMessage(String playerName, UUID gameId) {

@@ -17,16 +17,15 @@ import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
  * Provides general WebSocket endpoints and handles session disconnects
  */
 @Controller
-public class WebSocketController {
+public class WSHomeController {
 
-    Logger log = LoggerFactory.getLogger(WebSocketController.class);
+    Logger log = LoggerFactory.getLogger(WSHomeController.class);
 
     private final GameEngine gameEngine;
 
-    public WebSocketController(GameEngine gameEngine) {
+    public WSHomeController(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
     }
-
 
     @MessageMapping("/home/register")
     public synchronized void registerUser(SimpMessageHeaderAccessor sha, HomeRegisterDTO homeRegisterDTO) {
