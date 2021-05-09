@@ -72,10 +72,4 @@ public class WSGameSessionController {
             //webSocketService.sendCurrentUserListOutAgain
         }
     }
-
-    @MessageMapping("/gamesession/{gamesessionId}/fill-up")
-    public synchronized void fillUpGameSession(@DestinationVariable UUID gameSessionid, SimpMessageHeaderAccessor sha){
-        log.info("Player" + getIdentity(sha) + ": Triggered gameSession Fill-Up");
-        GameSession currentGameSession = gameEngine.findGameSessionByID(gameSessionid);
-    }
 }

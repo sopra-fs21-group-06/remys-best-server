@@ -13,9 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -327,21 +325,5 @@ public class GameEngine{
             }
         }
         return null;
-    }
-
-    public Game createGameFromGameSessionAndFillUp(GameSession gameSession){
-
-        int numberOfUsersToInvite = 4 - gameSession.getUserList().size();
-
-        if(!gameSession.getInvitedUsers().isEmpty()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cant use FillUp while there are still pending gameRequests");
-        }
-        else if(numberOfUsersToInvite > waitingRoom.getUserCount()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There are too few users in WaitingRoom to fillUp");
-        }
-        else{
-            gameSession.getUserList().addAll(waitingRoom.getXNumberOfUsers(numberOfUsersToInvite));
-            return createGameFromGameSession(gameSession);
-        }
     }
 }
