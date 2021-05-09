@@ -105,9 +105,15 @@ public class WebSocketService {
         sendToPlayer(userSessionIdentity, String.format(path, gameId.toString()), gameListOfCardsDTO);
     }
 
-    public void sendGameAssignmentMessage(String userSessionIdentity, List<Player> players, UUID gameId) {
+    public void sendGameAssignmentMessageToWaitingRoom(String userSessionIdentity, List<Player> players, UUID gameId) {
         WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = DogUtils.convertPlayersToWaitingRoomChooseColorDTO(players, gameId);
         String path = "/waiting-room";
+        sendToPlayer(userSessionIdentity, path, waitingRoomChooseColorDTO);
+    }
+
+    public void sendGameAssignmentMessageToGameSession(String userSessionIdentity, List<Player> players, UUID gameId) {
+        WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = DogUtils.convertPlayersToWaitingRoomChooseColorDTO(players, gameId);
+        String path = "/gamesession/ready";
         sendToPlayer(userSessionIdentity, path, waitingRoomChooseColorDTO);
     }
 

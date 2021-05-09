@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.objects.GameSession;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
@@ -77,5 +78,6 @@ public class WSGameSessionController {
     public synchronized void fillUpGameSession(@DestinationVariable UUID gameSessionid, SimpMessageHeaderAccessor sha){
         log.info("Player" + getIdentity(sha) + ": Triggered gameSession Fill-Up");
         GameSession currentGameSession = gameEngine.findGameSessionByID(gameSessionid);
+        gameEngine.createGameFromGameSessionAndFillUp(currentGameSession);
     }
 }
