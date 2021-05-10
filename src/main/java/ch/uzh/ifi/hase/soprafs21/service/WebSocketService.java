@@ -185,4 +185,11 @@ public class WebSocketService {
         sendToPlayer(sessionIdentityOfInvitedUser, path, DogUtils.generateGameSessoinInviteUserDTO(gameSessionId, hostName));
     }
 
+    public void broadcastThrowAway(UUID gameId, String playerName, List<String> cardCodes){
+        String path = "/game/%s/throwaway";
+        sendToTopic(String.format(path, gameId.toString()),
+                    DogUtils.generateGameThrowAwayDTO(playerName, cardCodes));
+
+    }
+
 }

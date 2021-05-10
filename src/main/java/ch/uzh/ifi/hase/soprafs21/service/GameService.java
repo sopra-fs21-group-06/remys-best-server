@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
 import ch.uzh.ifi.hase.soprafs21.moves.IMove;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GameManagement.CanPlayGetDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameThrowAwayDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +63,10 @@ public class GameService {
     public List<String> canPlay(Player p, Game game){
         List<Card> hand = p.getHand().getHandDeck();
         List<String> cardCodes = new ArrayList<>();
+        List<String> handAsCardCode = new ArrayList<>();
         for (Card c: hand){
             List<IMove> moves = c.getMoves();
+            handAsCardCode.add(c.getCode());
             for(IMove m: moves){
                 List<Marble> possibleMarbles = m.getPlayableMarbles(game,this);
                 if (!(possibleMarbles.isEmpty())){
@@ -72,6 +75,7 @@ public class GameService {
             }
         }
         if(cardCodes.isEmpty()) {
+            webSocketService.broadcastThrowAway(game.getGameId(), p.getPlayerName(), handAsCardCode);
             p.getHand().throwAwayHand();
         }
         return cardCodes;
