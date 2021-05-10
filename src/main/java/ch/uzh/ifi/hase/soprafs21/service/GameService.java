@@ -62,7 +62,7 @@ public class GameService {
     // TODO new endpoint
     public List<String> canPlay(Player p, Game game){
         List<Card> hand = p.getHand().getHandDeck();
-        List<String> cardCodes = new ArrayList<>();
+        List<String> playableCardCodes = new ArrayList<>();
         List<String> handAsCardCode = new ArrayList<>();
         for (Card c: hand){
             List<IMove> moves = c.getMoves();
@@ -70,15 +70,15 @@ public class GameService {
             for(IMove m: moves){
                 List<Marble> possibleMarbles = m.getPlayableMarbles(game,this);
                 if (!(possibleMarbles.isEmpty())){
-                    cardCodes.add(c.getCode());
+                    playableCardCodes.add(c.getCode());
                 }
             }
         }
-        if(cardCodes.isEmpty()) {
+        if(playableCardCodes.isEmpty()) {
             webSocketService.broadcastThrowAway(game.getGameId(), p.getPlayerName(), handAsCardCode);
             p.getHand().throwAwayHand();
         }
-        return cardCodes;
+        return playableCardCodes;
     }
 
     private void checkIsYourTurn(String playerName, Player currentPlayer) throws Exception {

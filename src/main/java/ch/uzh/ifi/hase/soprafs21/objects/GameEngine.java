@@ -36,6 +36,7 @@ public class GameEngine{
     private final UserService userService;
     private final WebSocketService webSocketService;
     private final GameService gameService;
+    private static final int PLAYER_AMOUNT = 4;
     Logger log = LoggerFactory.getLogger(GameEngine.class);
 
 
@@ -331,7 +332,7 @@ public class GameEngine{
 
     public void createGameFromGameSessionAndFillUp(GameSession gameSession){
 
-        int numberOfUsersToInvite = 4 - gameSession.getUserList().size();
+        int numberOfUsersToInvite = PLAYER_AMOUNT - gameSession.getUserList().size();
 
         if(!gameSession.getInvitedUsers().isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cant use FillUp while there are still pending gameRequests");
