@@ -47,7 +47,7 @@ public class WSGameSessionController {
 
             gameEngine.addinvitedUserToGameSession(invitedUser, gamesessionId);
             webSocketService.sendGameSessionInvitation(gamesessionId,  DogUtils.convertUserNameToSessionIdentity(gameRequestDTO.getUsername(), userService), DogUtils.convertTokenToUsername(gameRequestDTO.getToken(), userService));
-            webSocketService.sendGameSessionInvitedUserList(gamesessionId, currentGameSession.getInvitedUsers());
+            webSocketService.broadcastGameSessionInvitedUserList(gamesessionId, currentGameSession.getInvitedUsers());
             webSocketService.sendGameSessionInvitedUserCounter(currentGameSession, invitedUser.getUsername(), sessionIdentityInvitedUser);}
         catch (Exception e){
             log.info(e.toString());
@@ -60,7 +60,7 @@ public class WSGameSessionController {
         GameSession currentGameSession = gameEngine.findGameSessionByID(gamesessionId);
         User userLeaver = userService.getUserRepository().findByToken(gameSessionLeaveDTO.getToken());
         if(gameEngine.userIsHost(userLeaver.getUsername())){
-            webSocketService.sentGameSessionEndMessage(gamesessionId.toString(), userLeaver.getUsername());
+            webSocketService.broadcastGameSessionEndMessage(gamesessionId.toString(), userLeaver.getUsername());
             for(User u: currentGameSession.getUserList()){
                 userService.updateStatus(u.getToken(), UserStatus.Free);
             }
@@ -71,5 +71,12 @@ public class WSGameSessionController {
             currentGameSession.deleteUser(userLeaver);
             //webSocketService.sendCurrentUserListOutAgain
         }
+    }
+
+    @MessageMapping("/gamesession/{gamesessionId}/fill-up")
+    public synchronized void fillUpGameSession(@DestinationVariable UUID gameSessionid, SimpMessageHeaderAccessor sha){
+        log.info("Player" + getIdentity(sha) + ": Triggered gameSession Fill-Up");
+        GameSession currentGameSession = gameEngine.findGameSessionByID(gameSessionid);
+        gameEngine.createGameFromGameSessionAndFillUp(currentGameSession);
     }
 }

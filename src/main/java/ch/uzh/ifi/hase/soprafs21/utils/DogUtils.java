@@ -180,4 +180,11 @@ public class DogUtils {
         gameSessionInviteUserDTO.setHostName(hostName);
         return gameSessionInviteUserDTO;
     }
+
+    public static GameThrowAwayDTO generateGameThrowAwayDTO(String playerName, List<String> cardCodes){
+        GameThrowAwayDTO gameThrowAwayDTO = new GameThrowAwayDTO();
+        gameThrowAwayDTO.setPlayerName(playerName);
+        gameThrowAwayDTO.setCardCodes(cardCodes);
+        return gameThrowAwayDTO;
+    }
 }
