@@ -63,17 +63,11 @@ public abstract class AbstractForwards implements IMove {
         return possibleTargetFieldKeys;
     }
 
-<<<<<<< Updated upstream
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
 
-        Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
-        Marble marbleToMove = targetField.getMarble();
-=======
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList) {
->>>>>>> Stashed changes
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
         MarbleIdAndTargetFieldKey result = null;
-        Field targetField =game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKeyArrayList.get(0).getFieldKey());
+        Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKeyArrayList.get(0).getFieldKey());
         Marble marbleToMove = null;
         for(Marble m: game.getCurrentRound().getCurrentPlayer().getMarbleList()){
             if(m.getMarbleNr() == marbleIdAndTargetFieldKeyArrayList.get(0).getMarbleId()){

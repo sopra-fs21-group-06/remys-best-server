@@ -47,9 +47,6 @@ public class FourBackwards implements IMove {
     }
 
     @Override
-<<<<<<< Updated upstream
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
-=======
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList) {
         Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKeyArrayList.get(0).getFieldKey());
         Marble marbleToMove = null;
@@ -58,10 +55,7 @@ public class FourBackwards implements IMove {
                 marbleToMove = m;
             }
         }
->>>>>>> Stashed changes
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
-        Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
-        Marble marbleToMove = targetField.getMarble();
         MarbleIdAndTargetFieldKey result = game.getGameService().eat(targetField,game);
         if(!(result == null)){
             marbleIdAndTargetFieldKeys.add(result);

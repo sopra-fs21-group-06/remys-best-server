@@ -27,12 +27,7 @@ public class SixForwards extends AbstractForwards{
     }
 
     @Override
-<<<<<<< Updated upstream
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
-        return super.executeMove(game, marbleIdAndTargetFieldKey);
-=======
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList) {
         return super.executeMove(game, marbleIdAndTargetFieldKeyArrayList);
->>>>>>> Stashed changes
     }
 }

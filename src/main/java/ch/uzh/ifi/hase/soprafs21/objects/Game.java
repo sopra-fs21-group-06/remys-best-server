@@ -276,16 +276,8 @@ public class Game {
             MarbleIdAndTargetFieldKey mIdFieldKey = new MarbleIdAndTargetFieldKey(m.getMarbleId(), m.getTargetFieldKey());
             marbleIdsAndTargetFieldKey.add(mIdFieldKey);
         }
-
         try {
-<<<<<<< Updated upstream
-            for(MarbleExecuteCardDTO m: tupleList) {
-                marbleIdsAndTargetFieldKeys.addAll(gameService.makeMove(playerName, cardCode, moveName, this, executePlayCardDTO.getMarbleIdAndTargetFieldKey()));
-            }
-=======
             marbleIdsAndTargetFieldKeys.addAll(gameService.makeMove(playerName, cardCode, moveName, this, marbleIdsAndTargetFieldKey));
-
->>>>>>> Stashed changes
         } catch (Exception e) {
             e.printStackTrace();
             // TODO send error via websocket and abort, websocketService.sendPrivateError() to be implemented

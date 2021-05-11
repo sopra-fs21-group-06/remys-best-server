@@ -23,7 +23,7 @@ public class Exchange implements IMove {
         List<String> possibleTargetFieldKeys = new ArrayList<>();
         for (Player p: game.getPlayerList()) {
             if (!p.equals(game.getCurrentRound().getCurrentPlayer())) {
-                for (Marble m : p.getmarblesOnFieldNotHomeNotOnStart()) {
+                for (Marble m : p.getMarblesOnFieldNotHomeNotOnStart()) {
                     if (marbleToMove.getMarbleNr() != m.getMarbleNr()) {
                         possibleTargetFieldKeys.add(m.getCurrentField().getFieldKey());
                     }
@@ -34,18 +34,10 @@ public class Exchange implements IMove {
     }
 
     @Override
-<<<<<<< Updated upstream
-    public List<Marble> getPlayableMarbles(Game game, GameService gameService) {
-         List<Marble> possibleMarbles = new ArrayList<>();
-        List<Marble> marblesOnFieldAndNotFinished = game.getCurrentRound().getCurrentPlayer().getMarblesOnFieldAndNotFinished();
-        for(Marble m: marblesOnFieldAndNotFinished) {
-            if (!(m.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED))){
-=======
     public List<Marble> getPlayableMarbles(Game game, GameService gameService, int remainSeven) {
         List<Marble> possibleMarbles = new ArrayList<>();
-        for (Marble m : game.getCurrentRound().getCurrentPlayer().getmarblesOnFieldNotHomeNotOnStart()) {
+        for (Marble m : game.getCurrentRound().getCurrentPlayer().getMarblesOnFieldNotHomeNotOnStart()) {
             if (!(m.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED))) {
->>>>>>> Stashed changes
                 possibleMarbles.add(m);
             }
         }
@@ -55,11 +47,6 @@ public class Exchange implements IMove {
     
 
     @Override
-<<<<<<< Updated upstream
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
-        Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
-        Marble marbleToMove = targetField.getMarble();
-=======
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList) {
         Field targetField =game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKeyArrayList.get(0).getFieldKey());
         Marble marbleToMove = null;
@@ -68,7 +55,6 @@ public class Exchange implements IMove {
                 marbleToMove = m;
             }
         }
->>>>>>> Stashed changes
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
         String fieldKeyNewTeamMate = marbleToMove.getCurrentField().getFieldKey();
         Marble marbleTeamMate = targetField.getMarble();
@@ -77,7 +63,6 @@ public class Exchange implements IMove {
         marbleIdAndTargetFieldKeys.add(result1);
         marbleIdAndTargetFieldKeys.add(result2);
         game.getPlayingBoard().makeJackMove(targetField, marbleToMove);
-
         return marbleIdAndTargetFieldKeys;
     }
 }

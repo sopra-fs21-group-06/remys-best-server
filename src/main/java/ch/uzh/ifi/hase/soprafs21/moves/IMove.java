@@ -13,9 +13,6 @@ public interface IMove {
 
     List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int remainSeven); // TODO seven needs to track already selected moves List<MarbleAndTargetField>??
 
-<<<<<<< Updated upstream
-    ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey);
-=======
     ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList);
->>>>>>> Stashed changes
+
 }

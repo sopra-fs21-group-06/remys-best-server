@@ -11,16 +11,7 @@ public class ExecutePlayCardDTO {
     private String code;
     private String moveName;
     private List<MarbleExecuteCardDTO> marbles;
-<<<<<<< Updated upstream
-    private MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey;
 
-    public MarbleIdAndTargetFieldKey getMarbleIdAndTargetFieldKey() {
-        return marbleIdAndTargetFieldKey;
-    }
-
-    public void setMarbleIdAndTargetFieldKey(MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
-        this.marbleIdAndTargetFieldKey = marbleIdAndTargetFieldKey;
-=======
 
     public List<MarbleExecuteCardDTO>  getMarbles() {
         return marbles;
@@ -28,7 +19,7 @@ public class ExecutePlayCardDTO {
 
     public void setMarbleIdAndTargetFieldKeys(List<MarbleExecuteCardDTO> marbles) {
         this.marbles = marbles;
->>>>>>> Stashed changes
+
     }
 
     public String getToken() {

@@ -8,7 +8,7 @@ import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElevenForwards extends AbstractForwards{
+public class ElevenForwards extends AbstractForwards {
     private static final int NUMBER_TO_GO_FORWARDS = 11;
 
     @Override
@@ -25,14 +25,9 @@ public class ElevenForwards extends AbstractForwards{
     public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int remainSeven) {
         return super.getPossibleTargetFields(game, marbleToMove, NUMBER_TO_GO_FORWARDS, remainSeven);
     }
-
     @Override
-<<<<<<< Updated upstream
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
-        return super.executeMove(game, marbleIdAndTargetFieldKey);
-=======
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList) {
+    public ArrayList<MarbleIdAndTargetFieldKey> executeMove (Game game, ArrayList < MarbleIdAndTargetFieldKey > marbleIdAndTargetFieldKeyArrayList){
         return super.executeMove(game, marbleIdAndTargetFieldKeyArrayList);
->>>>>>> Stashed changes
     }
+
 }

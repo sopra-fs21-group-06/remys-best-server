@@ -19,16 +19,10 @@ public class GoToStart implements IMove {
 
 
     @Override
-<<<<<<< Updated upstream
-    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove) {
-        Field targetField = game.getPlayingBoard().getField(16, game.getCurrentRound().getCurrentPlayer().getColor());
-        List<String> possibleTargetFieldKeys = new ArrayList<>();
-=======
     public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int remainSeven) {
         Field targetField = game.getPlayingBoard().getField(16, game.getCurrentRound().getCurrentPlayer().getColor());
         List<String> possibleTargetFieldKeys = new ArrayList<>();
         possibleTargetFieldKeys.add(targetField.getFieldKey());
->>>>>>> Stashed changes
         if (!targetField.getFieldStatus().equals(FieldStatus.BLOCKED)) {
             possibleTargetFieldKeys.add(targetField.getFieldKey());
         }
@@ -55,11 +49,6 @@ public class GoToStart implements IMove {
     }
 
     @Override
-<<<<<<< Updated upstream
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
-        Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
-        Marble marbleToMove = targetField.getMarble();
-=======
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList) {
         Field targetField =game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKeyArrayList.get(0).getFieldKey());
         Marble marbleToMove = null;
@@ -68,7 +57,6 @@ public class GoToStart implements IMove {
                 marbleToMove = m;
             }
         }
->>>>>>> Stashed changes
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
         MarbleIdAndTargetFieldKey result = game.getGameService().eat(targetField,game);
         if(!(result == null)){

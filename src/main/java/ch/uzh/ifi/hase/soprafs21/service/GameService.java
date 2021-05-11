@@ -167,13 +167,9 @@ public class GameService {
         return moveToGetPlayableMarbles.getPossibleTargetFields(game, marbleToMove,remainSeven );
     }
 
-<<<<<<< Updated upstream
-    public ArrayList<MarbleIdAndTargetFieldKey> makeMove(String playerName, String cardCodeToPlay,  String moveName, Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) throws Exception {
-        String targetFieldKey = "";
-        int marbleIdToMove = 0;
-=======
+
     public ArrayList<MarbleIdAndTargetFieldKey> makeMove(String playerName, String cardCodeToPlay, String moveName, Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys) throws Exception {
->>>>>>> Stashed changes
+
         Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
         Card cardToPlay = new Card(cardCodeToPlay);
 
@@ -193,12 +189,7 @@ public class GameService {
         if(moveToExecute == null) {
             throw new Exception("Something strange happened");
         }
-
-<<<<<<< Updated upstream
-        ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = moveToExecute.executeMove(game, marbleIdAndTargetFieldKey);
-=======
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = moveToExecute.executeMove(game,marbleIdAndTargetFieldKeys );
->>>>>>> Stashed changes
         game.getCurrentRound().getCurrentPlayer().layDownCard(cardToPlay);
         // TODO finished player checks
         game.getCurrentRound().changeCurrentPlayer();
@@ -246,31 +237,7 @@ public class GameService {
         log.info("Cardvalue not playeble checkmove");
         return FALSE;
     }
-    public List<Marble> getMarblesToChangeWithJack (List < Marble > marblesOnField, Player p){
-        List<Marble> marblesMate = p.getTeamMate().getMarblesOnField();
-        List<Marble> marblesPlayer = marblesOnField;
-        List<Marble> possibleMarbles = null;
-        for (int i = 0; i < 4; i++) {
-            if (!(marblesMate.get(i).getMarbleIsBlockingAndOnStart())) {
-                possibleMarbles.add(marblesMate.get(i));
-            }
-            if (!(marblesPlayer.get(i).getMarbleIsBlockingAndOnStart())) {
-                marblesPlayer.add(marblesMate.get(i));
-            }
-        }
-        if (marblesPlayer.size() > 0 && possibleMarbles.size() > 1) {
-            for (Marble m : possibleMarbles) {
-                Color color = m.getColor();
-                int i = m.getCurrentField().getFieldValue();
-                log.info("Marble C: " + color + "FieldVal" + i);
-            }
-            return possibleMarbles;
-        }
-        else {
-            log.info("No marble possible with this card(JACK");
-            return null;
-        }
-    }
+
 
     public void endTurn(Game game){
         //CHeck if player is finished if yes change marbles & colors
@@ -289,7 +256,7 @@ public class GameService {
              Marble marbleToEat = endField.getMarble();
              game.getPlayingBoard().sendHome(marbleToEat);
              String colorInString = marbleToEat.getColor().getId();
-             int newPositionFieldValue = 24 - game.getPlayingBoard().getNumberMarblesAtHome(game.getCurrentRound().getCurrentPlayer().getColor());
+             int newPositionFieldValue = 25 - game.getPlayingBoard().getNumberMarblesAtHome(game.getCurrentRound().getCurrentPlayer().getColor());
              String newPositionFieldValueAsString = String.valueOf(newPositionFieldValue);
              result = new MarbleIdAndTargetFieldKey(marbleToEat.getMarbleNr(), newPositionFieldValueAsString+colorInString);
         }
