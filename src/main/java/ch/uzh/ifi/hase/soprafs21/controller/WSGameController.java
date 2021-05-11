@@ -5,7 +5,6 @@ import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
-import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.ExecutePlayCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameCardExchange;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameReadyDTO;
@@ -37,14 +36,14 @@ public class WSGameController {
     public synchronized void ready(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, GameReadyDTO gameReadyDTO) {
         log.info("Player " + getIdentity(sha) + ": Ready for game received");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
-        currentGame.setPlayerToReady(DogUtils.convertTokenToUsername(gameReadyDTO.getToken(), userService));
+        currentGame.setPlayerToReady(userService.convertTokenToUsername(gameReadyDTO.getToken()));
     }
 
     @MessageMapping("/game/{gameId}/card-exchange")
     public synchronized void cardExchange(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, GameCardExchange gameCardExchange){
         log.info("Player" + getIdentity(sha) + ": Has cardExchangePerformed");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
-        currentGame.setCardExchange(DogUtils.convertTokenToUsername(gameCardExchange.getToken(), userService), gameCardExchange.getCode());
+        currentGame.setCardExchange(userService.convertTokenToUsername(gameCardExchange.getToken()), gameCardExchange.getCode());
     }
 
     @MessageMapping("game/{gameId}/play")

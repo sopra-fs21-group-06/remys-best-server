@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.moves.IMove;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GameManagement.CanPlayGetDTO;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
@@ -12,15 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import ch.uzh.ifi.hase.soprafs21.objects.Card;
-import ch.uzh.ifi.hase.soprafs21.objects.Game;
-import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
-import ch.uzh.ifi.hase.soprafs21.objects.Player;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.GameManagement.CanPlayGetDTO;
 
 @RestController
 
@@ -42,8 +39,6 @@ public class RESTGameController {
     @ResponseBody
     public RoundMoveListDTO getMoves(@PathVariable UUID gameId, @RequestParam String code) {
         //log.info("Player" + getIdentity(sha) + ": Has made a moverequest");
-        Game currentGame = gameEngine.getRunningGameByID(gameId);
-        Player p = currentGame.getCurrentRound().getCurrentPlayer();
 
         Card card = new Card(code);
         List<CardMove> moves = new ArrayList<>();
@@ -64,7 +59,7 @@ public class RESTGameController {
         Game currentGame = gameEngine.getRunningGameByID(gameId);
 
         Card card = new Card(code);
-        String playerName = DogUtils.convertTokenToUsername(token, userService);
+        String playerName = userService.convertTokenToUsername(token);
 
         List<Marble> marbleList = currentGame.getGameService().getPlayableMarble(playerName, card, moveName, currentGame);
         return DogUtils.generateRoundMarblesListDTO(marbleList);
@@ -87,7 +82,7 @@ public class RESTGameController {
     public List<String> loginUser(@PathVariable UUID gameId, HttpServletRequest request){
         String token = request.getHeader("Authorization");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
-        Player player = gameEngine.findPlayerbyUsername(gameEngine.getRunningGameByID(gameId), DogUtils.convertTokenToUsername(token, userService));
+        Player player = gameEngine.findPlayerbyUsername(gameEngine.getRunningGameByID(gameId), userService.convertTokenToUsername(token));
         return gameEngine.getGameService().canPlay(player, currentGame);
     }
 }

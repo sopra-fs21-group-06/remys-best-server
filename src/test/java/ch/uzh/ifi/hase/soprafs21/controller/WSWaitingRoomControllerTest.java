@@ -7,10 +7,7 @@ import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.WaitingRoomUserObjDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.WaitingRoomEnterDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomSendOutCurrentUsersDTO;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +63,10 @@ public class WSWaitingRoomControllerTest {
     }
 
     // TODO reset Database after every test!!
+    @AfterEach
+    void resetUserRepository() {
+        gameEngine.getUserService().getUserRepository().deleteAll();
+    }
     // TODO clean up game engine state after every test!!
 
     private WaitingRoomEnterDTO generateWaitingRoomEnterDTO(User user) {
@@ -124,7 +125,7 @@ public class WSWaitingRoomControllerTest {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCurrentUsers().get(0).getUsername(), testUser.getUsername());
         Assertions.assertFalse(response.getCurrentUsers().isEmpty());
-        session.send("/app/waiting-room/unregister", waitingRoomSample);
+        //session.send("/app/waiting-room/unregister", waitingRoomSample);
     }
 
     @Test

@@ -4,7 +4,6 @@ import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
-import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.ExecutePlayCardDTO;
 
@@ -25,7 +24,7 @@ public class Game {
     private int roundCount = 0;
     private Round currentRound;
     private int cardCount = 54;
-    private final GameService gameService = GameService.getInstance();
+    private GameService gameService = GameService.getInstance();
     private final WebSocketService webSocketService;
 
     /**can throw nullPointerException **/
@@ -35,6 +34,10 @@ public class Game {
             playerList.add(userToPlayer(user));
         }
         this.startPlayer = playerList.get(0);
+    }
+
+    public void setGameService(GameService gameService) {
+        this.gameService = gameService;
     }
 
     /*
@@ -266,7 +269,7 @@ public class Game {
     }
 
     public void sendExecutedMove(ExecutePlayCardDTO executePlayCardDTO){
-        String playerName = DogUtils.convertTokenToUsername(executePlayCardDTO.getToken(), gameService.getUserService());
+        String playerName = gameService.getUserService().convertTokenToUsername(executePlayCardDTO.getToken());
         String cardCode = executePlayCardDTO.getCode();
         String moveName = executePlayCardDTO.getMoveName();
         List<MarbleExecuteCardDTO> tupleList = executePlayCardDTO.getMarbles();

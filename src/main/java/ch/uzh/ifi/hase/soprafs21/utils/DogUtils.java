@@ -29,22 +29,6 @@ public class DogUtils {
         }
     }
 
-    public static String convertTokenToUsername(String token, UserService userService){
-        return userService.getUserRepository().findByToken(token).getUsername();
-    }
-
-    public static String convertUserNameToToken(String username, UserService userService){
-        return userService.getUserRepository().findByUsername(username).getToken();
-    }
-
-    public static String convertSessionIdentityToUserName(String sessionIdentity, UserService userService){
-        return userService.getUserRepository().findBySessionIdentity(sessionIdentity).getUsername();
-    }
-
-    public static String convertUserNameToSessionIdentity(String userName, UserService userService){
-        return userService.getUserRepository().findByUsername(userName).getSessionIdentity();
-    }
-
     public static WaitingRoomChooseColorDTO convertPlayersToWaitingRoomChooseColorDTO(List<Player> players) {
         return convertPlayersToWaitingRoomChooseColorDTO(players, null);
     }
