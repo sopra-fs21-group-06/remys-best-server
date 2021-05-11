@@ -9,9 +9,13 @@ import java.util.List;
 public interface IMove {
     String getName();
 
-    List<Marble> getPlayableMarbles(Game game, GameService gameService);
+    List<Marble> getPlayableMarbles(Game game, GameService gameService, int remainSeven);
 
-    List<String> getPossibleTargetFields(Game game, Marble marbleToMove); // TODO seven needs to track already selected moves List<MarbleAndTargetField>??
+    List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int remainSeven); // TODO seven needs to track already selected moves List<MarbleAndTargetField>??
 
+<<<<<<< Updated upstream
     ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey);
+=======
+    ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList);
+>>>>>>> Stashed changes
 }

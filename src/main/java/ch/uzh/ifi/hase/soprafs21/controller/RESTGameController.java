@@ -59,6 +59,7 @@ public class RESTGameController {
     @GetMapping("/game/{gameId}/possible-marbles")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
+    //  public RoundMarbleListDTO getPossibleMarbles(HttpServletRequest request, @PathVariable UUID gameId, @RequestParam String code, @RequestParam String moveName, @RequestParam int remainSeven)
     public RoundMarbleListDTO getPossibleMarbles(HttpServletRequest request, @PathVariable UUID gameId, @RequestParam String code, @RequestParam String moveName) {
         String token = request.getHeader("Authorization");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
@@ -66,18 +67,21 @@ public class RESTGameController {
         Card card = new Card(code);
         String playerName = DogUtils.convertTokenToUsername(token, userService);
 
-        List<Marble> marbleList = currentGame.getGameService().getPlayableMarble(playerName, card, moveName, currentGame);
+        //List<Marble> marbleList = currentGame.getGameService().getPlayableMarble(playerName, card, moveName, currentGame, remainSeven);
+        List<Marble> marbleList = currentGame.getGameService().getPlayableMarble(playerName, card, moveName, currentGame, 0);
         return DogUtils.generateRoundMarblesListDTO(marbleList);
     }
 
     @GetMapping("/game/{gameId}/possible-target-fields")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
+    //public PossibleTargetFieldKeysListDTO getPossibleMarbles(@PathVariable UUID gameId, @RequestParam String code, @RequestParam String moveName, @RequestParam int marbleId, @RequestParam int remainSeven)
     public PossibleTargetFieldKeysListDTO getPossibleMarbles(@PathVariable UUID gameId, @RequestParam String code, @RequestParam String moveName, @RequestParam int marbleId) throws Exception {
         Game currentGame = gameEngine.getRunningGameByID(gameId);
         Marble currentMarble = gameService.getMarbleByMarbleId(currentGame, marbleId);
         Card cardToPlay = new Card(code);
-        List<String> targetFields = gameService.getPossibleTargetFields(currentMarble, moveName, cardToPlay, currentGame);
+        // List<String> targetFields = gameService.getPossibleTargetFields(currentMarble, moveName, cardToPlay, currentGame, remainSeven);
+        List<String> targetFields = gameService.getPossibleTargetFields(currentMarble, moveName, cardToPlay, currentGame, 0);
         return DogUtils.generatePossibleTargetFieldKeyListDTO(targetFields);
     }
 

@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
+import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 
 import java.util.ArrayList;
@@ -110,7 +111,7 @@ public class Player {
     public List<Marble> getmarblesOnFieldNotHomeNotOnStart(){
         List<Marble> marblesOnField = new ArrayList<>();
         for(Marble m: this.getMarbleList()){
-            if(!(m.getHome()) && !(m.getCurrentField() instanceof FinishField) && !(m.getCurrentField() instanceof StartField)){
+            if(!m.getHome() && !(m.getCurrentField() instanceof FinishField) && !m.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)){
                 marblesOnField.add(m);
             }
         }

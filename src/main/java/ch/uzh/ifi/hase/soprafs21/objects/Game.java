@@ -271,11 +271,21 @@ public class Game {
         String moveName = executePlayCardDTO.getMoveName();
         List<MarbleExecuteCardDTO> tupleList = executePlayCardDTO.getMarbles();
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = new ArrayList<>();
+        ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKey = new ArrayList<>();
+        for(MarbleExecuteCardDTO m: tupleList) {
+            MarbleIdAndTargetFieldKey mIdFieldKey = new MarbleIdAndTargetFieldKey(m.getMarbleId(), m.getTargetFieldKey());
+            marbleIdsAndTargetFieldKey.add(mIdFieldKey);
+        }
 
         try {
+<<<<<<< Updated upstream
             for(MarbleExecuteCardDTO m: tupleList) {
                 marbleIdsAndTargetFieldKeys.addAll(gameService.makeMove(playerName, cardCode, moveName, this, executePlayCardDTO.getMarbleIdAndTargetFieldKey()));
             }
+=======
+            marbleIdsAndTargetFieldKeys.addAll(gameService.makeMove(playerName, cardCode, moveName, this, marbleIdsAndTargetFieldKey));
+
+>>>>>>> Stashed changes
         } catch (Exception e) {
             e.printStackTrace();
             // TODO send error via websocket and abort, websocketService.sendPrivateError() to be implemented
@@ -301,11 +311,12 @@ public class Game {
                     break;
                 }
             }
-        }
-        for (Player p: playerList){
-            if(p.getPlayerName().equals(getNameNextPlayer())){
-                startPlayer = p;
-                break;
+        } else {
+            for (Player p : playerList) {
+                if (p.getPlayerName().equals(getNameNextPlayer())) {
+                    startPlayer = p;
+                    break;
+                }
             }
         }
     }

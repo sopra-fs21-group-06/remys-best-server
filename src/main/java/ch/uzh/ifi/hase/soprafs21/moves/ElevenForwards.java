@@ -17,17 +17,22 @@ public class ElevenForwards extends AbstractForwards{
     }
 
     @Override
-    public List<Marble> getPlayableMarbles(Game game, GameService gameService) {
-        return super.getPlayableMarbles(game, gameService, NUMBER_TO_GO_FORWARDS);
+    public List<Marble> getPlayableMarbles(Game game, GameService gameService, int remainSeven) {
+        return super.getPlayableMarbles(game, gameService, NUMBER_TO_GO_FORWARDS, remainSeven);
     }
 
     @Override
-    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove) {
-        return super.getPossibleTargetFields(game, marbleToMove, NUMBER_TO_GO_FORWARDS);
+    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int remainSeven) {
+        return super.getPossibleTargetFields(game, marbleToMove, NUMBER_TO_GO_FORWARDS, remainSeven);
     }
 
     @Override
+<<<<<<< Updated upstream
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
         return super.executeMove(game, marbleIdAndTargetFieldKey);
+=======
+    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList) {
+        return super.executeMove(game, marbleIdAndTargetFieldKeyArrayList);
+>>>>>>> Stashed changes
     }
 }

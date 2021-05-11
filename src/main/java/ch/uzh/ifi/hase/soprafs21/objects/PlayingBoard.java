@@ -132,10 +132,19 @@ public class PlayingBoard {
             return (!(yellowHome.isEmpty()));
         }
     }
-
+    public int getNumberMarblesAtHome(Color color){
+        if(color == Color.GREEN){
+            return greenHome.size();
+        } else if (color == Color.RED){
+            return redHome.size();
+        } else if (color == Color.BLUE){
+            return blueHome.size();
+        } else {
+            return yellowHome.size();
+        }
+    }
     public Marble getFirstHomeMarble(Color color, boolean removeFromStack){
         Marble m = null;
-
         if(color == Color.GREEN){
             if(removeFromStack) {
                 m = greenHome.pop();

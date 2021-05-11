@@ -17,7 +17,7 @@ public abstract class AbstractForwards implements IMove {
         return number + " Forwards";
     }
 
-    public List<Marble> getPlayableMarbles(Game game, GameService gameService, int numberToGoForwards) {
+    public List<Marble> getPlayableMarbles(Game game, GameService gameService, int numberToGoForwards, int remainSeven) {
         List<Marble> possibleMarbles = new ArrayList<>();
         Player p = game.getCurrentRound().getCurrentPlayer();
         for (Marble m : p.getMarbleList()) {
@@ -30,7 +30,7 @@ public abstract class AbstractForwards implements IMove {
         return possibleMarbles;
     }
 
-    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int numberToGoForwards) {
+    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int numberToGoForwards, int remainSeven) {
         List<String> possibleTargetFieldKeys = new ArrayList<>();
         int moveToInt = numberToGoForwards;
         int distanceNextStartField = 16 - marbleToMove.getCurrentField().getFieldValue();
@@ -63,18 +63,29 @@ public abstract class AbstractForwards implements IMove {
         return possibleTargetFieldKeys;
     }
 
+<<<<<<< Updated upstream
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
 
         Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
         Marble marbleToMove = targetField.getMarble();
+=======
+    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList) {
+>>>>>>> Stashed changes
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
         MarbleIdAndTargetFieldKey result = null;
-        if(!(targetField instanceof FinishField)){
-            result = game.getGameService().eat(targetField,game);
-            if(!(result == null)){
-                marbleIdAndTargetFieldKeys.add(result);
+        Field targetField =game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKeyArrayList.get(0).getFieldKey());
+        Marble marbleToMove = null;
+        for(Marble m: game.getCurrentRound().getCurrentPlayer().getMarbleList()){
+            if(m.getMarbleNr() == marbleIdAndTargetFieldKeyArrayList.get(0).getMarbleId()){
+                marbleToMove = m;
             }
         }
+
+        result = game.getGameService().eat(targetField,game);
+        if(!(result == null)){
+            marbleIdAndTargetFieldKeys.add(result);
+        }
+
         game.getPlayingBoard().makeMove(targetField, marbleToMove);
         log.info("marble forward successful");
         result = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleNr(), targetField.getFieldKey());

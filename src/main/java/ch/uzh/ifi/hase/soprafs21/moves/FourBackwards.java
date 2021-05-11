@@ -19,11 +19,11 @@ public class FourBackwards implements IMove {
     }
 
     @Override
-    public List<Marble> getPlayableMarbles(Game game, GameService gameService) {
+    public List<Marble> getPlayableMarbles(Game game, GameService gameService, int remainSeven) {
         List<Marble> possibleMarbles = new ArrayList<>();
         Player p = game.getCurrentRound().getCurrentPlayer();
-        for (Marble m : p.getMarbleList()) {
-            if (!m.getHome()) {
+        for (Marble m : p.getMarblesOnFieldAndNotFinished()) {
+            if (!(m.getCurrentField() instanceof FinishField)) {
                 if (gameService.checkMoveBackward(m, NUMBER_TO_GO_FORWARDS, game)) {
                     possibleMarbles.add(m);
                 }
@@ -33,7 +33,7 @@ public class FourBackwards implements IMove {
     }
 
     @Override
-    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove) {
+    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int remainSeven) {
         List<String> possibleTargetFieldKeys = new ArrayList<>();
         int fieldNr = marbleToMove.getCurrentField().getFieldValue() - 4;
         Color colorEndField = marbleToMove.getCurrentField().getColor();
@@ -47,7 +47,18 @@ public class FourBackwards implements IMove {
     }
 
     @Override
+<<<<<<< Updated upstream
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
+=======
+    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList) {
+        Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKeyArrayList.get(0).getFieldKey());
+        Marble marbleToMove = null;
+        for(Marble m: game.getCurrentRound().getCurrentPlayer().getMarbleList()){
+            if(m.getMarbleNr() == marbleIdAndTargetFieldKeyArrayList.get(0).getMarbleId()){
+                marbleToMove = m;
+            }
+        }
+>>>>>>> Stashed changes
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
         Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
         Marble marbleToMove = targetField.getMarble();
