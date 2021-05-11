@@ -39,8 +39,6 @@ public class RESTGameController {
     @ResponseBody
     public RoundMoveListDTO getMoves(@PathVariable UUID gameId, @RequestParam String code) {
         //log.info("Player" + getIdentity(sha) + ": Has made a moverequest");
-        Game currentGame = gameEngine.getRunningGameByID(gameId);
-        //Player p = currentGame.getCurrentRound().getCurrentPlayer();
 
         Card card = new Card(code);
         List<CardMove> moves = new ArrayList<>();
