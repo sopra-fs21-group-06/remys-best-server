@@ -1,7 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming;
 
+import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExecutePlayCardDTO {
@@ -9,7 +11,15 @@ public class ExecutePlayCardDTO {
     private String code;
     private String moveName;
     private List<MarbleExecuteCardDTO> marbles;
-    
+    private MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey;
+
+    public MarbleIdAndTargetFieldKey getMarbleIdAndTargetFieldKey() {
+        return marbleIdAndTargetFieldKey;
+    }
+
+    public void setMarbleIdAndTargetFieldKey(MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
+        this.marbleIdAndTargetFieldKey = marbleIdAndTargetFieldKey;
+    }
 
     public String getToken() {
         return token;

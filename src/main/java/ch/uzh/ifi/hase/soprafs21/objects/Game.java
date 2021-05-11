@@ -285,7 +285,7 @@ public class Game {
 
         try {
             for(MarbleExecuteCardDTO m: tupleList) {
-                marbleIdsAndTargetFieldKeys.addAll(gameService.makeMove(playerName, cardCode, m.getTargetFieldKey(), m.getMarbleId(), moveName, this));
+                marbleIdsAndTargetFieldKeys.addAll(gameService.makeMove(playerName, cardCode, moveName, this, executePlayCardDTO.getMarbleIdAndTargetFieldKey()));
             }
         } catch (Exception e) {
             e.printStackTrace();

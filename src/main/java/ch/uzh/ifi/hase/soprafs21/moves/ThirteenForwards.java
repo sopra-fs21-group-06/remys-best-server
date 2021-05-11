@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
-import ch.uzh.ifi.hase.soprafs21.objects.Field;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.Marble;
 import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
@@ -28,7 +27,7 @@ public class ThirteenForwards extends AbstractForwards{
     }
 
     @Override
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Marble marbleToMove, Field targetField, Game game) {
-        return super.executeMove(marbleToMove, targetField, game);
+    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
+        return super.executeMove(game, marbleIdAndTargetFieldKey);
     }
 }

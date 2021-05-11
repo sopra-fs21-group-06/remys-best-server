@@ -153,7 +153,9 @@ public class GameService {
         return moveToGetPlayableMarbles.getPossibleTargetFields(game, marbleToMove);
     }
 
-    public ArrayList<MarbleIdAndTargetFieldKey> makeMove(String playerName, String cardCodeToPlay, String targetFieldKey, int marbleIdToMove, String moveName, Game game) throws Exception {
+    public ArrayList<MarbleIdAndTargetFieldKey> makeMove(String playerName, String cardCodeToPlay,  String moveName, Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) throws Exception {
+        String targetFieldKey = "";
+        int marbleIdToMove = 0;
         Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
         Marble marbleToMove = getMarbleByGameIdMarbleIdPlayerName(game, playerName, marbleIdToMove);
         Card cardToPlay = new Card(cardCodeToPlay);
@@ -173,7 +175,7 @@ public class GameService {
             throw new Exception("Something strange happened");
         }
 
-        ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = moveToExecute.executeMove(marbleToMove, game.getPlayingBoard().getFieldByFieldKey(targetFieldKey),game);
+        ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = moveToExecute.executeMove(game, marbleIdAndTargetFieldKey);
         game.getCurrentRound().getCurrentPlayer().layDownCard(cardToPlay);
         // TODO finished player checks
 

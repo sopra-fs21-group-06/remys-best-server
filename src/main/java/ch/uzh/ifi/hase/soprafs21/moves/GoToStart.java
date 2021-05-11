@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
+import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import org.slf4j.Logger;
@@ -19,9 +20,11 @@ public class GoToStart implements IMove {
 
     @Override
     public List<String> getPossibleTargetFields(Game game, Marble marbleToMove) {
-        Field targetField = (Field) game.getPlayingBoard().getField(16, game.getCurrentRound().getCurrentPlayer().getColor());
+        Field targetField = game.getPlayingBoard().getField(16, game.getCurrentRound().getCurrentPlayer().getColor());
         List<String> possibleTargetFieldKeys = new ArrayList<>();
-        possibleTargetFieldKeys.add(targetField.getFieldKey());
+        if (!targetField.getFieldStatus().equals(FieldStatus.BLOCKED)) {
+            possibleTargetFieldKeys.add(targetField.getFieldKey());
+        }
         return possibleTargetFieldKeys;
     }
 
@@ -38,7 +41,9 @@ public class GoToStart implements IMove {
     }
 
     @Override
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Marble marbleToMove, Field targetField, Game game) {
+    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
+        Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
+        Marble marbleToMove = targetField.getMarble();
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
         game.getPlayingBoard().makeStartMove(marbleToMove.getColor());
         log.info("marble start successful");

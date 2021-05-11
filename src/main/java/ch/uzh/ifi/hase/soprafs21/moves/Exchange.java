@@ -40,15 +40,17 @@ public class Exchange implements IMove {
     }
 
     @Override
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Marble marbleToMove, Field targetField, Game game) {
-        ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
+    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
+        Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
+        Marble marbleToMove = targetField.getMarble();
+        ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeysOutgoing = new ArrayList<>();
         String fieldKeyNewTeamMate = marbleToMove.getCurrentField().getFieldKey();
         Marble marbleTeamMate = targetField.getMarble();
         MarbleIdAndTargetFieldKey result1 = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleNr(), targetField.getFieldKey());
         MarbleIdAndTargetFieldKey result2 = new MarbleIdAndTargetFieldKey(marbleTeamMate.getMarbleNr(), fieldKeyNewTeamMate);
-        marbleIdAndTargetFieldKeys.add(result1);
-        marbleIdAndTargetFieldKeys.add(result2);
+        marbleIdAndTargetFieldKeysOutgoing.add(result1);
+        marbleIdAndTargetFieldKeysOutgoing.add(result2);
         game.getPlayingBoard().makeJackMove(targetField, marbleToMove);
-        return marbleIdAndTargetFieldKeys;
+        return marbleIdAndTargetFieldKeysOutgoing;
     }
 }

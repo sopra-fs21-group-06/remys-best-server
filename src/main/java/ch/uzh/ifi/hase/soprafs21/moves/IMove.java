@@ -13,5 +13,5 @@ public interface IMove {
 
     List<String> getPossibleTargetFields(Game game, Marble marbleToMove); // TODO seven needs to track already selected moves List<MarbleAndTargetField>??
 
-    ArrayList<MarbleIdAndTargetFieldKey> executeMove(Marble marbleToMove, Field targetField, Game game);
+    ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey);
 }

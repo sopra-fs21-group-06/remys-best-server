@@ -6,7 +6,7 @@ import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,18 +63,15 @@ public abstract class AbstractForwards implements IMove {
         return possibleTargetFieldKeys;
     }
 
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Marble marbleToMove, Field targetField, Game game) {
+    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
+
+        Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
+        Marble marbleToMove = targetField.getMarble();
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
-        MarbleIdAndTargetFieldKey result = null;
         game.getPlayingBoard().makeMove(targetField, marbleToMove);
         log.info("marble forward successful");
-        if(!(targetField instanceof FinishField)){
-            result = game.getGameService().eat(targetField,game);
-            if(!(result == null)){
-                marbleIdAndTargetFieldKeys.add(result);
-            }
-        }
-        result = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleNr(), targetField.getFieldKey());
+
+        MarbleIdAndTargetFieldKey result = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleNr(), targetField.getFieldKey());
         marbleIdAndTargetFieldKeys.add(result);
         return marbleIdAndTargetFieldKeys;
     }

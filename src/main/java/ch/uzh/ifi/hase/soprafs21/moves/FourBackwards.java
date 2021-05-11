@@ -44,8 +44,10 @@ public class FourBackwards implements IMove {
         return possibleTargetFieldKeys;
     }
     @Override
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Marble marbleToMove, Field targetField, Game game) {
+    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
+        Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
+        Marble marbleToMove = targetField.getMarble();
         MarbleIdAndTargetFieldKey result = game.getGameService().eat(targetField,game);
         if(!(result == null)){
             marbleIdAndTargetFieldKeys.add(result);
