@@ -6,7 +6,6 @@ import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.objects.GameSession;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
-import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameRequestDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameSessionLeaveDTO;
 import org.slf4j.Logger;
@@ -41,12 +40,12 @@ public class WSGameSessionController {
             User invitedUser = userService.getUserRepository().findByUsername(gameRequestDTO.getUsername());
             String sessionIdentityInvitedUser = invitedUser.getSessionIdentity();
 
-            userService.updateStatus(DogUtils.convertUserNameToToken(invitedUser.getUsername(), userService), UserStatus.Busy);
+            userService.updateStatus(userService.convertUserNameToToken(invitedUser.getUsername()), UserStatus.Busy);
 
             GameSession currentGameSession = gameEngine.findGameSessionByID(gamesessionId);
 
             gameEngine.addinvitedUserToGameSession(invitedUser, gamesessionId);
-            webSocketService.sendGameSessionInvitation(gamesessionId,  DogUtils.convertUserNameToSessionIdentity(gameRequestDTO.getUsername(), userService), DogUtils.convertTokenToUsername(gameRequestDTO.getToken(), userService));
+            webSocketService.sendGameSessionInvitation(gamesessionId,  userService.convertUserNameToSessionIdentity(gameRequestDTO.getUsername()), userService.convertTokenToUsername(gameRequestDTO.getToken()));
             webSocketService.sendGameSessionInvitedUserList(gamesessionId, currentGameSession.getInvitedUsers());
             webSocketService.sendGameSessionInvitedUserCounter(currentGameSession, invitedUser.getUsername(), sessionIdentityInvitedUser);}
         catch (Exception e){

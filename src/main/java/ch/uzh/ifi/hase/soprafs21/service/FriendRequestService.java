@@ -9,7 +9,6 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.FriendDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.outgoing.FriendRequestCreatePostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.outgoing.FriendRequestResponsePostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
-import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +71,7 @@ public class FriendRequestService {
 
         checkIfSenderAndReceiverExist(token, friendRequestCreatePostDTO.getReceiverName());
 
-        String senderName = DogUtils.convertTokenToUsername(token, userService);
+        String senderName = userService.convertTokenToUsername(token);
         String receiverName = friendRequestCreatePostDTO.getReceiverName();
 
         if(!checkIfFriendRequestAlreadyExists(token, friendRequestCreatePostDTO.getReceiverName())){
@@ -164,8 +163,4 @@ public class FriendRequestService {
         return friendRequestExists == null ? friendRequestExistsInverted : friendRequestExists;
     }
 
-
-    public UserService getUserService() {
-        return userService;
-    }
 }

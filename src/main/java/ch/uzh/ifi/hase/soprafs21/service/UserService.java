@@ -28,6 +28,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+
     @Autowired
     public UserService(@Qualifier("userRepository") UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -144,6 +145,22 @@ public class UserService {
             }
             return 1;
         }
+    }
+
+    public String convertTokenToUsername(String token){
+        return this.userRepository.findByToken(token).getUsername();
+    }
+
+    public String convertUserNameToToken(String username){
+        return this.userRepository.findByUsername(username).getToken();
+    }
+
+    public String convertSessionIdentityToUserName(String sessionIdentity){
+        return this.userRepository.findBySessionIdentity(sessionIdentity).getUsername();
+    }
+
+    public String convertUserNameToSessionIdentity(String userName){
+        return this.userRepository.findByUsername(userName).getSessionIdentity();
     }
 
     public void logOutUser(User user){
