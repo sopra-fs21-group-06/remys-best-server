@@ -1,33 +1,23 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import ch.uzh.ifi.hase.soprafs21.constant.Color;
-import ch.uzh.ifi.hase.soprafs21.moves.IMove;
-import ch.uzh.ifi.hase.soprafs21.objects.*;
+
+import ch.uzh.ifi.hase.soprafs21.objects.Game;
+import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameEndDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.*;
-
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.ExecutePlayCardDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameCardExchange;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameReadyDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.event.EventListener;
-import org.springframework.data.util.Pair;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.socket.messaging.SessionConnectEvent;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import java.security.Principal;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.UUID;
 
-import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.convertSessionIdentityToUserName;
 import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
 
 @Controller
@@ -36,7 +26,6 @@ public class WSGameController {
     private final GameEngine gameEngine;
     private final WebSocketService webSocketService;
     private final UserService userService;
-    private SessionDisconnectEvent sessionDisconnectEvent;
 
     public WSGameController(GameEngine gameEngine, WebSocketService webSocketService, UserService userService) {
         this.gameEngine = gameEngine;
@@ -58,42 +47,6 @@ public class WSGameController {
         currentGame.setCardExchange(DogUtils.convertTokenToUsername(gameCardExchange.getToken(), userService), gameCardExchange.getCode());
     }
 
-    @MessageMapping("/game/{gameId}/move-request")
-    public synchronized void moveRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, CardMoveRequestDTO cardMoveRequestDTO){
-        log.info("Player" + getIdentity(sha) + ": Has made a moverequest");
-        Game currentGame = gameEngine.getRunningGameByID(gameId);
-        Player p = currentGame.getCurrentRound().getCurrentPlayer();
-
-        Card card = new Card(cardMoveRequestDTO.getCode());
-        List<CardMove> moves = new ArrayList<>();
-        for(IMove move : card.getMoves()) {
-            CardMove cardMove = new CardMove();
-            cardMove.setMoveName(move.getName());
-            moves.add(cardMove);
-        }
-
-        webSocketService.sendMovesToPlayer(getIdentity(sha), moves, gameId);
-    }
-
-    @MessageMapping("game/{gameId}/marble-request")
-    public synchronized void marbleRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, MoveMarbleRequestDTO moveMarbleRequestDTO){
-        log.info("Player" + getIdentity(sha) + ":Has made marblerequest");
-        Game currentGame = gameEngine.getRunningGameByID(gameId);
-
-        Card card = new Card(moveMarbleRequestDTO.getCode());
-        String playerName = DogUtils.convertTokenToUsername(moveMarbleRequestDTO.getToken(), userService);
-
-        List<Marble> marbleList = currentGame.getGameService().getPlayableMarble(playerName, card, moveMarbleRequestDTO.getMoveName(), currentGame);
-        webSocketService.sendMarblesToPlayer(getIdentity(sha), marbleList, gameId);
-    }
-
-    @MessageMapping("game/{gameId}/target-fields-request")
-    public synchronized void targetFieldRequest(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, GamePossibleTargetFieldRequestDTO gamePossibleTargetFieldRequestDTO){
-        log.info("Player" + getIdentity(sha) + ":Has requested TargetFieldList");
-        Game currentGame = gameEngine.getRunningGameByID(gameId);
-        currentGame.sendOutTargetFieldList(gamePossibleTargetFieldRequestDTO);
-    }
-
     @MessageMapping("game/{gameId}/play")
     public synchronized void playMove(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, ExecutePlayCardDTO executePlayCardDTO){
         log.info("Player" + getIdentity(sha) + ":Has played");
@@ -102,21 +55,44 @@ public class WSGameController {
         currentGame.getCurrentRound().sendOutCurrentTurnDTO();
         currentGame.sendOutCurrentTurnFactsDTO();
     }
-
-    @EventListener
+/*
+   @EventListener
     public synchronized void handleSessionDisconnect(SessionDisconnectEvent event) {
         String p = Objects.requireNonNull(event.getUser()).getName();
         if (p != null) {
             log.info("Player " + p + ": Connection lost");
             SimpMessageHeaderAccessor header = SimpMessageHeaderAccessor.wrap(event.getMessage());
-            GameEndDTO dto = new GameEndDTO();
-            String username = convertSessionIdentityToUserName(p,userService);
-            dto.setAborted(username);
-            log.info(username);
-            webSocketService.sentGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);
-            gameEngine.deleteGameByGameID(gameEngine.findGameIdByPlayerName(username));
-            log.info(username);
+            String username = convertSessionIdentityToUserName(p,gameEngine.getUserService());
+
+            //status change with users
+            //sessionIdentity null
+            //token null
+            if(gameEngine.isUserInGameSession(username)){
+                if(gameEngine.userIsHost(username)){
+                    //deletes gameSession and redirects users
+                    //need an empty DTO
+                    DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+                }else{
+                    //deletes user from gameSession and notifies users
+                    //gameEngine.deleteUserFromSession(username);
+                    DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+                }
+            }else if(gameEngine.userInWaitingRoom(username)){
+                // user deleted from waitingRoom;
+                //send list of current waiting users
+                DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+            }else if(gameEngine.userInGame(username)) {
+                GameEndDTO dto = new GameEndDTO();
+
+                dto.setAborted(username);
+                webSocketService.sentGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);
+                gameEngine.deleteGameByGameID(gameEngine.findGameIdByPlayerName(username));
+                DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+            }else{
+                DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+            }
         }
-    }
+    }*/
+
 }
 

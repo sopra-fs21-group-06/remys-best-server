@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs21.websocket.dto;
+package ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing;
 
 import ch.uzh.ifi.hase.soprafs21.objects.Player;
 

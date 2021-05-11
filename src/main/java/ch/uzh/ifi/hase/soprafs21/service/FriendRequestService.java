@@ -68,14 +68,14 @@ public class FriendRequestService {
         return allFriends;
     }
 
-    public void createFriendRequest(FriendRequestCreatePostDTO friendRequestCreatePostDTO){
+    public void createFriendRequest(FriendRequestCreatePostDTO friendRequestCreatePostDTO, String token){
 
-        checkIfSenderAndReceiverExist(friendRequestCreatePostDTO.getToken(), friendRequestCreatePostDTO.getReceiverName());
+        checkIfSenderAndReceiverExist(token, friendRequestCreatePostDTO.getReceiverName());
 
-        String senderName = DogUtils.convertTokenToUsername(friendRequestCreatePostDTO.getToken(), userService);
+        String senderName = DogUtils.convertTokenToUsername(token, userService);
         String receiverName = friendRequestCreatePostDTO.getReceiverName();
 
-        if(!checkIfFriendRequestAlreadyExists(friendRequestCreatePostDTO.getToken(), friendRequestCreatePostDTO.getReceiverName())){
+        if(!checkIfFriendRequestAlreadyExists(token, friendRequestCreatePostDTO.getReceiverName())){
             String tmp;
             tmp = senderName;
             senderName = receiverName;
@@ -96,9 +96,9 @@ public class FriendRequestService {
 
     }
 
-    public void processResponseFriendRequest(FriendRequestResponsePostDTO friendRequestResponsePostDTO, RequestStatus requestStatus){
-        checkIfSenderAndReceiverExist(friendRequestResponsePostDTO.getToken(), friendRequestResponsePostDTO.getSenderName());
-        FriendRequest requestToUpdate = checkIfFriendRequestExists(friendRequestResponsePostDTO.getToken(), friendRequestResponsePostDTO.getSenderName());
+    public void processResponseFriendRequest(FriendRequestResponsePostDTO friendRequestResponsePostDTO, RequestStatus requestStatus, String token){
+        checkIfSenderAndReceiverExist(token, friendRequestResponsePostDTO.getSenderName());
+        FriendRequest requestToUpdate = checkIfFriendRequestExists(token, friendRequestResponsePostDTO.getSenderName());
         requestToUpdate.setRequestStatus(requestStatus);
         friendRequestRepository.saveAndFlush(requestToUpdate);
     }

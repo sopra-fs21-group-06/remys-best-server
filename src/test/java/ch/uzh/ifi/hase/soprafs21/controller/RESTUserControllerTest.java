@@ -54,7 +54,7 @@ public class RESTUserControllerTest {
         user.setEmail("fioef@nfjnf.com");
         user.setToken("12345678");
         user.setId(45678L);
-        user.setStatus(UserStatus.OFFLINE);
+        user.setStatus(UserStatus.Offline);
 
         List<User> allUsers = Collections.singletonList(user);
 

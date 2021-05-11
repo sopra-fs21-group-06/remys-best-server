@@ -3,17 +3,16 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 import ch.uzh.ifi.hase.soprafs21.constant.RequestStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.FriendRequest;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.FriendDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.incoming.FriendRequestReceivedGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.incoming.FriendRequestSentGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.outgoing.FriendListGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.outgoing.FriendRequestCreatePostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.outgoing.FriendRequestResponsePostDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.incoming.FriendRequestReceivedGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.incoming.FriendRequestSentGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.FriendRequestService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Controller
+@RestController
 public class RESTFriendRequestController {
 
     private final FriendRequestService friendRequestService;
@@ -95,24 +94,29 @@ public class RESTFriendRequestController {
     }
 
 
+    //TODO Token from header
+
     @PostMapping("/friendrequests")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public void createFriendRequest(@RequestBody FriendRequestCreatePostDTO friendRequestCreatePostDTO){
-        friendRequestService.createFriendRequest(friendRequestCreatePostDTO);
+    public void createFriendRequest(@RequestBody FriendRequestCreatePostDTO friendRequestCreatePostDTO, HttpServletRequest request){
+        String token = request.getHeader("Authorization");
+        friendRequestService.createFriendRequest(friendRequestCreatePostDTO, token);
     }
 
     @PostMapping("/friendrequests/decline")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public void declineFriendRequest(@RequestBody FriendRequestResponsePostDTO friendRequestResponsePostDTO){
-        friendRequestService.processResponseFriendRequest(friendRequestResponsePostDTO, RequestStatus.DECLINED);
+    public void declineFriendRequest(@RequestBody FriendRequestResponsePostDTO friendRequestResponsePostDTO, HttpServletRequest request){
+        String token = request.getHeader("Authorization");
+        friendRequestService.processResponseFriendRequest(friendRequestResponsePostDTO, RequestStatus.DECLINED, token);
     }
 
     @PostMapping("/friendrequests/accept")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public void acceptFriendRequest(@RequestBody FriendRequestResponsePostDTO friendRequestResponsePostDTO){
-        friendRequestService.processResponseFriendRequest(friendRequestResponsePostDTO, RequestStatus.ACCEPTED);
+    public void acceptFriendRequest(@RequestBody FriendRequestResponsePostDTO friendRequestResponsePostDTO, HttpServletRequest request){
+        String token = request.getHeader("Authorization");
+        friendRequestService.processResponseFriendRequest(friendRequestResponsePostDTO, RequestStatus.ACCEPTED, token);
     }
 }

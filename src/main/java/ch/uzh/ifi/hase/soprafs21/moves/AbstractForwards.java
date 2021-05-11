@@ -68,10 +68,16 @@ public abstract class AbstractForwards implements IMove {
         Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
         Marble marbleToMove = targetField.getMarble();
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
+        MarbleIdAndTargetFieldKey result = null;
+        if(!(targetField instanceof FinishField)){
+            result = game.getGameService().eat(targetField,game);
+            if(!(result == null)){
+                marbleIdAndTargetFieldKeys.add(result);
+            }
+        }
         game.getPlayingBoard().makeMove(targetField, marbleToMove);
         log.info("marble forward successful");
-
-        MarbleIdAndTargetFieldKey result = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleNr(), targetField.getFieldKey());
+        result = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleNr(), targetField.getFieldKey());
         marbleIdAndTargetFieldKeys.add(result);
         return marbleIdAndTargetFieldKeys;
     }

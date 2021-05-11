@@ -1,14 +1,12 @@
 package ch.uzh.ifi.hase.soprafs21.utils;
 
-import ch.uzh.ifi.hase.soprafs21.objects.CardMove;
-import ch.uzh.ifi.hase.soprafs21.objects.Marble;
-import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
-import ch.uzh.ifi.hase.soprafs21.objects.Player;
+import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.*;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.*;
-import org.springframework.data.util.Pair;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 
 import java.security.Principal;
@@ -35,8 +33,16 @@ public class DogUtils {
         return userService.getUserRepository().findByToken(token).getUsername();
     }
 
+    public static String convertUserNameToToken(String username, UserService userService){
+        return userService.getUserRepository().findByUsername(username).getToken();
+    }
+
     public static String convertSessionIdentityToUserName(String sessionIdentity, UserService userService){
         return userService.getUserRepository().findBySessionIdentity(sessionIdentity).getUsername();
+    }
+
+    public static String convertUserNameToSessionIdentity(String userName, UserService userService){
+        return userService.getUserRepository().findByUsername(userName).getSessionIdentity();
     }
 
     public static WaitingRoomChooseColorDTO convertPlayersToWaitingRoomChooseColorDTO(List<Player> players) {
@@ -77,15 +83,17 @@ public class DogUtils {
 
         return factList;
     }
-   public static GameNotificationDTO generateGameNotificatoinDTO(String playerName, String action, String card) {
+   public static GameNotificationDTO generateGameNotificatoinDTO(String playerName, String action, String cardCode) {
        GameNotificationDTO gameNotificationDTO = new GameNotificationDTO();
        gameNotificationDTO.setPlayerName(playerName);
        gameNotificationDTO.setAction(action);
-       gameNotificationDTO.setCard(card);
+       if(cardCode != null) {
+           gameNotificationDTO.setCard(Card.convertCardCodeToCardName(cardCode));
+       }
        return gameNotificationDTO;
    }
 
-   public static RoundMoveListDTO generateRoundMoveListDTO(List<CardMove> moveList){
+    public static RoundMoveListDTO generateRoundMoveListDTO(List<CardMove> moveList){
        RoundMoveListDTO roundMoveListDTO = new RoundMoveListDTO();
        List<MoveDTO> moveListDTO = new ArrayList<>();
 
@@ -133,5 +141,50 @@ public class DogUtils {
         possibleTargetFieldKeysListDTO.setTargetFieldKeys(targetFields);
 
         return possibleTargetFieldKeysListDTO;
+    }
+    public static void resetStatusTokenAndSessionIdentity(UserService userService, String username){
+        User user = userService.findByUsername(username);
+        user.setToken(null);
+        user.setStatus(UserStatus.Offline);
+        user.setSessionIdentity(null);
+        userService.getUserRepository().saveAndFlush(user);
+
+    }
+
+    public static GameSessionInvitedUsersDTO generateGameSessionInvitedUsersDTO(List<User> invitedUsers){
+        GameSessionInvitedUsersDTO gameSessionInvitedUsersDTO = new GameSessionInvitedUsersDTO();
+        List<WaitingRoomUserObjDTO> invitedUsersList = new ArrayList<>();
+        for(User u: invitedUsers){
+            invitedUsersList.add(DTOMapper.INSTANCE.convertUsertoWaitingRoomUserObjDTO(u));
+        }
+        gameSessionInvitedUsersDTO.setInvitedUsers(invitedUsersList);
+        return gameSessionInvitedUsersDTO;
+    }
+
+    public static RequestCountDownDTO generateRequestCountDownDTO(int currentCounter, String userName){
+        RequestCountDownDTO requestCountDownDTO = new RequestCountDownDTO();
+        requestCountDownDTO.setCurrentCounter(currentCounter);
+        requestCountDownDTO.setUsername(userName);
+        return requestCountDownDTO;
+    }
+
+    public static GameSessionHostLeftDTO generateGameSessionHostLeftDTO(String hostName){
+        GameSessionHostLeftDTO gameSessionHostLeftDTO = new GameSessionHostLeftDTO();
+        gameSessionHostLeftDTO.setHostName(hostName);
+        return gameSessionHostLeftDTO;
+    }
+
+    public static GameSessionInviteUserDTO generateGameSessoinInviteUserDTO(UUID gameSessionIdentity, String hostName){
+        GameSessionInviteUserDTO gameSessionInviteUserDTO = new GameSessionInviteUserDTO();
+        gameSessionInviteUserDTO.setGameSessionId(gameSessionIdentity);
+        gameSessionInviteUserDTO.setHostName(hostName);
+        return gameSessionInviteUserDTO;
+    }
+
+    public static GameThrowAwayDTO generateGameThrowAwayDTO(String playerName, List<String> cardCodes){
+        GameThrowAwayDTO gameThrowAwayDTO = new GameThrowAwayDTO();
+        gameThrowAwayDTO.setPlayerName(playerName);
+        gameThrowAwayDTO.setCardCodes(cardCodes);
+        return gameThrowAwayDTO;
     }
 }

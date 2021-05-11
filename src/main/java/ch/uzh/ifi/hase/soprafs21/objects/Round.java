@@ -157,7 +157,7 @@ public class Round {
     }
 
     public void sendOutCurrentTurnDTO(){
-        webSocketService.sendCurrentTurnMessage(currentPlayer.getPlayerName(), game.getGameId());
+        webSocketService.broadcastCurrentTurnMessage(currentPlayer.getPlayerName(), game.getGameId());
     }
 }
 

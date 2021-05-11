@@ -12,6 +12,7 @@ import java.util.List;
 public class FourBackwards implements IMove {
     private static final int NUMBER_TO_GO_FORWARDS = -4;
     Logger log = LoggerFactory.getLogger(FourBackwards.class);
+
     @Override
     public String getName() {
         return "4 Backwards";
@@ -30,6 +31,7 @@ public class FourBackwards implements IMove {
         }
         return possibleMarbles;
     }
+
     @Override
     public List<String> getPossibleTargetFields(Game game, Marble marbleToMove) {
         List<String> possibleTargetFieldKeys = new ArrayList<>();
@@ -43,6 +45,7 @@ public class FourBackwards implements IMove {
         possibleTargetFieldKeys.add(possTargetField.getFieldKey());
         return possibleTargetFieldKeys;
     }
+
     @Override
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey) {
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
