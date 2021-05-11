@@ -285,7 +285,8 @@ public class Game {
             // e.getMessage();
         }
 
-        webSocketService.sendGameExecutedCard(playerName, cardCode, marbleIdsAndTargetFieldKeys, gameId);
+        webSocketService.broadcastGameExecutedCard(playerName, cardCode, marbleIdsAndTargetFieldKeys, gameId);
+        webSocketService.broadcastNotificationMessage(playerName, "played", cardCode, gameId);
     }
 
     public GameService getGameService() {

@@ -45,44 +45,44 @@ public class WebSocketService {
         this.simp.convertAndSendToUser(identity, "/queue" + path, dto);
     }
 
-    private void sendToTopic(String path, Object dto){
+    private void broadcastToTopic(String path, Object dto){
         this.simp.convertAndSend("/topic" + path, dto);
     }
 
     public void sendExchangeFactsMessage(String roundBeginner, UUID gameId) {
-        sendFactsMessage(DogUtils.convertRoundBeginnerToFactList(roundBeginner), gameId);
+        broadcastFactsMessage(DogUtils.convertRoundBeginnerToFactList(roundBeginner), gameId);
         // "Card Exchange" will trigger a mode switch on the frontend
-        sendNotificationMessage( "Card Exchange", gameId);
+        broadcastNotificationMessage( "Card Exchange", gameId);
     }
 
     public void sendCurrentTurnFactsMessage(int roundCount, String playerName, int nextCardAmount, String nextPlayerName, UUID gameId) {
-        sendFactsMessage(DogUtils.generateCurrentTurnFactList(roundCount, playerName, nextCardAmount, nextPlayerName), gameId);
+        broadcastFactsMessage(DogUtils.generateCurrentTurnFactList(roundCount, playerName, nextCardAmount, nextPlayerName), gameId);
     }
 
-    public void sendFactsMessage(List<FactDTO> factList, UUID gameId) {
+    public void broadcastFactsMessage(List<FactDTO> factList, UUID gameId) {
         GameFactsDTO gameFactsDTO = new GameFactsDTO();
         gameFactsDTO.setFacts(factList);
 
         String pathFacts = "/game/%s/facts";
-        sendToTopic(String.format(pathFacts, gameId.toString()), gameFactsDTO);
+        broadcastToTopic(String.format(pathFacts, gameId.toString()), gameFactsDTO);
     }
 
-    public void sendNotificationMessage(String action, UUID gameId) {
-        sendNotificationMessage(null, action, null, gameId);
+    public void broadcastNotificationMessage(String action, UUID gameId) {
+        broadcastNotificationMessage(null, action, null, gameId);
     }
 
-    public void sendNotificationMessage(String playerName, String action, String card, UUID gameId) {
+    public void broadcastNotificationMessage(String playerName, String action, String cardCode, UUID gameId) {
         String pathNotifications = "/game/%s/notification";
-        sendToTopic(String.format(pathNotifications, gameId.toString()),
-                    DogUtils.generateGameNotificatoinDTO(playerName, action, card));
+        broadcastToTopic(String.format(pathNotifications, gameId.toString()),
+                    DogUtils.generateGameNotificatoinDTO(playerName, action, cardCode));
     }
 
-    public void sendCurrentTurnMessage(String playerName, UUID gameId) {
+    public void broadcastCurrentTurnMessage(String playerName, UUID gameId) {
         RoundCurrentPlayerDTO roundCurrentPlayerDTO = new RoundCurrentPlayerDTO();
         roundCurrentPlayerDTO.setPlayerName(playerName);
 
         String path = "/game/%s/turn";
-        sendToTopic(String.format(path, gameId.toString()), roundCurrentPlayerDTO);
+        broadcastToTopic(String.format(path, gameId.toString()), roundCurrentPlayerDTO);
     }
 
     public void sendCardsToPlayer(String sessionIdentity, List<Card> cards, UUID gameId) {
@@ -105,34 +105,43 @@ public class WebSocketService {
         sendToPlayer(userSessionIdentity, String.format(path, gameId.toString()), gameListOfCardsDTO);
     }
 
-    public void sendGameAssignmentMessage(String userSessionIdentity, List<Player> players, UUID gameId) {
-        WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = DogUtils.convertPlayersToWaitingRoomChooseColorDTO(players, gameId);
+    public void sendGameAssignmentMessageToWaitingRoom(String userSessionIdentity, List<Player> players, UUID gameId) {
         String path = "/waiting-room";
+        sendGameAssignmentMessage(userSessionIdentity, players, gameId, path);
+    }
+
+    public void sendGameAssignmentMessageToGameSession(String userSessionIdentity, List<Player> players, UUID gameId) {
+        String path = "/gamesession/ready";
+        sendGameAssignmentMessage(userSessionIdentity, players, gameId, path);
+    }
+
+    private void sendGameAssignmentMessage(String userSessionIdentity, List<Player> players, UUID gameId, String path){
+        WaitingRoomChooseColorDTO waitingRoomChooseColorDTO = DogUtils.convertPlayersToWaitingRoomChooseColorDTO(players, gameId);
         sendToPlayer(userSessionIdentity, path, waitingRoomChooseColorDTO);
     }
 
-    public void sendGameExecutedCard(String playerName, String cardCode, ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys, UUID gameId){
+    public void broadcastGameExecutedCard(String playerName, String cardCode, ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys, UUID gameId){
         String path = "/game/%s/played";
-        sendToTopic(String.format(path, gameId.toString()),
+        broadcastToTopic(String.format(path, gameId.toString()),
                 DogUtils.generateExecutedCardDTO(playerName, cardCode,
                         DogUtils.generateMarbleExecutreCardDTO(marbleIdsAndTargetFieldKeys)));
     }
 
     public void sentGameEndMessage(String gameId, GameEndDTO gameEndDTO) {
         String path = "/game/%s/game-end";
-        sendToTopic(String.format(path, gameId), gameEndDTO);
+        broadcastToTopic(String.format(path, gameId), gameEndDTO);
     }
 
-    public void sentGameSessionEndMessage(String gameSessionId, String hostName) {
+    public void broadcastGameSessionEndMessage(String gameSessionId, String hostName) {
 
         String path = "/gamesession/%s/gamesession-end";
-        sendToTopic(String.format(path, gameSessionId),
+        broadcastToTopic(String.format(path, gameSessionId),
                     DogUtils.generateGameSessionHostLeftDTO(hostName));
     }
 
-    public void sendGameSessionInvitedUserList(UUID gameSessionId, List<User> invitedUserList){
+    public void broadcastGameSessionInvitedUserList(UUID gameSessionId, List<User> invitedUserList){
         String path = "/gamesession/%s/invited-user";
-        sendToTopic(String.format(path, gameSessionId.toString()),
+        broadcastToTopic(String.format(path, gameSessionId.toString()),
                 DogUtils.generateGameSessionInvitedUsersDTO(invitedUserList));
 
     }
@@ -143,7 +152,7 @@ public class WebSocketService {
         TimerTask task = new TimerTask() {
             public void run() {
                 RequestCountDownDTO requestCountDownDTO = DogUtils.generateRequestCountDownDTO(counter[0], userName);
-                broadCastRequestCountdown(gameSession.getID(),requestCountDownDTO );
+                broadcastRequestCountdown(gameSession.getID(),requestCountDownDTO );
                 sendRequestCountdown(sessionIdentity, requestCountDownDTO);
                 counter[0]--;
                 if(counter[0] < 0 || gameSession.userInInvitedUsers(userName)){
@@ -161,9 +170,9 @@ public class WebSocketService {
 
     }
 
-    private void broadCastRequestCountdown(UUID gameSessionId, RequestCountDownDTO requestCountDownDTO){
+    private void broadcastRequestCountdown(UUID gameSessionId, RequestCountDownDTO requestCountDownDTO){
         String path = "/gamesession/%s/countdown";
-        sendToTopic(String.format(path, gameSessionId.toString()),
+        broadcastToTopic(String.format(path, gameSessionId.toString()),
                     requestCountDownDTO);
     }
 
@@ -177,6 +186,13 @@ public class WebSocketService {
     public void sendGameSessionInvitation(UUID gameSessionId, String sessionIdentityOfInvitedUser, String hostName){
         String path = "/gamesession/invitation";
         sendToPlayer(sessionIdentityOfInvitedUser, path, DogUtils.generateGameSessoinInviteUserDTO(gameSessionId, hostName));
+    }
+
+    public void broadcastThrowAway(UUID gameId, String playerName, List<String> cardCodes){
+        String path = "/game/%s/throwaway";
+        broadcastToTopic(String.format(path, gameId.toString()),
+                    DogUtils.generateGameThrowAwayDTO(playerName, cardCodes));
+
     }
 
 }

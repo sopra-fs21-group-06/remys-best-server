@@ -79,7 +79,7 @@ public class RESTGameController {
     @GetMapping("/game/{gameId}/throw-away")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ResponseBody
-    public CanPlayGetDTO loginUser(@PathVariable UUID gameId, HttpServletRequest request){
+    public List<String> loginUser(@PathVariable UUID gameId, HttpServletRequest request){
         String token = request.getHeader("Authorization");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
         Player player = gameEngine.findPlayerbyUsername(gameEngine.getRunningGameByID(gameId), userService.convertTokenToUsername(token));

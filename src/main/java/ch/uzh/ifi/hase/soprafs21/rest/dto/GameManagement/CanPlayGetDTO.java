@@ -6,31 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CanPlayGetDTO {
-    private String cardCode;
-    private String moveName;
-    private List<Integer> marbles;
+    private List<String> cardCodes;
 
-    public String getCardCode() {
-        return cardCode;
+    public List<String> getCardCodes() {
+        return cardCodes;
     }
 
-    public void setCardCode(String cardCode) {
-        this.cardCode = cardCode;
-    }
-
-    public String getMoveName() {
-        return moveName;
-    }
-
-    public void setMoveName(String moveName) {
-        this.moveName = moveName;
-    }
-
-    public List<Integer> getMarbles() {
-        return marbles;
-    }
-
-    public void setMarbles(List<Integer> marbles) {
-        this.marbles = marbles;
+    public void setCardCodes(List<String> cardCodes) {
+        this.cardCodes = cardCodes;
     }
 }

@@ -65,4 +65,14 @@ public class WaitingRoom {
         userCount++;
         return userQueue.size();
     }
+
+    public List<User> getXNumberOfUsers(int numberOfUsers){
+        List<User> usersToAddToGameSession = new ArrayList<>();
+        for(int i = 0; i < numberOfUsers; i++){
+            User newUserToAddToGamesession = userQueue.remove(0);
+            usersToAddToGameSession.add(newUserToAddToGamesession);
+
+        }
+        return usersToAddToGameSession;
+    }
 }
