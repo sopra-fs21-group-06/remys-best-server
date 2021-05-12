@@ -46,7 +46,7 @@ public class GameService {
 
     // New Round initiated, then Send Card to Player and GameStats
     public void initiateRound(Game game) {
-        Round currentRound = new Round(game.getPlayers(),game.getStartPlayer(),game.getCurrentCardAmountForRound(),game, cardAPIService,webSocketService, userService);
+        Round currentRound = new Round(game.getPlayers(),game.getStartPlayer(),game.getCurrentCardAmountForRound(),game, cardAPIService, webSocketService, userService);
         game.incrementRoundNumber();
         game.setCurrentRound(currentRound);
     }
@@ -161,7 +161,7 @@ public class GameService {
         }
     }
 
-    private List<Marble> getPlayableMarble(Game game, String playerName, Card cardToPlay, String moveName) {
+    public List<Marble> getPlayableMarble(Game game, String playerName, Card cardToPlay, String moveName) {
         return getPlayableMarble(game, playerName, cardToPlay, moveName, new ArrayList<>());
     }
 
@@ -176,7 +176,7 @@ public class GameService {
         return getPlayableMarblesOfMove(moveToGetPlayableMarbles, game, this, sevenMoves);
     }
 
-    private List<String> getPossibleTargetFields(Game game, Marble marbleToMove, String moveName, Card cardToPlay) {
+    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, String moveName, Card cardToPlay) {
         return getPossibleTargetFields(game, marbleToMove, moveName, cardToPlay, new ArrayList<>());
     }
 
@@ -219,7 +219,7 @@ public class GameService {
         String status = f.getFieldStatus().name();
         Marble ma = null;
         for(Marble m: game.getCurrentRound().getCurrentPlayer().getMarbleList()){
-            if(m.getMarbleNr() == marbleIdAndTargetFieldKeys.get(0).getMarbleId()){
+            if(m.getMarbleId() == marbleIdAndTargetFieldKeys.get(0).getMarbleId()){
                 ma = m;
             }
         }
@@ -354,7 +354,7 @@ public class GameService {
              String colorInString = marbleToEat.getColor().getId();
              int newPositionFieldValue = 25 - game.getPlayingBoard().getNumberMarblesAtHome(game.getCurrentRound().getCurrentPlayer().getColor());
              String newPositionFieldValueAsString = String.valueOf(newPositionFieldValue);
-             result = new MarbleIdAndTargetFieldKey(marbleToEat.getMarbleNr(), newPositionFieldValueAsString+colorInString);
+             result = new MarbleIdAndTargetFieldKey(marbleToEat.getMarbleId(), newPositionFieldValueAsString+colorInString);
         }
         return result;
     }
@@ -362,8 +362,8 @@ public class GameService {
     public Marble getMarbleByMarbleId(Game game, int marbleId) {
         List<Marble> marbleList = game.getCurrentRound().getCurrentPlayer().getMarbleList();
         for (Marble m : marbleList) {
-            if (m.getMarbleNr() == marbleId) {
-                log.info(String.valueOf(m.getMarbleNr()));
+            if (m.getMarbleId() == marbleId) {
+                log.info(String.valueOf(m.getMarbleId()));
                 return m;
             }
         }

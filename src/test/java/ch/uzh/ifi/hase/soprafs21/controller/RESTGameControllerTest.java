@@ -199,7 +199,7 @@ public class RESTGameControllerTest {
         // this mocks the GameEngine -> we define above what the GameEngine should return when getRunningGameByID() is called
         given(gameEngine.getRunningGameByID(Mockito.any())).willReturn(currentRunningGame);
         given(gameService.getMarbleByMarbleId(currentRunningGame, Mockito.any())).willReturn(currentMarble);
-        given(gameService.getPossibleTargetFields(currentMarble, Mockito.any(), Mockito.any(), currentRunningGame)).willReturn(targetFields);
+        given(gameService.getPossibleTargetFields(currentRunningGame, currentMarble, Mockito.any(), Mockito.any())).willReturn(targetFields);
 
 
         //when

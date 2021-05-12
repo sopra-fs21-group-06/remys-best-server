@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 @Transactional
-
 public class WebSocketService {
     Logger log = LoggerFactory.getLogger(WebSocketService.class);
 

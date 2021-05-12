@@ -53,7 +53,7 @@ public class GoToStart implements INormalMove {
         Field targetField =game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKeyArrayList.get(0).getFieldKey());
         Marble marbleToMove = null;
         for(Marble m: game.getCurrentRound().getCurrentPlayer().getMarbleList()){
-            if(m.getMarbleNr() == marbleIdAndTargetFieldKeyArrayList.get(0).getMarbleId()){
+            if(m.getMarbleId() == marbleIdAndTargetFieldKeyArrayList.get(0).getMarbleId()){
                 marbleToMove = m;
             }
         }
@@ -62,9 +62,9 @@ public class GoToStart implements INormalMove {
         if(!(result == null)){
             marbleIdAndTargetFieldKeys.add(result);
         }
-        game.getPlayingBoard().makeStartMove(marbleToMove.getColor());
+        marbleToMove = game.getPlayingBoard().makeStartMove(marbleToMove.getColor());
         log.info("marble start successful");
-        result = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleNr(), targetField.getFieldKey());
+        result = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleId(), targetField.getFieldKey());
         marbleIdAndTargetFieldKeys.add(result);
         return marbleIdAndTargetFieldKeys;
     }

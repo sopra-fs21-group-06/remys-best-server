@@ -3,7 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 
 public class Marble {
-    private final int marbleNr;
+    private final int marbleId;
     private Color color;
     private Field currentField;
     private Boolean isHome;
@@ -11,12 +11,12 @@ public class Marble {
 
 
     public Marble(int marbleId, Color color){
-        this.marbleNr = marbleId;
+        this.marbleId = marbleId;
         this.color = color;
     }
 
-    public int getMarbleNr() {
-        return marbleNr;
+    public int getMarbleId() {
+        return marbleId;
     }
 
     public void setHome(Boolean home) {

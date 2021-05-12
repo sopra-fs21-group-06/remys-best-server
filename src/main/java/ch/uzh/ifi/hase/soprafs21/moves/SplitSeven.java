@@ -135,7 +135,7 @@ public class SplitSeven implements ISplitMove {
             Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdandTargetKey.getFieldKey());
             Field startField = marble.getCurrentField();
             marbleIdAndTargetFieldKeys.addAll(eatSeven(targetField, startField, game));
-            MarbleIdAndTargetFieldKey result = new MarbleIdAndTargetFieldKey(marble.getMarbleNr(), targetField.getFieldKey());
+            MarbleIdAndTargetFieldKey result = new MarbleIdAndTargetFieldKey(marble.getMarbleId(), targetField.getFieldKey());
             marbleIdAndTargetFieldKeys.add(result);
             game.getPlayingBoard().makeMove(targetField, marble);
         }
