@@ -125,8 +125,9 @@ public class WebSocketService {
         sendToPlayer(userSessionIdentity, path, waitingRoomChooseColorDTO);
     }
 
-    public void broadcastGameExecutedCard(String playerName, String cardCode, ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys, UUID gameId){
+    public void broadcastPlayedMessage(String playerName, String cardCode, ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys, UUID gameId){
         String path = "/game/%s/played";
+        broadcastNotificationMessage(playerName, "played", cardCode, gameId);
         broadcastToTopic(String.format(path, gameId.toString()),
                 DogUtils.generateExecutedCardDTO(playerName, cardCode,
                         DogUtils.generateMarbleExecutedCardDTO(marbleIdsAndTargetFieldKeys)));

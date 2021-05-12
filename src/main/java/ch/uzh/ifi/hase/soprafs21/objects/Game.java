@@ -252,15 +252,12 @@ public class Game {
 
         try {
             ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeysToExecute = DogUtils.generateMarbleIdsAndTargetFieldKeys(marbleExecuteCardDTO);
-            executedMarbleIdsAndTargetFieldKeys = gameService.makeMove(this, playerName, cardCode, moveName, marbleIdsAndTargetFieldKeysToExecute);
+            gameService.makeMove(this, playerName, cardCode, moveName, marbleIdsAndTargetFieldKeysToExecute);
         } catch (Exception e) {
             e.printStackTrace();
             // TODO send error via websocket and abort, websocketService.sendPrivateError() to be implemented
             // e.getMessage();
         }
-
-        webSocketService.broadcastGameExecutedCard(playerName, cardCode, executedMarbleIdsAndTargetFieldKeys, gameId);
-        webSocketService.broadcastNotificationMessage(playerName, "played", cardCode, gameId);
     }
 
     public GameService getGameService() {

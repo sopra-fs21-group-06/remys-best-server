@@ -192,10 +192,13 @@ public class GameService {
         if(moveToExecute == null) {
             throw new Exception("Something strange happened");
         }
-        ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = moveToExecute.executeMove(game,marbleIdAndTargetFieldKeys );
+        ArrayList<MarbleIdAndTargetFieldKey> executedMarbleIdsAndTargetFieldKeys = moveToExecute.executeMove(game,marbleIdAndTargetFieldKeys );
         game.getCurrentRound().getCurrentPlayer().layDownCard(cardToPlay);
+        webSocketService.broadcastPlayedMessage(playerName, cardCodeToPlay, executedMarbleIdsAndTargetFieldKeys, game.getGameId());
 
-        return marbleIdsAndTargetFieldKeys;
+        checkEndTurnAndEndRound(game);
+
+        return executedMarbleIdsAndTargetFieldKeys;
     }
 
     public void checkEndTurnAndEndRound(Game game){
