@@ -28,27 +28,37 @@ public class SplitSeven implements ISplitMove {
     public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, ArrayList<MarbleIdAndTargetFieldKey> sevenMoves) {
         int countToRemainSeven = game.getGameService().getRemainingSevenMoves(game, sevenMoves);
         List<String> possibleTargetFieldKeys = new ArrayList<>();
-        Boolean conditionMarbleInFinishSector = marbleToMove.getCurrentField() instanceof FinishField;
-        Boolean conditionMarbleIsOnStartSecondTime = marbleToMove.getCurrentField() instanceof StartField &&  !marbleToMove.getCurrentField().equals(FieldStatus.BLOCKED);
-        Boolean conditionMarbleCanMakeItIntoFinish = marbleToMove.getCurrentField().getColor().equals(marbleToMove.getColor()) && 16 - marbleToMove.getCurrentField().getFieldValue() < countToRemainSeven;
+        Field marbleCurrentField = marbleToMove.getCurrentField();
+        Field startField = game.getPlayingBoard().getRightColorStartField(marbleToMove.getColor());
+        for (MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey : sevenMoves) {
+            if (marbleIdAndTargetFieldKey.getMarbleId() == marbleToMove.getMarbleNr() && countToRemainSeven!= 7) {
+                marbleCurrentField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
+            }
+            if (!startField.getFieldKey().equals(marbleIdAndTargetFieldKey.getFieldKey()) && startField.getFieldStatus().equals(FieldStatus.BLOCKED) && marbleIdAndTargetFieldKey.getMarbleId() == startField.getMarble().getMarbleNr() && countToRemainSeven != 7) {
+                game.getPlayingBoard().getRightColorStartField(marbleToMove.getColor()).setFieldStatus(FieldStatus.FREE);
+            }
+        }
+        Boolean conditionMarbleInFinishSector = marbleCurrentField instanceof FinishField;
+        Boolean conditionMarbleIsOnStartSecondTime = marbleCurrentField instanceof StartField &&  !marbleCurrentField.equals(FieldStatus.BLOCKED);
+        Boolean conditionMarbleCanMakeItIntoFinish = marbleCurrentField.getColor().equals(marbleToMove.getColor()) && 16 - marbleCurrentField.getFieldValue() < countToRemainSeven && 16 - marbleCurrentField.getFieldValue() > 0 ;
         //Add all finishsector field
         if(conditionMarbleCanMakeItIntoFinish || conditionMarbleIsOnStartSecondTime || conditionMarbleInFinishSector){
             // count to remain seven changes into the remaining size of steps after going to start
             int remainSeven = countToRemainSeven;
             if (conditionMarbleCanMakeItIntoFinish){
-                remainSeven = 16 - marbleToMove.getCurrentField().getFieldValue() - countToRemainSeven;
+                remainSeven = countToRemainSeven - 16 + marbleCurrentField.getFieldValue();
             }
             List<Field> finishFields= game.getPlayingBoard().getFinishFields(marbleToMove.getColor());
             int count = 0;
             for(Field f: finishFields){
                 // field is further away
-                if(marbleToMove.getCurrentField().getFieldValue() < f.getFieldValue()){
+                if(marbleCurrentField.getFieldValue() < f.getFieldValue()){
                     //case if next finishfield is blocked
                     if(f.getFieldStatus().equals(FieldStatus.OCCUPIED)){
                         count = remainSeven + 1;
                     } else {
                         // if remain seven is bigger than count add field key else there are still free spots but no more seven to move
-                        if(count <= remainSeven){
+                        if(count < remainSeven){
                             possibleTargetFieldKeys.add(f.getFieldKey());
                             count++;
                         }
@@ -64,17 +74,24 @@ public class SplitSeven implements ISplitMove {
                 if(f.getFieldKey().equals(marbleToMove.getCurrentField().getFieldKey())){
                     fieldIsFound = TRUE;
                 }
-                if(fieldIsFound){
+                if (fieldIsFound) {
                     // wenn ganz am schluss vom playingfield
-                    if(f instanceof StartField && f.getColor().equals(Color.YELLOW)){
-                        for(Field field: playingFields){
-                            if(!field.getFieldKey().equals(marbleToMove.getCurrentField().getFieldKey()) && countRestSeven > 0)
+                    if (f instanceof StartField && f.getColor().equals(Color.YELLOW)) {
+                        for (Field field : playingFields) {
+                            if (field.getFieldStatus().equals(FieldStatus.BLOCKED) && !field.getFieldKey().equals(marbleCurrentField.getFieldKey())) {
+                                countRestSeven = 0;
+                            }
+                            if (!field.getFieldKey().equals(marbleCurrentField.getFieldKey()) && countRestSeven > 0)
                                 possibleTargetFieldKeys.add(field.getFieldKey());
-                                countRestSeven--;
+                            countRestSeven--;
 
                         }
-                    } else {
-                        if(countRestSeven > 0 && !f.getFieldKey().equals(marbleToMove.getCurrentField().getFieldKey()) ){
+                    }
+                    else {
+                        if (f.getFieldStatus().equals(FieldStatus.BLOCKED) && !f.getFieldKey().equals(marbleCurrentField.getFieldKey())) {
+                            countRestSeven = 0;
+                        }
+                        if (countRestSeven > 0 && !f.getFieldKey().equals(marbleCurrentField.getFieldKey())) {
                             possibleTargetFieldKeys.add(f.getFieldKey());
                             countRestSeven--;
                         }
@@ -82,6 +99,7 @@ public class SplitSeven implements ISplitMove {
                 }
             }
         }
+        game.getPlayingBoard().getRightColorStartField(marbleToMove.getColor()).setFieldStatus(FieldStatus.BLOCKED);
         return possibleTargetFieldKeys;
     }
 
@@ -119,6 +137,7 @@ public class SplitSeven implements ISplitMove {
             marbleIdAndTargetFieldKeys.addAll(eatSeven(targetField, startField, game));
             MarbleIdAndTargetFieldKey result = new MarbleIdAndTargetFieldKey(marble.getMarbleNr(), targetField.getFieldKey());
             marbleIdAndTargetFieldKeys.add(result);
+            game.getPlayingBoard().makeMove(targetField, marble);
         }
         return marbleIdAndTargetFieldKeys;
     }
@@ -128,9 +147,6 @@ public class SplitSeven implements ISplitMove {
         MarbleIdAndTargetFieldKey result = null;
         Boolean fieldIsFound = FALSE;
         for(Field f: game.getPlayingBoard().getListPlayingFields()){
-            if(f.getFieldKey().equals(startField.getFieldKey())){
-                fieldIsFound = TRUE;
-            }
             if(fieldIsFound){
                 // wenn ganz am schluss vom playingfield
                 if(f instanceof StartField && f.getColor().equals(Color.YELLOW)){
@@ -161,6 +177,9 @@ public class SplitSeven implements ISplitMove {
                         }
                     }
                 }
+            }
+            if(f.getFieldKey().equals(startField.getFieldKey())){
+                fieldIsFound = TRUE;
             }
         }
         return marbleIdAndTargetFieldKeys;
