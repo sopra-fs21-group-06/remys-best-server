@@ -41,8 +41,16 @@ public class Exchange implements INormalMove {
                 possibleMarbles.add(m);
             }
         }
-
-        return possibleMarbles;
+        int count = 0;
+        for(Marble m: possibleMarbles){
+            if(!getPossibleTargetFields(game,m).equals(null)){
+                count++;
+            }
+        }
+        if (count != 0){
+            return possibleMarbles;
+        }
+        return possibleMarbles = null;
     }
     
 

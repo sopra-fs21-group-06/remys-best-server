@@ -207,8 +207,6 @@ public class PlayingBoard {
         }
         if (isNull(fieldToSend)) {
             System.out.println("Something went wrong in getField()");
-        } else {
-            System.out.println("all ok  getField()");
         }
         return fieldToSend;
 
@@ -336,17 +334,15 @@ public class PlayingBoard {
     public void sendHome(Marble m){
         if(m.getColor() == Color.GREEN){
             greenHome.push(m);
-            m.setHome(TRUE);
         } else if (m.getColor() == Color.RED){
             redHome.push(m);
-            m.setHome(TRUE);
         } else if (m.getColor() == Color.BLUE){
             blueHome.push(m);
-            m.setHome(TRUE);
         } else if (m.getColor() == Color.YELLOW) {
             yellowHome.push(m);
-            m.setHome(TRUE);
         }
+        m.setHome(TRUE);
+        m.setCurrentField(null);
     }
 
     public List<Field> getFinishFields(Color color){

@@ -39,7 +39,7 @@ public class FourBackwards implements INormalMove {
         Color colorEndField = marbleToMove.getCurrentField().getColor();
         if (fieldNr < 1){
             fieldNr = 16 + fieldNr;
-            colorEndField = game.getPlayingBoard().getPreviousColor(marbleToMove.getColor());
+            colorEndField = game.getPlayingBoard().getPreviousColor(colorEndField);
         }
         Field possTargetField = game.getPlayingBoard().getField(fieldNr, colorEndField);
         possibleTargetFieldKeys.add(possTargetField.getFieldKey());

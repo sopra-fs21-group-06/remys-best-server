@@ -72,12 +72,12 @@ public class GameService {
             handAsCardCode.add(c.getCode());
             for(IMove move: moves){
                 List<Marble> possibleMarbles = getPlayableMarblesOfMove(move, game, this, new ArrayList<>());
-                if (!(possibleMarbles.isEmpty())){
+                if (!(possibleMarbles.equals(null))){
                     playableCardCodes.add(c.getCode());
                 }
             }
         }
-        if(playableCardCodes.isEmpty()) {
+        if(playableCardCodes.equals(null)) {
             webSocketService.broadcastThrowAway(game.getGameId(), p.getPlayerName(), handAsCardCode);
             p.getHand().throwAwayHand();
             game.getCurrentRound().changeCurrentPlayer();
