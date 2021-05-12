@@ -121,6 +121,10 @@ public class PlayingBoard {
         return yellowMarbles;
     }
 
+    public LinkedList<Field> getListPlayingFields() {
+        return listPlayingFields;
+    }
+
     public Boolean hasMarbleOnHomeStack(Color color){
         if(color == Color.GREEN){
             return (!(greenHome.isEmpty()));
@@ -288,7 +292,7 @@ public class PlayingBoard {
             return TRUE;
         } else {
             log.info("Finishfield" + finishField.getFieldKey() + "is not finishfield in finsifieldmove");
-            return TRUE;
+            return FALSE;
         }
     }
 

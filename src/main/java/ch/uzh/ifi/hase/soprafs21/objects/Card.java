@@ -31,7 +31,7 @@ public class Card {
         } else if ("6".equals(value)) {
             moves.add(new SixForwards());
         } else if ("7".equals(value)){
-            //moves.add(new SplitSeven());
+            moves.add(new Split());
         } else if ("8".equals(value)){
             moves.add(new EightForwards());
         } else if ("9".equals(value)){
@@ -57,7 +57,7 @@ public class Card {
             moves.add(new FourBackwards());
             moves.add(new FiveForwards());
             moves.add(new SixForwards());
-            //moves.add(new SplitSeven());
+            moves.add(new Split());
             moves.add(new EightForwards());
             moves.add(new NineForwards());
             moves.add(new TenForwards());

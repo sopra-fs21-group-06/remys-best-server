@@ -69,7 +69,7 @@ public class RESTGameController {
     @GetMapping("/game/{gameId}/possible-target-fields")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public PossibleTargetFieldKeysListDTO getPossibleMarbles(@PathVariable UUID gameId, @RequestParam String code, @RequestParam String moveName, @RequestParam int marbleId,  @RequestParam int remainingSevenMoves) throws Exception {
+    public PossibleTargetFieldKeysListDTO getPossibleTargetFields(@PathVariable UUID gameId, @RequestParam String code, @RequestParam String moveName, @RequestParam int marbleId,  @RequestParam int remainingSevenMoves) throws Exception {
         Game currentGame = gameEngine.getRunningGameByID(gameId);
         Marble currentMarble = gameService.getMarbleByMarbleId(currentGame, marbleId);
         Card cardToPlay = new Card(code);
