@@ -78,7 +78,6 @@ public class GameService {
         }
         if(playableCardCodes.isEmpty()) {
             webSocketService.broadcastThrowAway(game.getGameId(), p.getPlayerName(), handAsCardCode);
-            webSocketService.broadcastNotificationMessage(p.getPlayerName(), "threw cards away", game.getGameId());
             p.getHand().throwAwayHand();
             game.getCurrentRound().changeCurrentPlayer();
         }

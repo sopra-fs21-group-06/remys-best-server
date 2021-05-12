@@ -196,6 +196,7 @@ public class WebSocketService {
 
     public void broadcastThrowAway(UUID gameId, String playerName, List<String> cardCodes){
         String path = "/game/%s/throwaway";
+        broadcastNotificationMessage(playerName, "threw cards away", gameId);
         broadcastToTopic(String.format(path, gameId.toString()),
                     DogUtils.generateGameThrowAwayDTO(playerName, cardCodes));
 
