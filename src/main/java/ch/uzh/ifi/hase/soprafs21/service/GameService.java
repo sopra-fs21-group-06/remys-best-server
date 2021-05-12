@@ -7,12 +7,16 @@ import ch.uzh.ifi.hase.soprafs21.objects.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 
 
@@ -41,8 +45,8 @@ public class GameService {
 
     // New Round initiated, then Send Card to Player and GameStats
     public void initiateRound(Game game) {
-        Round currentRound = new Round(game.getPlayerList(),game.getStartPlayer(),game.getNrCards(),game, cardAPIService,webSocketService, userService);
-        game.addToRoundCount();
+        Round currentRound = new Round(game.getPlayers(),game.getStartPlayer(),game.getCurrentCardAmountForRound(),game, cardAPIService,webSocketService, userService);
+        game.incrementRoundNumber();
         game.setCurrentRound(currentRound);
     }
 
@@ -51,11 +55,13 @@ public class GameService {
     }
 
     public void updateRoundStats(Game game){
-        game.changeCurrentPlayer();
-        game.changeNrCards();
+        game.changeStartingPlayer();
+        game.incrementRoundNumber();
+        game.incrementCardAmountForRound();
+
+        // TODO set exchange mode ?
     }
 
-    // TODO new endpoint
     public List<String> canPlay(Player p, Game game){
         List<Card> hand = p.getHand().getHandDeck();
         List<String> playableCardCodes = new ArrayList<>();
@@ -73,6 +79,7 @@ public class GameService {
         if(playableCardCodes.isEmpty()) {
             webSocketService.broadcastThrowAway(game.getGameId(), p.getPlayerName(), handAsCardCode);
             p.getHand().throwAwayHand();
+            game.getCurrentRound().changeCurrentPlayer();
         }
         return playableCardCodes;
     }
@@ -84,7 +91,8 @@ public class GameService {
     }
 
     private void checkIsYourMarble(Card cardToPlay, String moveName, Game game, Marble marbleToMove) throws Exception {
-        if (!(getPlayableMarble(game.getCurrentRound().getCurrentPlayer().getPlayerName(), cardToPlay, moveName, game, 7).contains(marbleToMove))){
+        String playerName = game.getCurrentRound().getCurrentPlayer().getPlayerName();
+        if (!(getPlayableMarble(game, playerName, cardToPlay, moveName, 7).contains(marbleToMove))){
             throw new Exception("Invalid Move: Not your marble");
         }
     }
@@ -117,15 +125,11 @@ public class GameService {
         }
     }
 
-    private void checkTargetFieldValidity(Marble marbleToMove, String moveName,Card cardToPlay, Game game, String targetFieldKey) throws Exception {
-        int startFieldVal = marbleToMove.getCurrentField().getFieldValue();
-        int targetFieldVal = game.getPlayingBoard().getFieldByFieldKey(targetFieldKey).getFieldValue();
-        int remainSeven = targetFieldVal - startFieldVal;
-        if (targetFieldVal < startFieldVal){
-            remainSeven = 16 - startFieldVal + targetFieldVal;
-
-        }
-        if (!(getPossibleTargetFields(marbleToMove, moveName, cardToPlay, game, remainSeven).contains(targetFieldKey))){
+    private void checkTargetFieldValidity(Marble marbleToMove, String moveName, Card cardToPlay, Game game, String targetFieldKey) throws Exception {
+        Field startField = marbleToMove.getCurrentField();
+        Field targetFieldValue = game.getPlayingBoard().getFieldByFieldKey(targetFieldKey);
+        int remainingSevenMoves = getDistanceBetweenFields(startField, targetFieldValue);
+        if (!(getPossibleTargetFields(game, marbleToMove, moveName, cardToPlay, remainingSevenMoves).contains(targetFieldKey))){
             throw new Exception("Invalid Move: This target field can not be reached with the selected marble and card");
         }
     }
@@ -143,9 +147,7 @@ public class GameService {
         }
     }
 
-
-    public List<Marble> getPlayableMarble(String playerName, Card cardToPlay, String moveName, Game game, int remainSeven) throws Exception{
-        checkIsYourTurn(playerName, game.getCurrentRound().getCurrentPlayer());
+    public List<Marble> getPlayableMarble(Game game, String playerName, Card cardToPlay, String moveName, int remainingSevenMoves) {
         IMove moveToGetPlayableMarbles = null;
         for(IMove imove : cardToPlay.getMoves()) {
             if (imove.getName().equals(moveName)) {
@@ -153,10 +155,10 @@ public class GameService {
                 break;
             }
         }
-        return moveToGetPlayableMarbles.getPlayableMarbles(game, this, remainSeven);
+        return moveToGetPlayableMarbles.getPlayableMarbles(game, this, remainingSevenMoves);
     }
 
-    public List<String> getPossibleTargetFields(Marble marbleToMove, String moveName, Card cardToPlay, Game game, int remainSeven) {
+    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, String moveName, Card cardToPlay, int remainingSevenMoves) {
         IMove moveToGetPlayableMarbles = null;
         for(IMove imove : cardToPlay.getMoves()) {
             if (imove.getName().equals(moveName)) {
@@ -164,11 +166,11 @@ public class GameService {
                 break;
             }
         }
-        return moveToGetPlayableMarbles.getPossibleTargetFields(game, marbleToMove,remainSeven );
+        return moveToGetPlayableMarbles.getPossibleTargetFields(game, marbleToMove, remainingSevenMoves);
     }
 
 
-    public ArrayList<MarbleIdAndTargetFieldKey> makeMove(String playerName, String cardCodeToPlay, String moveName, Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys) throws Exception {
+    public ArrayList<MarbleIdAndTargetFieldKey> makeMove(Game game, String playerName, String cardCodeToPlay, String moveName, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys) throws Exception {
 
         Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
         Card cardToPlay = new Card(cardCodeToPlay);
@@ -189,10 +191,13 @@ public class GameService {
         if(moveToExecute == null) {
             throw new Exception("Something strange happened");
         }
-        ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = moveToExecute.executeMove(game,marbleIdAndTargetFieldKeys );
+        ArrayList<MarbleIdAndTargetFieldKey> executedMarbleIdsAndTargetFieldKeys = moveToExecute.executeMove(game,marbleIdAndTargetFieldKeys );
         game.getCurrentRound().getCurrentPlayer().layDownCard(cardToPlay);
+        webSocketService.broadcastPlayedMessage(playerName, cardCodeToPlay, executedMarbleIdsAndTargetFieldKeys, game.getGameId());
 
-        return marbleIdsAndTargetFieldKeys;
+        checkEndTurnAndEndRound(game);
+
+        return executedMarbleIdsAndTargetFieldKeys;
     }
 
     public void checkEndTurnAndEndRound(Game game){
@@ -286,7 +291,7 @@ public class GameService {
     public boolean checkRoundIsFinished(Game game){
         int countCantPlay = 0;
         int countNoMoreCards = 0;
-        for(Player p: game.getPlayerList()){
+        for(Player p: game.getPlayers()){
             if(canPlay(p, game) == null){
                 countCantPlay++;
             }
@@ -323,7 +328,7 @@ public class GameService {
         return result;
     }
 
-    public Marble getMarbleByMarbleId(Game game, int marbleId) throws Exception {
+    public Marble getMarbleByMarbleId(Game game, int marbleId) {
         List<Marble> marbleList = game.getCurrentRound().getCurrentPlayer().getMarbleList();
         for (Marble m : marbleList) {
             if (m.getMarbleNr() == marbleId) {
@@ -331,10 +336,32 @@ public class GameService {
                 return m;
             }
         }
-        throw new Exception("MarbleId not in current player's marbles");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "MarbleId not in current player's marbles");
     }
 
+    public int getRemainingSevenMoves(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys) {
+        int fieldCounter = 0;
 
+        for(MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey : marbleIdsAndTargetFieldKeys) {
+            Marble marble = getMarbleByMarbleId(game, marbleIdAndTargetFieldKey.getMarbleId());
+            Field startField = marble.getCurrentField();
+            Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
+            fieldCounter += getDistanceBetweenFields(startField, targetField);
+        }
+
+        return 7 - fieldCounter;
+    }
+
+    private int getDistanceBetweenFields(Field startField, Field targetField) {
+        int startFieldValue = startField.getFieldValue();
+        int targetFieldValue = targetField.getFieldValue();
+        int distance = targetFieldValue - startFieldValue;
+        if (targetFieldValue < startFieldValue){
+            distance = 16 - startFieldValue + targetFieldValue;
+        }
+        // TODO finishing zone covered?
+        return distance;
+    }
 }
 
 

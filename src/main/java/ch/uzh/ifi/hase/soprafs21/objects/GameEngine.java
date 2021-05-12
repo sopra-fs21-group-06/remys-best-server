@@ -94,7 +94,7 @@ public class GameEngine{
             Game createdGame = createGameFromWaitingRoom();
             for(User userInWaitingRoom : waitingRoom.getUserQueue()) {
                 String userIdentity = userInWaitingRoom.getSessionIdentity();
-                webSocketService.sendGameAssignmentMessageToWaitingRoom(userIdentity, createdGame.getPlayerList(), createdGame.getGameId());
+                webSocketService.sendGameAssignmentMessageToWaitingRoom(userIdentity, createdGame.getPlayers(), createdGame.getGameId());
             }
         }
     }
@@ -258,7 +258,7 @@ public class GameEngine{
     public UUID findGameIdByPlayerName(String playerName){
         try {
             for (Game game : runningGamesList) {
-                for (Player player : game.getPlayerList()) {
+                for (Player player : game.getPlayers()) {
                     log.info(player.getPlayerName());
                     if (playerName.equals(player.getPlayerName())) {
                         return game.getGameId();
@@ -322,7 +322,7 @@ public class GameEngine{
     }
 
     public Player findPlayerbyUsername(Game game, String playerName){
-        for(Player p: game.getPlayerList()){
+        for(Player p: game.getPlayers()){
             if(p.getPlayerName().equals(playerName)){
                 return p;
             }
@@ -350,11 +350,11 @@ public class GameEngine{
 
             for (User userForFillup : usersFromWaitingRoomToFillup) {
                 String userIdentity = userForFillup.getSessionIdentity();
-                webSocketService.sendGameAssignmentMessageToWaitingRoom(userIdentity, createdGame.getPlayerList(), createdGame.getGameId());
+                webSocketService.sendGameAssignmentMessageToWaitingRoom(userIdentity, createdGame.getPlayers(), createdGame.getGameId());
             }
             for(User usersGameSession: usersInGameSession){
                 String userIdentity = usersGameSession.getSessionIdentity();
-                webSocketService.sendGameAssignmentMessageToGameSession(userIdentity, createdGame.getPlayerList(), createdGame.getGameId());
+                webSocketService.sendGameAssignmentMessageToGameSession(userIdentity, createdGame.getPlayers(), createdGame.getGameId());
             }
         }
     }

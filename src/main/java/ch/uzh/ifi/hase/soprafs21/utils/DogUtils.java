@@ -1,8 +1,10 @@
 package ch.uzh.ifi.hase.soprafs21.utils;
 
+import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GameManagement.RemainingSevenMovesDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.*;
@@ -112,12 +114,29 @@ public class DogUtils {
        return executredCardDTO;
    }
 
-   public static List<MarbleExecuteCardDTO> generateMarbleExecutreCardDTO(ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys){
+    public static RemainingSevenMovesDTO generateRemainingSevenMovesDTO(int remainingSevenMoves){
+        RemainingSevenMovesDTO remainingSevenMovesDTO = new RemainingSevenMovesDTO();
+        remainingSevenMovesDTO.setRemainingSevenMoves(remainingSevenMoves);
+        return remainingSevenMovesDTO;
+    }
+
+   public static List<MarbleExecuteCardDTO> generateMarbleExecutedCardDTO(ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys){
         List<MarbleExecuteCardDTO> marbleExecuteCardDTOList = new ArrayList<>();
         for(MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey : marbleIdsAndTargetFieldKeys){
             marbleExecuteCardDTOList.add(new MarbleExecuteCardDTO(marbleIdAndTargetFieldKey.getMarbleId(), marbleIdAndTargetFieldKey.getFieldKey()));
         }
         return marbleExecuteCardDTOList;
+   }
+
+   public static ArrayList<MarbleIdAndTargetFieldKey> generateMarbleIdsAndTargetFieldKeys(List<MarbleExecuteCardDTO> marbleExecuteCardDTOs) {
+       ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKey = new ArrayList<>();
+
+       for(MarbleExecuteCardDTO m: marbleExecuteCardDTOs) {
+           MarbleIdAndTargetFieldKey mIdFieldKey = new MarbleIdAndTargetFieldKey(m.getMarbleId(), m.getTargetFieldKey());
+           marbleIdsAndTargetFieldKey.add(mIdFieldKey);
+       }
+
+       return marbleIdsAndTargetFieldKey;
    }
 
     public static PossibleTargetFieldKeysListDTO generatePossibleTargetFieldKeyListDTO(List<String> targetFields){
@@ -170,5 +189,35 @@ public class DogUtils {
         gameThrowAwayDTO.setPlayerName(playerName);
         gameThrowAwayDTO.setCardCodes(cardCodes);
         return gameThrowAwayDTO;
+    }
+
+    public static String getNextPlayerName(Player currentPlayer, List<Player> players) {
+        String name = null;
+        if(currentPlayer.getColor().equals(Color.BLUE)){
+            for (Player p: players){
+                if(p.getColor().equals(Color.GREEN)){
+                    name = p.getPlayerName();
+                }
+            }
+        } else if(currentPlayer.getColor().equals(Color.GREEN)){
+            for (Player p: players){
+                if(p.getColor().equals(Color.RED)){
+                    name = p.getPlayerName();
+                }
+            }
+        } else if(currentPlayer.getColor().equals(Color.RED)){
+            for (Player p: players){
+                if(p.getColor().equals(Color.YELLOW)){
+                    name = p.getPlayerName();
+                }
+            }
+        } else if(currentPlayer.getColor().equals(Color.YELLOW)){
+            for (Player p: players){
+                if(p.getColor().equals(Color.BLUE)){
+                    name = p.getPlayerName();
+                }
+            }
+        }
+        return name;
     }
 }
