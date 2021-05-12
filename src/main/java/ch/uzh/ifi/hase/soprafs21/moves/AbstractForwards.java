@@ -34,10 +34,10 @@ public abstract class AbstractForwards implements IMove {
         List<String> possibleTargetFieldKeys = new ArrayList<>();
         int moveToInt = numberToGoForwards;
         int distanceNextStartField = 16 - marbleToMove.getCurrentField().getFieldValue();
-        int valueFieldNew = 0;
+        int valueFieldNew;
         Color colorFieldCurrentField = marbleToMove.getCurrentField().getColor();
-        Color colorNextField = null;
-        Field targetField = null;
+        Color colorNextField;
+        Field targetField;
         // check if possibleEndfield is on next Part of Game -> CHange color and Value
         // Case 2 fields into home and not
         if (marbleToMove.getCurrentField().getFieldValue() + moveToInt < 21 && marbleToMove.getCurrentField().getFieldValue() + moveToInt > 16 && marbleToMove.getCurrentField().getColor().equals(marbleToMove.getColor()) && !marbleToMove.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)){
@@ -66,7 +66,7 @@ public abstract class AbstractForwards implements IMove {
 
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList) {
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
-        MarbleIdAndTargetFieldKey result = null;
+
         Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKeyArrayList.get(0).getFieldKey());
         Marble marbleToMove = null;
         for(Marble m: game.getCurrentRound().getCurrentPlayer().getMarbleList()){
@@ -75,7 +75,7 @@ public abstract class AbstractForwards implements IMove {
             }
         }
 
-        result = game.getGameService().eat(targetField,game);
+        MarbleIdAndTargetFieldKey result = game.getGameService().eat(targetField,game);
         if(!(result == null)){
             marbleIdAndTargetFieldKeys.add(result);
         }

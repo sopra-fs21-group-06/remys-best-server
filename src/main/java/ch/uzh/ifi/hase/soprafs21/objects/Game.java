@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
+import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.ExecutePlayCardDTO;
 
@@ -14,14 +15,14 @@ import java.util.UUID;
 
 public class Game {
     /** should game have a Round ? such that we just instantiate a new variable of round that automatically is created with right number of cards etc?**/
-    private List<Player> playerList = new ArrayList<Player>();
-    private int nrCards=7;
+    private List<Player> players = new ArrayList<>();
+    private int currentCardAmountForRound = 7;
     private boolean GameIsFinished = false;
     private String deckId;
     private Player startPlayer;
     private PlayingBoard playingBoard = new PlayingBoard();
     private final UUID gameId = UUID.randomUUID();
-    private int roundCount = 0;
+    private int roundNumber = 0;
     private Round currentRound;
     private int cardCount = 54;
     private GameService gameService = GameService.getInstance();
@@ -31,9 +32,9 @@ public class Game {
     public Game(List<User> users, WebSocketService webSocketService) {
         this.webSocketService = webSocketService;
         for(User user : users){
-            playerList.add(userToPlayer(user));
+            players.add(userToPlayer(user));
         }
-        this.startPlayer = playerList.get(0);
+        this.startPlayer = players.get(0);
     }
 
     public void setGameService(GameService gameService) {
@@ -64,16 +65,6 @@ public class Game {
         this.currentRound = currentRound;
     }
 
-
-    public int getNextCardAmount(){
-        if (nrCards == 2){
-           return 7;
-        } else {
-            return nrCards - 1;
-        }
-    }
-
-
     public Round getCurrentRound() {
         return currentRound;
     }
@@ -83,29 +74,26 @@ public class Game {
         return new Player(user.getUsername());
     }
 
-    /*
-    Thats a very informative comment. o.B.d.A. trivial.
-     */
     public List<Player> updatePlayerColor(String playerName, Color color){
-        for(Player p: playerList){
+        for(Player p: players){
             if(p.getPlayerName().equals(playerName)){
                 p.setColor(color);
                 break;
             }
         }
-        return playerList;
+        return players;
     }
 
     public void setCardExchange(String playerName, String cardToChangeCode){
         // TODO check if card is in player's name
-        for(Player p: playerList){
+        for(Player p: players){
             if(p.getPlayerName().equals(playerName)){
                 p.setCardToChangeCode(cardToChangeCode);
                 break;
             }
         }
         boolean allPlayerPerformedCardexchange = true;
-        for(Player p: playerList){
+        for(Player p: players){
             if (p.getCardToChangeCode() == null) {
                 allPlayerPerformedCardexchange = false;
                 break;
@@ -113,19 +101,23 @@ public class Game {
         }
         if(allPlayerPerformedCardexchange) {
 
-            for(Player p: playerList){
+            for(Player p: players){
                 if(p.getCardToChangeCode()!= null){
                     performCardExchange(p, p.getTeamMate());
                 }
             }
-            currentRound.sendOutCurrentTurnDTO();
-            sendOutCurrentTurnFactsDTO();
+            broadcastCurrentTurnAndUpdatedFacts();
         }
     }
 
+    public void broadcastCurrentTurnAndUpdatedFacts() {
+        currentRound.broadcastCurrentTurnMessage();
+        broadcastFactsMessage();
+    }
+
     private void computeAndSetTeamMates() {
-        for(Player p : playerList) {
-            for(Player possibleTeamMate : playerList) {
+        for(Player p : players) {
+            for(Player possibleTeamMate : players) {
                 if(p.getColor() == Color.BLUE && possibleTeamMate.getColor() == Color.RED) {
                     p.setTeamMate(possibleTeamMate);
                     possibleTeamMate.setTeamMate(p);
@@ -150,7 +142,7 @@ public class Game {
         int player1CardIdx = 0;
         int player2CardIdx= 0;
 
-        for(int i = 0; i < nrCards; i++){
+        for(int i = 0; i < currentCardAmountForRound; i++){
             if(player1.getHand().getHandDeck().get(i).getCode().equals(player1CardCode)){
                 player1Card = player1.getHand().getHandDeck().get(i);
                 player1CardIdx = i;
@@ -159,7 +151,7 @@ public class Game {
             }
         }
 
-        for(int i = 0; i < nrCards; i++){
+        for(int i = 0; i < currentCardAmountForRound; i++){
             if(player2.getHand().getHandDeck().get(i).getCode().equals(player2CardCode)){
                 player2Card = player2.getHand().getHandDeck().get(i);
                 player2CardIdx = i;
@@ -167,6 +159,7 @@ public class Game {
                 break;
             }
         }
+
         player1.getHand().getHandDeck().add(player1CardIdx, player2Card);
         player2.getHand().getHandDeck().add(player2CardIdx, player1Card);
 
@@ -174,26 +167,21 @@ public class Game {
         player2.setCardToChangeCode(null);
 
         assert player2Card != null;
-        currentRound.sendOutCardDifferenceHandDTO(player1, player2Card, player1CardIdx);
+        currentRound.sendCardsToPlayer(player1, player2Card, player1CardIdx);
         assert player1Card != null;
-        currentRound.sendOutCardDifferenceHandDTO(player2, player1Card, player2CardIdx);
-    }
-
-    public void setRoundCount(int roundCount) {
-        this.roundCount = roundCount;
+        currentRound.sendCardsToPlayer(player2, player1Card, player2CardIdx);
     }
 
     public void setPlayerToReady(String playername) {
-        for(Player p: playerList){
+        for(Player p: players){
             if(p.getPlayerName().equals(playername)){
                 p.setReady(true);
                 break;
             }
         }
 
-
         boolean areAllPlayersReady = true;
-        for(Player p: playerList){
+        for(Player p: players){
             if (!p.isReady()) {
                 areAllPlayersReady = false;
                 break;
@@ -207,19 +195,16 @@ public class Game {
         }
     }
 
-
-
-
-    public int getNrCards() {
-        return nrCards;
+    public int getCurrentCardAmountForRound() {
+        return currentCardAmountForRound;
     }
 
     public Player getStartPlayer() {
         return startPlayer;
     }
 
-    public List<Player> getPlayerList() {
-        return playerList;
+    public List<Player> getPlayers() {
+        return players;
     }
 
     public PlayingBoard getPlayingBoard() {
@@ -230,29 +215,19 @@ public class Game {
         return gameId;
     }
 
-   /* public void setNrCards(int nrCards) {
-        this.nrCards = nrCards;
+    public void incrementRoundNumber(){
+        roundNumber++;
     }
 
-    public void setPlayerList(List<Player> playerList) {
-        this.playerList = playerList;
+    public void incrementCardAmountForRound() {
+        this.currentCardAmountForRound = getNextCardAmount();
     }
 
-    public void setPlayingBoard(PlayingBoard playingBoard) {
-        this.playingBoard = playingBoard;
-    }*/
-
-    public void setStartPlayer(Player startPlayer) {
-        this.startPlayer = startPlayer;
-    }
-    public void addToRoundCount(){
-        roundCount++;
-    }
-    public void changeNrCards(){
-        if (this.nrCards == 2){
-            this.nrCards = 7;
+    private int getNextCardAmount() {
+        if (this.currentCardAmountForRound == 2){
+            return 7;
         } else {
-            this.nrCards--;
+            return this.currentCardAmountForRound - 1;
         }
     }
 
@@ -264,30 +239,27 @@ public class Game {
         this.cardCount = cardCount;
     }
 
-    public void sendOutCurrentTurnFactsDTO(){
-        webSocketService.sendCurrentTurnFactsMessage(roundCount, currentRound.getCurrentPlayer().getPlayerName(), getNextCardAmount(), currentRound.getNameNextPlayer(), gameId);
+    public void broadcastFactsMessage(){
+        webSocketService.broadcastFactsMessage(roundNumber, currentRound.getCurrentPlayer().getPlayerName(), getNextCardAmount(), currentRound.getNextPlayerName(), gameId);
     }
 
-    public void sendExecutedMove(ExecutePlayCardDTO executePlayCardDTO){
+    public void executeMove(ExecutePlayCardDTO executePlayCardDTO){
         String playerName = gameService.getUserService().convertTokenToUsername(executePlayCardDTO.getToken());
         String cardCode = executePlayCardDTO.getCode();
         String moveName = executePlayCardDTO.getMoveName();
-        List<MarbleExecuteCardDTO> tupleList = executePlayCardDTO.getMarbles();
-        ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = new ArrayList<>();
-        ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKey = new ArrayList<>();
-        for(MarbleExecuteCardDTO m: tupleList) {
-            MarbleIdAndTargetFieldKey mIdFieldKey = new MarbleIdAndTargetFieldKey(m.getMarbleId(), m.getTargetFieldKey());
-            marbleIdsAndTargetFieldKey.add(mIdFieldKey);
-        }
+        List<MarbleExecuteCardDTO> marbleExecuteCardDTO = executePlayCardDTO.getMarbles();
+        ArrayList<MarbleIdAndTargetFieldKey> executedMarbleIdsAndTargetFieldKeys = new ArrayList<>();
+
         try {
-            marbleIdsAndTargetFieldKeys.addAll(gameService.makeMove(playerName, cardCode, moveName, this, marbleIdsAndTargetFieldKey));
+            ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeysToExecute = DogUtils.generateMarbleIdsAndTargetFieldKeys(marbleExecuteCardDTO);
+            executedMarbleIdsAndTargetFieldKeys = gameService.makeMove(this, playerName, cardCode, moveName, marbleIdsAndTargetFieldKeysToExecute);
         } catch (Exception e) {
             e.printStackTrace();
             // TODO send error via websocket and abort, websocketService.sendPrivateError() to be implemented
             // e.getMessage();
         }
 
-        webSocketService.broadcastGameExecutedCard(playerName, cardCode, marbleIdsAndTargetFieldKeys, gameId);
+        webSocketService.broadcastGameExecutedCard(playerName, cardCode, executedMarbleIdsAndTargetFieldKeys, gameId);
         webSocketService.broadcastNotificationMessage(playerName, "played", cardCode, gameId);
     }
 
@@ -298,51 +270,16 @@ public class Game {
     public WebSocketService getWebSocketService() {
         return webSocketService;
     }
-    public void changeCurrentPlayer () {
-        if(playerList.size() == 2){
-            for(Player p: playerList){
-                if(!startPlayer.equals(p)){
-                    startPlayer = p;
-                    break;
-                }
-            }
-        } else {
-            for (Player p : playerList) {
-                if (p.getPlayerName().equals(getNameNextPlayer())) {
-                    startPlayer = p;
-                    break;
-                }
+    public void changeStartingPlayer() {
+        for (Player p : players) {
+            if (p.getPlayerName().equals(getNextPlayerName())) {
+                startPlayer = p;
+                break;
             }
         }
     }
-    public String getNameNextPlayer () {
-        String name = "";
-        if(startPlayer.getColor().equals(Color.BLUE)){
-            for (Player p: playerList){
-                if(p.getColor().equals(Color.GREEN)){
-                    name = p.getPlayerName();
-                }
-            }
-        } else if(startPlayer.getColor().equals(Color.GREEN)){
-            for (Player p: playerList){
-                if(p.getColor().equals(Color.RED)){
-                    name = p.getPlayerName();
-                }
-            }
-        } else if(startPlayer.getColor().equals(Color.RED)){
-            for (Player p: playerList){
-                if(p.getColor().equals(Color.YELLOW)){
-                    name = p.getPlayerName();
-                }
-            }
-        } else if(startPlayer.getColor().equals(Color.YELLOW)){
-            for (Player p: playerList){
-                if(p.getColor().equals(Color.BLUE)){
-                    name = p.getPlayerName();
-                }
-            }
-        }
-        return name;
 
+    public String getNextPlayerName() {
+        return DogUtils.getNextPlayerName(this.startPlayer, this.players);
     }
 }

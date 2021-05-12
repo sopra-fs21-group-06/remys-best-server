@@ -21,7 +21,7 @@ public class Exchange implements IMove {
     @Override
     public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int remainSeven) {
         List<String> possibleTargetFieldKeys = new ArrayList<>();
-        for (Player p: game.getPlayerList()) {
+        for (Player p: game.getPlayers()) {
             if (!p.equals(game.getCurrentRound().getCurrentPlayer())) {
                 for (Marble m : p.getMarblesOnFieldNotHomeNotOnStart()) {
                     if (marbleToMove.getMarbleNr() != m.getMarbleNr()) {

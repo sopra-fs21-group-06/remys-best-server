@@ -38,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 public class WebSocketService {
     Logger log = LoggerFactory.getLogger(WebSocketService.class);
+
     @Autowired
     public SimpMessagingTemplate simp;
 
@@ -55,7 +56,7 @@ public class WebSocketService {
         broadcastNotificationMessage( "Card Exchange", gameId);
     }
 
-    public void sendCurrentTurnFactsMessage(int roundCount, String playerName, int nextCardAmount, String nextPlayerName, UUID gameId) {
+    public void broadcastFactsMessage(int roundCount, String playerName, int nextCardAmount, String nextPlayerName, UUID gameId) {
         broadcastFactsMessage(DogUtils.generateCurrentTurnFactList(roundCount, playerName, nextCardAmount, nextPlayerName), gameId);
     }
 
@@ -69,6 +70,10 @@ public class WebSocketService {
 
     public void broadcastNotificationMessage(String action, UUID gameId) {
         broadcastNotificationMessage(null, action, null, gameId);
+    }
+
+    public void broadcastNotificationMessage(String playerName, String action, UUID gameId) {
+        broadcastNotificationMessage(playerName, action, null, gameId);
     }
 
     public void broadcastNotificationMessage(String playerName, String action, String cardCode, UUID gameId) {
@@ -124,7 +129,7 @@ public class WebSocketService {
         String path = "/game/%s/played";
         broadcastToTopic(String.format(path, gameId.toString()),
                 DogUtils.generateExecutedCardDTO(playerName, cardCode,
-                        DogUtils.generateMarbleExecutreCardDTO(marbleIdsAndTargetFieldKeys)));
+                        DogUtils.generateMarbleExecutedCardDTO(marbleIdsAndTargetFieldKeys)));
     }
 
     public void sentGameEndMessage(String gameId, GameEndDTO gameEndDTO) {

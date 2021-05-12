@@ -8,7 +8,7 @@ import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SixForwards extends AbstractForwards{
+public class SixForwards extends AbstractForwards {
     private static final int NUMBER_TO_GO_FORWARDS = 6;
 
     @Override
