@@ -2,20 +2,11 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
-import ch.uzh.ifi.hase.soprafs21.moves.AbstractForwards;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.geo.Circle;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
-import org.w3c.dom.Node;
-
-import javax.persistence.criteria.CriteriaBuilder;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-
 import java.util.List;
 import java.util.Stack;
 
@@ -147,6 +138,7 @@ public class PlayingBoard {
             return yellowHome.size();
         }
     }
+
     public Marble getFirstHomeMarble(Color color, boolean removeFromStack){
         Marble m = null;
         if(color == Color.GREEN){
@@ -241,15 +233,16 @@ public class PlayingBoard {
         }
         return fieldToSend;
     }
+
     // Marble m is the first on the stack,
-    public String makeStartMove(Color color) {
+    public Marble makeStartMove(Color color) {
         Marble marble = getFirstHomeMarble(color, true);
         StartField targetField = getRightColorStartField(color);
         targetField.setFieldStatus(FieldStatus.BLOCKED);
         targetField.setMarble(marble);
         marble.setCurrentField(targetField);
         marble.setHome(FALSE);
-        return targetField.getFieldKey();
+        return marble;
     }
 
     public void makeJackMove(Field fieldToChange, Marble m){

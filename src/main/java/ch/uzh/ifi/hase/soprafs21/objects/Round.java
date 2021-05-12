@@ -25,7 +25,7 @@ public class Round {
         this.currentPlayer = startPlayer;
         this.nrCards = nrCards;
         this.cardAPIService = cardAPIService;
-        deckId = cardAPIService.createDeck().getDeck_id();
+        this.deckId = cardAPIService.createDeck().getDeck_id();
         this.webSocketService = webSocketService;
         this.userService = userService;
         initializeRound();

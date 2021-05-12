@@ -24,7 +24,7 @@ public class Exchange implements INormalMove {
         for (Player p: game.getPlayers()) {
             if (!p.equals(game.getCurrentRound().getCurrentPlayer())) {
                 for (Marble m : p.getMarblesOnFieldNotHomeNotOnStart()) {
-                    if (marbleToMove.getMarbleNr() != m.getMarbleNr()) {
+                    if (marbleToMove.getMarbleId() != m.getMarbleId()) {
                         possibleTargetFieldKeys.add(m.getCurrentField().getFieldKey());
                     }
                 }
@@ -59,15 +59,15 @@ public class Exchange implements INormalMove {
         Field targetField =game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKeyArrayList.get(0).getFieldKey());
         Marble marbleToMove = null;
         for(Marble m: game.getCurrentRound().getCurrentPlayer().getMarbleList()){
-            if(m.getMarbleNr() == marbleIdAndTargetFieldKeyArrayList.get(0).getMarbleId()){
+            if(m.getMarbleId() == marbleIdAndTargetFieldKeyArrayList.get(0).getMarbleId()){
                 marbleToMove = m;
             }
         }
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
         String fieldKeyNewTeamMate = marbleToMove.getCurrentField().getFieldKey();
         Marble marbleTeamMate = targetField.getMarble();
-        MarbleIdAndTargetFieldKey result1 = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleNr(), targetField.getFieldKey());
-        MarbleIdAndTargetFieldKey result2 = new MarbleIdAndTargetFieldKey(marbleTeamMate.getMarbleNr(), fieldKeyNewTeamMate);
+        MarbleIdAndTargetFieldKey result1 = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleId(), targetField.getFieldKey());
+        MarbleIdAndTargetFieldKey result2 = new MarbleIdAndTargetFieldKey(marbleTeamMate.getMarbleId(), fieldKeyNewTeamMate);
         marbleIdAndTargetFieldKeys.add(result1);
         marbleIdAndTargetFieldKeys.add(result2);
         game.getPlayingBoard().makeJackMove(targetField, marbleToMove);

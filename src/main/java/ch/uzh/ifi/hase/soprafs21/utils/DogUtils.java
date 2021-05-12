@@ -192,32 +192,29 @@ public class DogUtils {
     }
 
     public static String getNextPlayerName(Player currentPlayer, List<Player> players) {
-        String name = null;
-        if(currentPlayer.getColor().equals(Color.BLUE)){
-            for (Player p: players){
-                if(p.getColor().equals(Color.GREEN)){
-                    name = p.getPlayerName();
-                }
-            }
-        } else if(currentPlayer.getColor().equals(Color.GREEN)){
-            for (Player p: players){
-                if(p.getColor().equals(Color.RED)){
-                    name = p.getPlayerName();
-                }
-            }
-        } else if(currentPlayer.getColor().equals(Color.RED)){
-            for (Player p: players){
-                if(p.getColor().equals(Color.YELLOW)){
-                    name = p.getPlayerName();
-                }
-            }
-        } else if(currentPlayer.getColor().equals(Color.YELLOW)){
-            for (Player p: players){
-                if(p.getColor().equals(Color.BLUE)){
-                    name = p.getPlayerName();
-                }
+        Color currentColor = currentPlayer.getColor();
+        Color nextColor = getNextColor(currentColor);
+
+        String playerName = null;
+        for (Player player: players){
+            if(player.getColor().equals(nextColor)){
+                playerName = player.getPlayerName();
+                break;
             }
         }
-        return name;
+
+        return playerName;
+    }
+
+    public static Color getNextColor(Color color) {
+        if(color.equals(Color.BLUE)) {
+            return Color.GREEN;
+        } else if(color.equals(Color.GREEN)){
+            return Color.RED;
+        } else if(color.equals(Color.RED)){
+            return Color.YELLOW;
+        } else {
+            return Color.BLUE;
+        }
     }
 }

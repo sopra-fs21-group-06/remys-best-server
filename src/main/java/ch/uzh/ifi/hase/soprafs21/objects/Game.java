@@ -172,9 +172,9 @@ public class Game {
         currentRound.sendCardsToPlayer(player2, player1Card, player2CardIdx);
     }
 
-    public void setPlayerToReady(String playername) {
+    public void setPlayerToReady(String playerName) {
         for(Player p: players){
-            if(p.getPlayerName().equals(playername)){
+            if(p.getPlayerName().equals(playerName)){
                 p.setReady(true);
                 break;
             }
@@ -248,7 +248,6 @@ public class Game {
         String cardCode = executePlayCardDTO.getCode();
         String moveName = executePlayCardDTO.getMoveName();
         List<MarbleExecuteCardDTO> marbleExecuteCardDTO = executePlayCardDTO.getMarbles();
-        ArrayList<MarbleIdAndTargetFieldKey> executedMarbleIdsAndTargetFieldKeys = new ArrayList<>();
 
         try {
             ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeysToExecute = DogUtils.generateMarbleIdsAndTargetFieldKeys(marbleExecuteCardDTO);

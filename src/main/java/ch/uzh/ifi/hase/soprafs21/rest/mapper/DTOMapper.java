@@ -67,9 +67,8 @@ public interface DTOMapper {
     @Mapping(source = "moveName", target = "moveName")
     MoveDTO convertCardMovetoMoveDTO(CardMove cardMove);
 
-    @Mapping(source = "marbleNr", target = "marbleId")
+    @Mapping(source = "marbleId", target = "marbleId")
     MarbleDTO convertMarbletoMarbleDTO(Marble marble);
-
 
     //FriendRequests
     @Mapping(source = "senderName", target = "senderName")
