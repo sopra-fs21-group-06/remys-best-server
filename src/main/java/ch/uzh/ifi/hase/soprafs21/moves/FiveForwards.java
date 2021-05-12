@@ -8,7 +8,7 @@ import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FiveForwards extends AbstractForwards{
+public class FiveForwards extends AbstractForwards {
     private static final int NUMBER_TO_GO_FORWARDS = 5;
 
     @Override
@@ -17,13 +17,13 @@ public class FiveForwards extends AbstractForwards{
     }
 
     @Override
-    public List<Marble> getPlayableMarbles(Game game, GameService gameService, int remainSeven) {
-        return super.getPlayableMarbles(game, gameService, NUMBER_TO_GO_FORWARDS, remainSeven);
+    public List<Marble> getPlayableMarbles(Game game, GameService gameService) {
+        return super.getPlayableMarbles(game, gameService, NUMBER_TO_GO_FORWARDS);
     }
 
     @Override
-    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int remainSeven) {
-        return super.getPossibleTargetFields(game, marbleToMove, NUMBER_TO_GO_FORWARDS, remainSeven);
+    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove) {
+        return super.getPossibleTargetFields(game, marbleToMove, NUMBER_TO_GO_FORWARDS);
     }
 
     @Override

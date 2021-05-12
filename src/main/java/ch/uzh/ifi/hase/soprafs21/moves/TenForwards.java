@@ -15,13 +15,13 @@ public class TenForwards extends AbstractForwards {
     }
 
     @Override
-    public List<Marble> getPlayableMarbles(Game game, GameService gameService, int remainSeven) {
-        return super.getPlayableMarbles(game, gameService, NUMBER_TO_GO_FORWARDS, remainSeven);
+    public List<Marble> getPlayableMarbles(Game game, GameService gameService) {
+        return super.getPlayableMarbles(game, gameService, NUMBER_TO_GO_FORWARDS);
     }
 
     @Override
-    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int remainSeven) {
-        return super.getPossibleTargetFields(game, marbleToMove, NUMBER_TO_GO_FORWARDS, remainSeven);
+    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove) {
+        return super.getPossibleTargetFields(game, marbleToMove, NUMBER_TO_GO_FORWARDS);
     }
 
     @Override

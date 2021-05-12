@@ -2,6 +2,8 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.moves.IMove;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GameManagement.PossibleMarblesDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GameManagement.PossibleTargetFieldsDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GameManagement.RemainingSevenMovesDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GameManagement.SevenMovesDTO;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
@@ -52,28 +54,28 @@ public class RESTGameController {
         return DogUtils.generateRoundMoveListDTO(moves);
     }
 
-    @GetMapping("/game/{gameId}/possible-marbles")
+    @PostMapping("/game/{gameId}/possible-marbles")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public RoundMarbleListDTO getPossibleMarbles(HttpServletRequest request, @PathVariable UUID gameId, @RequestParam String code, @RequestParam String moveName, @RequestParam int remainingSevenMoves) throws Exception {
+    public RoundMarbleListDTO getPossibleMarbles(HttpServletRequest request, @PathVariable UUID gameId, @RequestBody PossibleMarblesDTO possibleMarblesDTO) throws Exception {
         String token = request.getHeader("Authorization");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
-
-        Card card = new Card(code);
+        Card card = new Card(possibleMarblesDTO.getCode());
         String playerName = userService.convertTokenToUsername(token);
-
-        List<Marble> marbleList = currentGame.getGameService().getPlayableMarble(currentGame, playerName, card, moveName, remainingSevenMoves);
+        ArrayList<MarbleIdAndTargetFieldKey> sevenMoves = DogUtils.generateMarbleIdsAndTargetFieldKeys(possibleMarblesDTO.getSevenMoves());
+        List<Marble> marbleList = currentGame.getGameService().getPlayableMarble(currentGame, playerName, card, possibleMarblesDTO.getMoveName(), sevenMoves);
         return DogUtils.generateRoundMarblesListDTO(marbleList);
     }
 
-    @GetMapping("/game/{gameId}/possible-target-fields")
+    @PostMapping("/game/{gameId}/possible-target-fields")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public PossibleTargetFieldKeysListDTO getPossibleTargetFields(@PathVariable UUID gameId, @RequestParam String code, @RequestParam String moveName, @RequestParam int marbleId,  @RequestParam int remainingSevenMoves) throws Exception {
+    public PossibleTargetFieldKeysListDTO getPossibleTargetFields(@PathVariable UUID gameId, @RequestBody PossibleTargetFieldsDTO possibleTargetFieldsDTO) throws Exception {
         Game currentGame = gameEngine.getRunningGameByID(gameId);
-        Marble currentMarble = gameService.getMarbleByMarbleId(currentGame, marbleId);
-        Card cardToPlay = new Card(code);
-        List<String> targetFields = gameService.getPossibleTargetFields(currentGame, currentMarble, moveName, cardToPlay, remainingSevenMoves);
+        Marble currentMarble = gameService.getMarbleByMarbleId(currentGame, possibleTargetFieldsDTO.getMarbleId());
+        Card cardToPlay = new Card(possibleTargetFieldsDTO.getCode());
+        ArrayList<MarbleIdAndTargetFieldKey> sevenMoves = DogUtils.generateMarbleIdsAndTargetFieldKeys(possibleTargetFieldsDTO.getSevenMoves());
+        List<String> targetFields = gameService.getPossibleTargetFields(currentGame, currentMarble, possibleTargetFieldsDTO.getMoveName(), cardToPlay, sevenMoves);
         return DogUtils.generatePossibleTargetFieldKeyListDTO(targetFields);
     }
 

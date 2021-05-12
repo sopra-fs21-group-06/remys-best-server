@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FourBackwards implements IMove {
+public class FourBackwards implements INormalMove {
     private static final int NUMBER_TO_GO_FORWARDS = -4;
     Logger log = LoggerFactory.getLogger(FourBackwards.class);
 
@@ -19,7 +19,7 @@ public class FourBackwards implements IMove {
     }
 
     @Override
-    public List<Marble> getPlayableMarbles(Game game, GameService gameService, int remainSeven) {
+    public List<Marble> getPlayableMarbles(Game game, GameService gameService) {
         List<Marble> possibleMarbles = new ArrayList<>();
         Player p = game.getCurrentRound().getCurrentPlayer();
         for (Marble m : p.getMarblesOnFieldAndNotFinished()) {
@@ -33,7 +33,7 @@ public class FourBackwards implements IMove {
     }
 
     @Override
-    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int remainSeven) {
+    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove) {
         List<String> possibleTargetFieldKeys = new ArrayList<>();
         int fieldNr = marbleToMove.getCurrentField().getFieldValue() - 4;
         Color colorEndField = marbleToMove.getCurrentField().getColor();
