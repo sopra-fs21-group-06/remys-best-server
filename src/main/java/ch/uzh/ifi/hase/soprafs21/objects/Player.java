@@ -20,6 +20,15 @@ public class Player {
     private Player teamMate;
     private boolean isReady;
     private String cardToChangeCode = null;
+    private boolean isFinished;
+
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    public void setFinished(boolean finished) {
+        isFinished = finished;
+    }
 
     public void layDownCard(Card c){
         hand.deleteCardFromHand(c);
@@ -42,6 +51,7 @@ public class Player {
 
     public Player(String playerName) {
         this.playerName=playerName;
+        this.setFinished(FALSE);
     }
 
     public Color getColor() {
