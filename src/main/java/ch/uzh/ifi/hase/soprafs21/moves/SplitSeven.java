@@ -15,8 +15,8 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 
-public class Split implements IMove {
-    Logger log = LoggerFactory.getLogger(Split.class);
+public class SplitSeven implements ISplitMove {
+    Logger log = LoggerFactory.getLogger(SplitSeven.class);
 
     @Override
     public String getName() {
@@ -25,7 +25,8 @@ public class Split implements IMove {
 
     @Override
     //Cases done: Marble ist im finishsector (alle die drin sind)
-    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int countToRemainSeven) {
+    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, ArrayList<MarbleIdAndTargetFieldKey> sevenMoves) {
+        int countToRemainSeven = game.getGameService().getRemainingSevenMoves(game, sevenMoves);
         List<String> possibleTargetFieldKeys = new ArrayList<>();
         Boolean conditionMarbleInFinishSector = marbleToMove.getCurrentField() instanceof FinishField;
         Boolean conditionMarbleIsOnStartSecondTime = marbleToMove.getCurrentField() instanceof StartField &&  !marbleToMove.getCurrentField().equals(FieldStatus.BLOCKED);
@@ -85,7 +86,8 @@ public class Split implements IMove {
     }
 
     @Override
-    public List<Marble> getPlayableMarbles(Game game, GameService gameService, int countToRemainSeven) {
+    public List<Marble> getPlayableMarbles(Game game, GameService gameService, ArrayList<MarbleIdAndTargetFieldKey> sevenMoves) {
+        int countToRemainSeven = game.getGameService().getRemainingSevenMoves(game, sevenMoves);
         List<Marble> possibleMarbles = new ArrayList<>();
         Player p = game.getCurrentRound().getCurrentPlayer();
         int countPossibleStepsAllMarbles = 0;
@@ -114,11 +116,54 @@ public class Split implements IMove {
             Marble marble = game.getGameService().getMarbleByMarbleId(game, marbleIdandTargetKey.getMarbleId());
             Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdandTargetKey.getFieldKey());
             Field startField = marble.getCurrentField();
-            marbleIdAndTargetFieldKeys.addAll(game.getGameService().eatSeven(targetField, startField, game));
+            marbleIdAndTargetFieldKeys.addAll(eatSeven(targetField, startField, game));
             MarbleIdAndTargetFieldKey result = new MarbleIdAndTargetFieldKey(marble.getMarbleNr(), targetField.getFieldKey());
             marbleIdAndTargetFieldKeys.add(result);
         }
         return marbleIdAndTargetFieldKeys;
-
     }
+
+    private ArrayList<MarbleIdAndTargetFieldKey> eatSeven(Field targetField, Field startField, Game game){
+        ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
+        MarbleIdAndTargetFieldKey result = null;
+        Boolean fieldIsFound = FALSE;
+        for(Field f: game.getPlayingBoard().getListPlayingFields()){
+            if(f.getFieldKey().equals(startField.getFieldKey())){
+                fieldIsFound = TRUE;
+            }
+            if(fieldIsFound){
+                // wenn ganz am schluss vom playingfield
+                if(f instanceof StartField && f.getColor().equals(Color.YELLOW)){
+                    for(Field field: game.getPlayingBoard().getListPlayingFields()){
+                        if(field.getFieldKey().equals(targetField.getFieldKey())){
+                            result = game.getGameService().eat(targetField, game);
+                            if(!(result == null)){
+                                marbleIdAndTargetFieldKeys.add(result);
+                            }
+                            return marbleIdAndTargetFieldKeys;
+                        } else {
+                            result = game.getGameService().eat(field,game);
+                            if(!(result == null)){
+                                marbleIdAndTargetFieldKeys.add(result);
+                            }
+                        }
+                    }
+                } else {
+                    if(f.getFieldKey().equals(targetField.getFieldKey())){
+                        result = game.getGameService().eat(targetField, game);
+                        if(!(result == null)){
+                            marbleIdAndTargetFieldKeys.add(result);
+                        }
+                        return marbleIdAndTargetFieldKeys;
+                    } else {
+                        if(!(result == null)){
+                            marbleIdAndTargetFieldKeys.add(result);
+                        }
+                    }
+                }
+            }
+        }
+        return marbleIdAndTargetFieldKeys;
+    }
+
 }

@@ -10,14 +10,14 @@ import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractForwards implements IMove {
+public abstract class AbstractForwards implements INormalMove {
     Logger log = LoggerFactory.getLogger(AbstractForwards.class);
 
     public String getName(String number) {
         return number + " Forwards";
     }
 
-    public List<Marble> getPlayableMarbles(Game game, GameService gameService, int numberToGoForwards, int remainSeven) {
+    public List<Marble> getPlayableMarbles(Game game, GameService gameService, int numberToGoForwards) {
         List<Marble> possibleMarbles = new ArrayList<>();
         Player p = game.getCurrentRound().getCurrentPlayer();
         for (Marble m : p.getMarbleList()) {
@@ -30,7 +30,7 @@ public abstract class AbstractForwards implements IMove {
         return possibleMarbles;
     }
 
-    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int numberToGoForwards, int remainSeven) {
+    public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, int numberToGoForwards) {
         List<String> possibleTargetFieldKeys = new ArrayList<>();
         int distanceNextStartField = 16 - marbleToMove.getCurrentField().getFieldValue();
         int valueFieldNew;
