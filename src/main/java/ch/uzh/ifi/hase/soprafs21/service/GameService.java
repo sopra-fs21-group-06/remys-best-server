@@ -15,9 +15,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-
+import static java.lang.Boolean.*;
 
 
 @Service
@@ -193,6 +191,18 @@ public class GameService {
         }
         ArrayList<MarbleIdAndTargetFieldKey> executedMarbleIdsAndTargetFieldKeys = moveToExecute.executeMove(game,marbleIdAndTargetFieldKeys );
         game.getCurrentRound().getCurrentPlayer().layDownCard(cardToPlay);
+        String s = String.valueOf(mIdAndFieldKey.getMarbleId());
+        Field f = game.getPlayingBoard().getFieldByFieldKey(mIdAndFieldKey.getFieldKey());
+        String status = f.getFieldStatus().name();
+        Marble ma = null;
+        for(Marble m: game.getCurrentRound().getCurrentPlayer().getMarbleList()){
+            if(m.getMarbleNr() == marbleIdAndTargetFieldKeys.get(0).getMarbleId()){
+                ma = m;
+            }
+        }
+        String mahome = String.valueOf(ma.getHome());
+        String mafinish = String.valueOf(ma.getFinish());
+        log.info("Marble :" + s + "Field :" + mIdAndFieldKey.getFieldKey() + "FieldStatus: "+ status +  "Marble is home :" + mahome + "Marble is finsih: " + mafinish);
         webSocketService.broadcastPlayedMessage(playerName, cardCodeToPlay, executedMarbleIdsAndTargetFieldKeys, game.getGameId());
 
         checkEndTurnAndEndRound(game);
@@ -245,10 +255,8 @@ public class GameService {
             count = game.getPlayingBoard().nrStepsToNextStartFieldBlock(startingFieldMove);
         }
         if (numberToGoForwards <= count) {
-            log.info("CheckMOve: Marble : " + marble.getColor() + "FieldVal: " + marble.getCurrentField().getFieldValue() + "ishome: " + marble.getHome());
             return TRUE;
         }
-        log.info("Cardvalue not playeble checkmove");
         return FALSE;
     }
     public void endGame(Game game){
@@ -314,7 +322,48 @@ public class GameService {
         initiateRound(game);
         webSocketService.sendExchangeFactsMessage(game.getCurrentRound().getCurrentPlayer().getPlayerName(), game.getGameId());
     }
-
+    public ArrayList<MarbleIdAndTargetFieldKey>  eatSeven(Field targetField, Field startField, Game game){
+        ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
+        MarbleIdAndTargetFieldKey result = null;
+        Boolean fieldIsFound = FALSE;
+        for(Field f: game.getPlayingBoard().getListPlayingFields()){
+            if(f.getFieldKey().equals(startField.getFieldKey())){
+                fieldIsFound = TRUE;
+            }
+            if(fieldIsFound){
+                // wenn ganz am schluss vom playingfield
+                if(f instanceof StartField && f.getColor().equals(Color.YELLOW)){
+                    for(Field field: game.getPlayingBoard().getListPlayingFields()){
+                        if(field.getFieldKey().equals(targetField.getFieldKey())){
+                            result = eat(targetField, game);
+                            if(!(result == null)){
+                                marbleIdAndTargetFieldKeys.add(result);
+                            }
+                            return marbleIdAndTargetFieldKeys;
+                        } else {
+                            result = eat(field,game);
+                            if(!(result == null)){
+                                marbleIdAndTargetFieldKeys.add(result);
+                            }
+                        }
+                    }
+                } else {
+                    if(f.getFieldKey().equals(targetField.getFieldKey())){
+                        result = eat(targetField, game);
+                        if(!(result == null)){
+                            marbleIdAndTargetFieldKeys.add(result);
+                        }
+                        return marbleIdAndTargetFieldKeys;
+                    } else {
+                        if(!(result == null)){
+                            marbleIdAndTargetFieldKeys.add(result);
+                        }
+                    }
+                }
+            }
+        }
+        return marbleIdAndTargetFieldKeys;
+    }
     public MarbleIdAndTargetFieldKey eat(Field endField, Game game) {
         MarbleIdAndTargetFieldKey result = null;
         if (endField.getFieldStatus().equals(FieldStatus.OCCUPIED)) {
@@ -359,7 +408,7 @@ public class GameService {
         if (targetFieldValue < startFieldValue){
             distance = 16 - startFieldValue + targetFieldValue;
         }
-        // TODO finishing zone covered?
+        // TODO finishing zone covered? JOP covered
         return distance;
     }
 }
