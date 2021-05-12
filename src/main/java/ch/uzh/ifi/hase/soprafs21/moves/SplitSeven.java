@@ -31,10 +31,10 @@ public class SplitSeven implements ISplitMove {
         Field marbleCurrentField = marbleToMove.getCurrentField();
         Field startField = game.getPlayingBoard().getRightColorStartField(marbleToMove.getColor());
         for (MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey : sevenMoves) {
-            if (marbleIdAndTargetFieldKey.getMarbleId() == marbleToMove.getMarbleNr() && countToRemainSeven!= 7) {
+            if (marbleIdAndTargetFieldKey.getMarbleId() == marbleToMove.getMarbleId() && countToRemainSeven!= 7) {
                 marbleCurrentField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
             }
-            if (!startField.getFieldKey().equals(marbleIdAndTargetFieldKey.getFieldKey()) && startField.getFieldStatus().equals(FieldStatus.BLOCKED) && marbleIdAndTargetFieldKey.getMarbleId() == startField.getMarble().getMarbleNr() && countToRemainSeven != 7) {
+            if (!startField.getFieldKey().equals(marbleIdAndTargetFieldKey.getFieldKey()) && startField.getFieldStatus().equals(FieldStatus.BLOCKED) && marbleIdAndTargetFieldKey.getMarbleId() == startField.getMarble().getMarbleId() && countToRemainSeven != 7) {
                 game.getPlayingBoard().getRightColorStartField(marbleToMove.getColor()).setFieldStatus(FieldStatus.FREE);
             }
         }
@@ -64,36 +64,38 @@ public class SplitSeven implements ISplitMove {
                         }
                     }
                 }
-        }
-        List<Field> playingFields = game.getPlayingBoard().getListPlayingFields();
-        // case of marbles outside finishsector, countrestseven zählt wieviel noch
-        int countRestSeven = countToRemainSeven;
-        Boolean fieldIsFound = FALSE;
-        if(!(marbleToMove.getCurrentField() instanceof FinishField))
-            for(Field f: playingFields){
-                if(f.getFieldKey().equals(marbleToMove.getCurrentField().getFieldKey())){
-                    fieldIsFound = TRUE;
-                }
-                if (fieldIsFound) {
-                    // wenn ganz am schluss vom playingfield
-                    if (f instanceof StartField && f.getColor().equals(Color.YELLOW)) {
-                        for (Field field : playingFields) {
-                            if (field.getFieldStatus().equals(FieldStatus.BLOCKED) && !field.getFieldKey().equals(marbleCurrentField.getFieldKey())) {
+            }
+            List<Field> playingFields = game.getPlayingBoard().getListPlayingFields();
+            // case of marbles outside finishsector, countrestseven zählt wieviel noch
+            int countRestSeven = countToRemainSeven;
+            Boolean fieldIsFound = FALSE;
+            if(!(marbleToMove.getCurrentField() instanceof FinishField)) {
+                for(Field f: playingFields){
+                    if(f.getFieldKey().equals(marbleToMove.getCurrentField().getFieldKey())){
+                        fieldIsFound = TRUE;
+                    }
+                    if (fieldIsFound) {
+                        // wenn ganz am schluss vom playingfield
+                        if (f instanceof StartField && f.getColor().equals(Color.YELLOW)) {
+                            for (Field field : playingFields) {
+                                if (field.getFieldStatus().equals(FieldStatus.BLOCKED) && !field.getFieldKey().equals(marbleCurrentField.getFieldKey())) {
+                                    countRestSeven = 0;
+                                }
+                                if (!field.getFieldKey().equals(marbleCurrentField.getFieldKey()) && countRestSeven > 0) {
+                                    possibleTargetFieldKeys.add(field.getFieldKey());
+                                    countRestSeven--;
+                                }
+
+                            }
+                        }
+                        else {
+                            if (f.getFieldStatus().equals(FieldStatus.BLOCKED) && !f.getFieldKey().equals(marbleCurrentField.getFieldKey())) {
                                 countRestSeven = 0;
                             }
-                            if (!field.getFieldKey().equals(marbleCurrentField.getFieldKey()) && countRestSeven > 0)
-                                possibleTargetFieldKeys.add(field.getFieldKey());
-                            countRestSeven--;
-
-                        }
-                    }
-                    else {
-                        if (f.getFieldStatus().equals(FieldStatus.BLOCKED) && !f.getFieldKey().equals(marbleCurrentField.getFieldKey())) {
-                            countRestSeven = 0;
-                        }
-                        if (countRestSeven > 0 && !f.getFieldKey().equals(marbleCurrentField.getFieldKey())) {
-                            possibleTargetFieldKeys.add(f.getFieldKey());
-                            countRestSeven--;
+                            if (countRestSeven > 0 && !f.getFieldKey().equals(marbleCurrentField.getFieldKey())) {
+                                possibleTargetFieldKeys.add(f.getFieldKey());
+                                countRestSeven--;
+                            }
                         }
                     }
                 }
