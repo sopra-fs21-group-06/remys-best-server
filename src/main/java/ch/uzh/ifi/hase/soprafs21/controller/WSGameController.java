@@ -51,6 +51,7 @@ public class WSGameController {
         log.info("Player" + getIdentity(sha) + ":Has played");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
         currentGame.sendExecutedMove(executePlayCardDTO);
+        currentGame.getGameService().checkEndTurnAndEndRound(currentGame);
         currentGame.getCurrentRound().sendOutCurrentTurnDTO();
         currentGame.sendOutCurrentTurnFactsDTO();
     }

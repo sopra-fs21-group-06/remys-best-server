@@ -55,7 +55,7 @@ public class RESTGameController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     //  public RoundMarbleListDTO getPossibleMarbles(HttpServletRequest request, @PathVariable UUID gameId, @RequestParam String code, @RequestParam String moveName, @RequestParam int remainSeven)
-    public RoundMarbleListDTO getPossibleMarbles(HttpServletRequest request, @PathVariable UUID gameId, @RequestParam String code, @RequestParam String moveName) {
+    public RoundMarbleListDTO getPossibleMarbles(HttpServletRequest request, @PathVariable UUID gameId, @RequestParam String code, @RequestParam String moveName) throws Exception {
         String token = request.getHeader("Authorization");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
 

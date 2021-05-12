@@ -42,7 +42,7 @@ public class GameService {
     // New Round initiated, then Send Card to Player and GameStats
     public void initiateRound(Game game) {
         Round currentRound = new Round(game.getPlayerList(),game.getStartPlayer(),game.getNrCards(),game, cardAPIService,webSocketService, userService);
-        game.setRoundCount(1);
+        game.addToRoundCount();
         game.setCurrentRound(currentRound);
     }
 
@@ -52,7 +52,6 @@ public class GameService {
 
     public void updateRoundStats(Game game){
         game.changeCurrentPlayer();
-        game.addToRoundCount();
         game.changeNrCards();
     }
 
@@ -145,7 +144,8 @@ public class GameService {
     }
 
 
-    public List<Marble> getPlayableMarble(String playerName, Card cardToPlay, String moveName, Game game, int remainSeven) {
+    public List<Marble> getPlayableMarble(String playerName, Card cardToPlay, String moveName, Game game, int remainSeven) throws Exception{
+        checkIsYourTurn(playerName, game.getCurrentRound().getCurrentPlayer());
         IMove moveToGetPlayableMarbles = null;
         for(IMove imove : cardToPlay.getMoves()) {
             if (imove.getName().equals(moveName)) {
@@ -191,9 +191,18 @@ public class GameService {
         }
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys = moveToExecute.executeMove(game,marbleIdAndTargetFieldKeys );
         game.getCurrentRound().getCurrentPlayer().layDownCard(cardToPlay);
-        // TODO finished player checks
-        game.getCurrentRound().changeCurrentPlayer();
+
         return marbleIdsAndTargetFieldKeys;
+    }
+
+    public void checkEndTurnAndEndRound(Game game){
+        endTurn(game);
+        if(checkRoundIsFinished(game)){
+            log.info("round finsihed(checkEndTurnAndEndRound)");
+            endRound(game);
+        } else {
+            game.getCurrentRound().changeCurrentPlayer();
+        }
     }
 
     public Boolean checkMoveBackward(Marble marble, int numberToGoForwards, Game game){
@@ -237,17 +246,68 @@ public class GameService {
         log.info("Cardvalue not playeble checkmove");
         return FALSE;
     }
+    public void endGame(Game game){
 
-
-    public void endTurn(Game game){
-        //CHeck if player is finished if yes change marbles & colors
-        game.getCurrentRound().changeCurrentPlayer();
-        log.info("Turn over, next Players turn");
+            log.info("Game is finsihed");
+            // EndGAME?
 
     }
+    // Return True if one player and his teammate are finished
 
+
+    public boolean checkPlayerIsFinished(Player currentPlayer){
+        int countChangeTeam = 0;
+        for(Marble m: currentPlayer.getMarbleList()){
+            if(m.getFinish()){
+                countChangeTeam++;
+            }
+        }
+        if(countChangeTeam == 4) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+    public void endTurn(Game game) {
+        Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
+        Player teamMate = currentPlayer.getTeamMate();
+        if (checkPlayerIsFinished(currentPlayer)) {
+            currentPlayer.setFinished(TRUE);
+            if (currentPlayer.isFinished() && teamMate.isFinished()) {
+                endGame(game);
+            }
+            else {
+                log.info("Change of Color and Marble for currentPlayer");
+                currentPlayer.setMarbleList(teamMate.getMarbleList());
+                currentPlayer.setColor(teamMate.getColor());
+            }
+        }
+    }
+    public boolean checkRoundIsFinished(Game game){
+        int countCantPlay = 0;
+        int countNoMoreCards = 0;
+        for(Player p: game.getPlayerList()){
+            if(canPlay(p, game) == null){
+                countCantPlay++;
+            }
+            if(p.getHand().getHandDeck() == null){
+                countNoMoreCards++;
+            }
+        }
+        if(countCantPlay == 4){
+            log.info("No player has a playable Card anymore (checkroundisfinsined");
+            return TRUE;
+        }
+        if(countNoMoreCards == 4){
+            log.info("No more cards in game(checkroundisfinsined");
+            return TRUE;
+        }
+        return FALSE;
+    }
     public void endRound(Game game){
         updateRoundStats(game);
+        initiateRound(game);
+        webSocketService.sendExchangeFactsMessage(game.getCurrentRound().getCurrentPlayer().getPlayerName(), game.getGameId());
     }
 
     public MarbleIdAndTargetFieldKey eat(Field endField, Game game) {
