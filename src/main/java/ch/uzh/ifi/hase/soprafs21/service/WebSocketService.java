@@ -151,17 +151,19 @@ public class WebSocketService {
 
     }
 
-    public void sendGameSessionInvitedUserCounter(GameSession gameSession, String userName, String sessionIdentity) throws InterruptedException {
+    public void sendGameSessionInvitedUserCounter(GameSession gameSession, User invitedUser, String sessionIdentity) throws InterruptedException {
 
         final int[] counter = {15};
         TimerTask task = new TimerTask() {
             public void run() {
-                RequestCountDownDTO requestCountDownDTO = DogUtils.generateRequestCountDownDTO(counter[0], userName);
+                RequestCountDownDTO requestCountDownDTO = DogUtils.generateRequestCountDownDTO(counter[0], invitedUser.getUsername());
                 broadcastRequestCountdown(gameSession.getID(),requestCountDownDTO );
                 sendRequestCountdown(sessionIdentity, requestCountDownDTO);
                 counter[0]--;
-                if(counter[0] < 0 || gameSession.userInInvitedUsers(userName)){
+                if(counter[0] < 0 || !gameSession.userInInvitedUsers(invitedUser.getUsername())){
                     cancel();
+                    gameSession.getInvitedUsers().remove(invitedUser);
+                    broadcastGameSessionInvitedUserList(gameSession.getID(), gameSession.getInvitedUsers());
                 }
             }
         };
@@ -170,7 +172,7 @@ public class WebSocketService {
         long delay = 1000L;
         long period = 1000L;
         executor.scheduleAtFixedRate(task, delay, period, TimeUnit.MILLISECONDS);
-        Thread.sleep(1000L*15);
+        Thread.sleep(1000L*16);
         executor.shutdown();
 
     }
@@ -182,14 +184,14 @@ public class WebSocketService {
     }
 
     private void sendRequestCountdown(String sessionIdentity, RequestCountDownDTO requestCountDownDTO){
-        String path = "gamesession/countdown";
+        String path = "/countdown";
         sendToPlayer(sessionIdentity, path,
                     requestCountDownDTO);
 
     }
 
     public void sendGameSessionInvitation(UUID gameSessionId, String sessionIdentityOfInvitedUser, String hostName){
-        String path = "/gamesession/invitation";
+        String path = "/invitation";
         sendToPlayer(sessionIdentityOfInvitedUser, path, DogUtils.generateGameSessoinInviteUserDTO(gameSessionId, hostName));
     }
 

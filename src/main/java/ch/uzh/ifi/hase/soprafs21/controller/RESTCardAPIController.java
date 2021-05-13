@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+
+// only used for testing purposes, delete when testing done
 @RestController
-public class CardAPIController {
+public class RESTCardAPIController {
 
     private final CardAPIService cardAPIService;
 
-    public CardAPIController(CardAPIService cardAPIService) {
+    public RESTCardAPIController(CardAPIService cardAPIService) {
         this.cardAPIService = cardAPIService;
     }
 
