@@ -1,11 +1,9 @@
-package ch.uzh.ifi.hase.soprafs21.moves;
+package ch.uzh.ifi.hase.soprafs21;
 
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.objects.CardAPIDeckResponseObject;
-import ch.uzh.ifi.hase.soprafs21.objects.Game;
-import ch.uzh.ifi.hase.soprafs21.objects.Marble;
-import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
+import ch.uzh.ifi.hase.soprafs21.moves.*;
+import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
@@ -23,7 +21,7 @@ import java.util.UUID;
 import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
-public abstract class AbstractMoveTest {
+public abstract class AbstractTestUtility {
 
     @Autowired
     private GameService gameService;
@@ -80,6 +78,14 @@ public abstract class AbstractMoveTest {
         game.setPlayerToReady(testUser4.getUsername());
 
         return game;
+    }
+
+    public void addCardsToHand(Player player, List<String> cardCodes) {
+        List<Card> cardsToAdd = new ArrayList<>();
+        for(String cardCode: cardCodes) {
+            cardsToAdd.add(new Card(cardCode));
+        }
+        player.getHand().addCardsToHand(cardsToAdd);
     }
 
     public Marble goToStart(Game game) {

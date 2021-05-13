@@ -72,12 +72,12 @@ public class GameService {
             handAsCardCode.add(c.getCode());
             for(IMove move: moves){
                 List<Marble> possibleMarbles = getPlayableMarblesOfMove(move, game, this, new ArrayList<>());
-                if (!(possibleMarbles == null)){
+                if (!possibleMarbles.isEmpty()){
                     playableCardCodes.add(c.getCode());
                 }
             }
         }
-        if(playableCardCodes == null) {
+        if(playableCardCodes.isEmpty()) {
             webSocketService.broadcastThrowAway(game.getGameId(), p.getPlayerName(), handAsCardCode);
             p.getHand().throwAwayHand();
             game.getCurrentRound().changeCurrentPlayer();
@@ -390,7 +390,6 @@ public class GameService {
         if (targetFieldValue < startFieldValue){
             distance = 16 - startFieldValue + targetFieldValue;
         }
-        // TODO finishing zone covered? JOP covered
         return distance;
     }
 }
