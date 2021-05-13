@@ -50,7 +50,7 @@ public class Exchange implements INormalMove {
         if (count != 0){
             return possibleMarbles;
         }
-        return possibleMarbles = null;
+        return possibleMarbles;
     }
     
 

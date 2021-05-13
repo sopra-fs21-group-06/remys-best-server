@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
+import ch.uzh.ifi.hase.soprafs21.AbstractTestUtility;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.Marble;
 import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
@@ -16,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class BackwardsMoveTest extends AbstractMoveTest {
+public class BackwardsMoveTest extends AbstractTestUtility {
 
     @Test
     public void testFourBackwardsFromHomeBase() {
@@ -90,7 +91,7 @@ public class BackwardsMoveTest extends AbstractMoveTest {
 
         // From field 2 four backwards
         goTwoForwards(game, marble, "2GREEN");
-        String targetFieldKey = "14BLUE"; // TODO can one go backwards to finish zone??
+        String targetFieldKey = "14BLUE";
 
         INormalMove fourBackwards = new FourBackwards();
         List<Marble> playableMarbles = fourBackwards.getPlayableMarbles(game, game.getGameService());

@@ -8,10 +8,20 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class GoToStartMoveTest extends AbstractTestUtility {
+public class SplitSevenMoveTest extends AbstractTestUtility {
 
     @Test
-    public void testGoToStart() {
+    public void testSplitSeven() {
+        // TODO
+    }
+
+    @Test
+    public void testSevenEat_sameTargetField_marbleEaten() {
+        // TODO
+    }
+
+    @Test
+    public void testSevenEat_jumpedOverAnotherMarble_marbleEaten() {
         // TODO
     }
 }
