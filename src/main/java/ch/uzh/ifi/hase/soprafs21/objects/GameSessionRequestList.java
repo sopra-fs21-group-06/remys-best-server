@@ -19,7 +19,7 @@ public class GameSessionRequestList {
         if(request!=null){gameSessionRequestList.remove(request);}
     };
 
-    public void clearByHostID(UUID id) {
+    public void clearByHostID(Long id) {
         try {
             for (GameSessionRequest request : gameSessionRequestList) {
                 if (request.getHostID().equals(id)) {
@@ -33,7 +33,7 @@ public class GameSessionRequestList {
         }
     }
 
-    public void clearByUserAndGameSessionID(UUID gameSessionID, UUID userID){
+    public void clearByUserAndGameSessionID(UUID gameSessionID, Long userID){
         try {
             for (GameSessionRequest request : gameSessionRequestList) {
                 if (request.getGameSessionID().equals(gameSessionID) && request.getReceiverID().equals(userID)) {
@@ -47,7 +47,7 @@ public class GameSessionRequestList {
         }
     };
 
-    public List<GameSessionRequest> getRequestsByUserID(UUID id){
+    public List<GameSessionRequest> getRequestsByUserID(Long id){
         try {
             List<GameSessionRequest> list = new ArrayList<GameSessionRequest>();
             for (GameSessionRequest request : gameSessionRequestList) {

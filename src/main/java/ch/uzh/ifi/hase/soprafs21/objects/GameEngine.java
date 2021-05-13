@@ -218,9 +218,9 @@ public class GameEngine {
     }
 
 
-    public void clearRequestsByHost(UUID hostID){gameSessionRequestList.clearByHostID(hostID);}
+    public void clearRequestsByHost(Long hostID){gameSessionRequestList.clearByHostID(hostID);}
 
-    public void clearRequestByUser(UUID userID, UUID gameSessionID){gameSessionRequestList.clearByUserAndGameSessionID(userID,gameSessionID);}
+    public void clearRequestByUser(Long userID, UUID gameSessionID){gameSessionRequestList.clearByUserAndGameSessionID(gameSessionID, userID);}
 
 
     public void addRequest(GameSessionRequest gameSessionRequest){gameSessionRequestList.addRequest(gameSessionRequest);}
@@ -238,7 +238,7 @@ public class GameEngine {
     }
 
 
-    public List<GameSessionRequest> getRequestByUserID(UUID userID){return gameSessionRequestList.getRequestsByUserID(userID);}
+    public List<GameSessionRequest> getRequestByUserID(Long userID){return gameSessionRequestList.getRequestsByUserID(userID);}
 
     public void deleteUserFromSession(User user, UUID gameSessionID){
         try {
@@ -316,9 +316,15 @@ public class GameEngine {
         return null;
     }
 
-
     public boolean userInGame(String username) {
-        return true;
+        for(Game game: runningGamesList){
+            for(Player player: game.getPlayers()){
+                if(player.getPlayerName().equals(username)){
+                    return true;
+                }
+        }
+    }
+        return false;
     }
 
     public Player findPlayerbyUsername(Game game, String playerName){
@@ -360,5 +366,28 @@ public class GameEngine {
                 webSocketService.sendGameSessionFillUpError(userService.convertUserNameToSessionIdentity(gameSession.getHostName()), e.getMessage());
             }
         }
+    }
+
+    public void deleteGameSessionByHostName(String username) {
+        for(GameSession gameSession: gameSessionList){
+            if(userIsHost(username)&& userInGameSession(userService.getUserRepository().findByUsername(username),gameSession.getID())){
+                deleteGameSession(gameSession.getID());
+            }
+        }
+    }
+
+    public UUID findGameSessionIdByUsername(String username) {
+        for(GameSession gameSession: gameSessionList) {
+            for (User user : gameSession.getUserList()) {
+                if (user.getUsername().equals(username)) {
+                    return gameSession.getID();
+                }
+            }
+        }
+        return null;
+    }
+
+    public List<User> getUsersByGameSessionId(UUID gameSessionId){
+        return Objects.requireNonNull(findGameSessionByID(gameSessionId)).getUserList();
     }
 }

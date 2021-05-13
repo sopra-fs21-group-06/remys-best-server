@@ -145,13 +145,28 @@ public class DogUtils {
 
         return possibleTargetFieldKeysListDTO;
     }
-    public static void resetStatusTokenAndSessionIdentity(UserService userService, String username){
+    public static void resetStatusAndSessionIdentity(UserService userService, String username){
         User user = userService.findByUsername(username);
-        user.setToken(null);
         user.setStatus(UserStatus.Offline);
         user.setSessionIdentity(null);
         userService.getUserRepository().saveAndFlush(user);
+    }
 
+    public static GameSessionUserListDTO convertPlayersToGameSessionUserListDTO(List<User> users) {
+        GameSessionUserListDTO dto = new GameSessionUserListDTO();
+
+        List<GameSessionUserDTO> gameSessionUserDTOS = new ArrayList<GameSessionUserDTO>();
+        boolean enoughUsers = true;
+        for (User user : users) {
+            if (user.getUsername() == null) {
+                enoughUsers = false;
+            }
+            gameSessionUserDTOS.add(DTOMapper.INSTANCE.convertUserToGameSessionUserDTO(user));
+        }
+        dto.setUsers(gameSessionUserDTOS);
+        dto.setStartGame(enoughUsers);
+
+        return dto;
     }
 
     public static GameSessionInvitedUsersDTO generateGameSessionInvitedUsersDTO(List<User> invitedUsers){
@@ -216,5 +231,9 @@ public class DogUtils {
         } else {
             return Color.BLUE;
         }
+    }
+
+    public static String convertSessionIdentityToUserName(String sessionIdentity, UserService userService){
+        return userService.getUserRepository().findBySessionIdentity(sessionIdentity).getUsername();
     }
 }

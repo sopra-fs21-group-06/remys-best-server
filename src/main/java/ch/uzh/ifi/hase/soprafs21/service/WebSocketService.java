@@ -29,6 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.convertPlayersToGameSessionUserListDTO;
 
 /**
  * - Handles general WebSocket stuff (chat, reconnect)
@@ -210,6 +211,10 @@ public class WebSocketService {
                     DogUtils.generateGameThrowAwayDTO(playerName, cardCodes));
 
     }
+    public void sendPlayerDisconnectedFromWaitingRoom(WaitingRoomSendOutCurrentUsersDTO dto){
+        String path = "/waiting-room";
+        broadcastToTopic(path, dto);
+    }
 
     public void sendGameSessionInviteError(String sessionIdentity){
         String msg = "Invited User must be online and free to join your game.";
@@ -229,4 +234,24 @@ public class WebSocketService {
         sendToPlayer(sessionIdentitiy, path, errorDTO);
     }
 
+
+
+    public void sendAbruptEndOfGameSessionMessage(UUID gameSessionIdByUsername) {
+        String path = "/game-session/%s";
+        GameSessionEndDTO dto = new GameSessionEndDTO();
+        broadcastToTopic(String.format(path, gameSessionIdByUsername.toString()), dto);
+    }
+
+
+    public void sendUserLeftGameSessionMessage(String username,UUID gameSessionId) {
+        String path = "/game-session/%s";
+        UserLeftGameSessionDTO dto = new UserLeftGameSessionDTO(username);
+        broadcastToTopic(String.format(path, gameSessionId.toString()), dto);
+    }
+
+    public void broadcastUsersInGameSession(UUID gameSessionId) {
+        String path ="/game-session/%s/accepted";
+        broadcastToTopic(String.format(path, gameSessionId.toString()), convertPlayersToGameSessionUserListDTO(GameEngine.instance().getUsersByGameSessionId(gameSessionId)));
+        log.info("User list was broadcasted");
+    }
 }

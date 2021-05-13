@@ -12,11 +12,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameRequestAcceptDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameRequestDeniedDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameSessionUserListDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.RejectUserDTO;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
 import java.util.UUID;
 
+import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.convertPlayersToGameSessionUserListDTO;
 import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
 
 @Controller
@@ -77,9 +84,31 @@ public class WSGameSessionController {
     }
 
     @MessageMapping("/gamesession/{gamesessionId}/fill-up")
-    public synchronized void fillUpGameSession(@DestinationVariable UUID gameSessionid, SimpMessageHeaderAccessor sha){
+    public synchronized void fillUpGameSession(@DestinationVariable UUID gameSessionid, SimpMessageHeaderAccessor sha) {
         log.info("Player" + getIdentity(sha) + ": Triggered gameSession Fill-Up");
         GameSession currentGameSession = gameEngine.findGameSessionByID(gameSessionid);
         gameEngine.createGameFromGameSessionAndFillUp(currentGameSession);
+    }
+
+
+    @MessageMapping("/game-session-request/{gameSessionId}/accept")
+    @SendTo("/topic/game-session/{gameSessionId}")
+    public synchronized GameSessionUserListDTO acceptInvitation(@DestinationVariable UUID gameSessionId, SimpMessageHeaderAccessor sha, GameRequestAcceptDTO dto){
+        String username = DogUtils.convertSessionIdentityToUserName(sha.getSessionId(), userService);
+        try {
+            gameEngine.addUserToSession(userService.findByUsername(username), gameSessionId);
+            userService.findByUsername(username).setStatus(UserStatus.Busy);
+            return convertPlayersToGameSessionUserListDTO(gameEngine.getUsersByGameSessionId(gameSessionId));
+        }catch(NullPointerException e){
+            return null;
+        }
+    }
+
+    @MessageMapping("/game-session-request/{gameSessionId}/reject")
+    @SendTo("/topic/game-session/{gameSessionId}")
+    public synchronized RejectUserDTO rejectInvitation(@DestinationVariable UUID gameSessionId, SimpMessageHeaderAccessor sha, GameRequestDeniedDTO dto){
+        String username = DogUtils.convertSessionIdentityToUserName(sha.getSessionId(), userService);
+        gameEngine.clearRequestByUser(userService.findByUsername(username).getId(),gameSessionId);
+        return new RejectUserDTO(username);
     }
 }

@@ -165,4 +165,22 @@ public class UserService {
     public String convertUserNameToSessionIdentity(String userName){
         return userRepository.findByUsername(userName).getSessionIdentity();
     }
+
+    public void logOutUser(User user){
+
+        User userToUpdate = userRepository.getOne(userRepository.findByToken(user.getToken()).getId());
+        userToUpdate.setToken(null);
+        userToUpdate.setStatus(UserStatus.Offline);
+
+        userRepository.save(userToUpdate);
+        userRepository.flush();
+    }
+
+    public void updateUser(User user) {
+        User existingUser = userRepository.findByToken(user.getToken());
+        if(user.getUsername()!= null){existingUser.setUsername(user.getUsername());}
+        if(user.getEmail()!= null){existingUser.setEmail(user.getEmail());}
+        if(user.getPassword()!= null){existingUser.setPassword(user.getPassword());}
+        userRepository.saveAndFlush(existingUser);
+    }
 }
