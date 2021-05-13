@@ -163,6 +163,7 @@ public class WebSocketService {
                 if(counter[0] < 0 || gameSession.userInInvitedUsers(invitedUser.getUsername())){
                     cancel();
                     gameSession.getInvitedUsers().remove(invitedUser);
+                    broadcastGameSessionInvitedUserList(gameSession.getID(), gameSession.getInvitedUsers());
                 }
             }
         };
