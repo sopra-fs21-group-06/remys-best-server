@@ -160,7 +160,7 @@ public class WebSocketService {
                 broadcastRequestCountdown(gameSession.getID(),requestCountDownDTO );
                 sendRequestCountdown(sessionIdentity, requestCountDownDTO);
                 counter[0]--;
-                if(counter[0] < 0 || gameSession.userInInvitedUsers(invitedUser.getUsername())){
+                if(counter[0] < 0 || !gameSession.userInInvitedUsers(invitedUser.getUsername())){
                     cancel();
                     gameSession.getInvitedUsers().remove(invitedUser);
                     broadcastGameSessionInvitedUserList(gameSession.getID(), gameSession.getInvitedUsers());
