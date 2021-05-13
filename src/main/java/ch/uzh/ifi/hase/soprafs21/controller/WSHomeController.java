@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 
-
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.HomeRegisterDTO;
@@ -31,6 +30,7 @@ public class WSHomeController {
     public synchronized void registerUser(SimpMessageHeaderAccessor sha, HomeRegisterDTO homeRegisterDTO) {
         log.info("Player " + getIdentity(sha) + ": Entered HomeScreen");
         gameEngine.getUserService().updateUserIdentity(getIdentity(sha), homeRegisterDTO.getToken());
+        gameEngine.getUserService().updateStatus(homeRegisterDTO.getToken(), UserStatus.Free);
     }
     @MessageMapping("home/unregister")
     public synchronized void unregisterUser(SimpMessageHeaderAccessor sha, HomeRegisterDTO homeRegisterDTO){
