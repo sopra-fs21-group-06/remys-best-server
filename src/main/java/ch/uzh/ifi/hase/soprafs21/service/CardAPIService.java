@@ -36,7 +36,7 @@ public class CardAPIService {
         final String uri = String.format("https://deckofcardsapi.com/api/deck/%s/draw/?count=%s", deckID, amountOfCards);
         RestTemplate restTemplate = new RestTemplate();
 
-        CardAPICardResponseObject cardAPICardResponseObject= restTemplate.getForObject(uri, CardAPICardResponseObject.class);
+        CardAPICardResponseObject cardAPICardResponseObject = restTemplate.getForObject(uri, CardAPICardResponseObject.class);
         assert cardAPICardResponseObject != null;
         List<CardAPICardJson> cardList = cardAPICardResponseObject.getCards();
 
