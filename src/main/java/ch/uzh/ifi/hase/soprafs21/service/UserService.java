@@ -156,11 +156,11 @@ public class UserService {
     }
 
     public String convertSessionIdentityToUserName(String sessionIdentity){
-        return this.userRepository.findBySessionIdentity(sessionIdentity).getUsername();
+        return userRepository.findBySessionIdentity(sessionIdentity).getUsername();
     }
 
     public String convertUserNameToSessionIdentity(String userName){
-        return this.userRepository.findByUsername(userName).getSessionIdentity();
+        return userRepository.findByUsername(userName).getSessionIdentity();
     }
 
     public void logOutUser(User user){

@@ -183,14 +183,14 @@ public class WebSocketService {
     }
 
     private void sendRequestCountdown(String sessionIdentity, RequestCountDownDTO requestCountDownDTO){
-        String path = "gamesession/countdown";
+        String path = "/countdown";
         sendToPlayer(sessionIdentity, path,
                     requestCountDownDTO);
 
     }
 
     public void sendGameSessionInvitation(UUID gameSessionId, String sessionIdentityOfInvitedUser, String hostName){
-        String path = "/gamesession/invitation";
+        String path = "/invitation";
         sendToPlayer(sessionIdentityOfInvitedUser, path, DogUtils.generateGameSessoinInviteUserDTO(gameSessionId, hostName));
     }
 
