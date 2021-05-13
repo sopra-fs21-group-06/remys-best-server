@@ -34,7 +34,7 @@ public class WSGameSessionController {
     }
 
     @MessageMapping("/gamesession/{gamesessionId}/invite")
-    public void inviteUser(@DestinationVariable UUID gamesessionId, SimpMessageHeaderAccessor sha, GameRequestDTO gameRequestDTO) {
+    public synchronized void inviteUser(@DestinationVariable UUID gamesessionId, SimpMessageHeaderAccessor sha, GameRequestDTO gameRequestDTO) {
         try{
             log.info("Player " + getIdentity(sha) + ": Made an invitation to" + gameRequestDTO.getUsername());
             User invitedUser = userService.getUserRepository().findByUsername(gameRequestDTO.getUsername());
@@ -47,7 +47,7 @@ public class WSGameSessionController {
             gameEngine.addinvitedUserToGameSession(invitedUser, gamesessionId);
             webSocketService.sendGameSessionInvitation(gamesessionId,  userService.convertUserNameToSessionIdentity(gameRequestDTO.getUsername()), userService.convertTokenToUsername(gameRequestDTO.getToken()));
             webSocketService.broadcastGameSessionInvitedUserList(gamesessionId, currentGameSession.getInvitedUsers());
-            webSocketService.sendGameSessionInvitedUserCounter(currentGameSession, invitedUser.getUsername(), sessionIdentityInvitedUser);}
+            webSocketService.sendGameSessionInvitedUserCounter(currentGameSession, invitedUser, sessionIdentityInvitedUser);}
         catch (Exception e){
             log.info(e.toString());
         }
