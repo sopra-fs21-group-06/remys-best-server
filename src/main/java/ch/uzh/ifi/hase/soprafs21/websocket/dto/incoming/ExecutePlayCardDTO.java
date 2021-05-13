@@ -9,7 +9,14 @@ public class ExecutePlayCardDTO {
     private String code;
     private String moveName;
     private List<MarbleExecuteCardDTO> marbles;
-    
+
+    public List<MarbleExecuteCardDTO>  getMarbles() {
+        return marbles;
+    }
+
+    public void setMarbles(List<MarbleExecuteCardDTO> marbles) {
+        this.marbles = marbles;
+    }
 
     public String getToken() {
         return token;
@@ -35,11 +42,4 @@ public class ExecutePlayCardDTO {
         this.moveName = moveName;
     }
 
-    public List<MarbleExecuteCardDTO> getMarbles() {
-        return marbles;
-    }
-
-    public void setMarbles(List<MarbleExecuteCardDTO> marbles) {
-        this.marbles = marbles;
-    }
 }

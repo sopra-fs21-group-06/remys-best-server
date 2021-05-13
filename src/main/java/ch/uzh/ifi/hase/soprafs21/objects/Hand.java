@@ -25,7 +25,11 @@ public class Hand {
         if(this.handDeck.contains(c)){
             this.handDeck.remove(c);
         }
-
-}}
+    }
+    public void throwAwayHand(){
+        List<Card> newHandDeck = new ArrayList<>();
+        setHandDeck(newHandDeck);
+    }
+}
 
 

@@ -1,10 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
+
 import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
-import ch.uzh.ifi.hase.soprafs21.objects.Field;
-import ch.uzh.ifi.hase.soprafs21.objects.Game;
-import ch.uzh.ifi.hase.soprafs21.objects.Marble;
-import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
+import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Exchange implements IMove {
+public class Exchange implements INormalMove {
     Logger log = LoggerFactory.getLogger(Exchange.class);
     @Override
     public String getName() {
@@ -23,13 +21,12 @@ public class Exchange implements IMove {
     @Override
     public List<String> getPossibleTargetFields(Game game, Marble marbleToMove) {
         List<String> possibleTargetFieldKeys = new ArrayList<>();
-        List<Marble> marblesOnFieldAndNotFinishedPlayer = game.getCurrentRound().getCurrentPlayer().getMarblesOnFieldAndNotFinished();
-        List<Marble> marblesOnFieldAndNotFinishedTeamMate = game.getCurrentRound().getCurrentPlayer().getTeamMate().getMarblesOnFieldAndNotFinished();
-        marblesOnFieldAndNotFinishedPlayer.addAll(marblesOnFieldAndNotFinishedTeamMate);
-        for(Marble m: marblesOnFieldAndNotFinishedPlayer){
-            if(marbleToMove.getMarbleNr() != m.getMarbleNr()){
-                if (!(m.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED))){
-                    possibleTargetFieldKeys.add(m.getCurrentField().getFieldKey());
+        for (Player p: game.getPlayers()) {
+            if (!p.equals(game.getCurrentRound().getCurrentPlayer())) {
+                for (Marble m : p.getMarblesOnFieldNotHomeNotOnStart()) {
+                    if (marbleToMove.getMarbleId() != m.getMarbleId()) {
+                        possibleTargetFieldKeys.add(m.getCurrentField().getFieldKey());
+                    }
                 }
             }
         }
@@ -39,22 +36,38 @@ public class Exchange implements IMove {
     @Override
     public List<Marble> getPlayableMarbles(Game game, GameService gameService) {
         List<Marble> possibleMarbles = new ArrayList<>();
-        List<Marble> marblesOnFieldAndNotFinished = game.getCurrentRound().getCurrentPlayer().getMarblesOnFieldAndNotFinished();
-        for(Marble m: marblesOnFieldAndNotFinished) {
-            if (!(m.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED))){
+        for (Marble m : game.getCurrentRound().getCurrentPlayer().getMarblesOnFieldNotHomeNotOnStart()) {
+            if (!(m.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED))) {
                 possibleMarbles.add(m);
             }
         }
+        int count = 0;
+        for(Marble m: possibleMarbles){
+            if(!getPossibleTargetFields(game,m).equals(null)){
+                count++;
+            }
+        }
+        if (count != 0){
+            return possibleMarbles;
+        }
         return possibleMarbles;
     }
+    
 
     @Override
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Marble marbleToMove, Field targetField, Game game) {
+    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList) {
+        Field targetField =game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKeyArrayList.get(0).getFieldKey());
+        Marble marbleToMove = null;
+        for(Marble m: game.getCurrentRound().getCurrentPlayer().getMarbleList()){
+            if(m.getMarbleId() == marbleIdAndTargetFieldKeyArrayList.get(0).getMarbleId()){
+                marbleToMove = m;
+            }
+        }
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
         String fieldKeyNewTeamMate = marbleToMove.getCurrentField().getFieldKey();
         Marble marbleTeamMate = targetField.getMarble();
-        MarbleIdAndTargetFieldKey result1 = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleNr(), targetField.getFieldKey());
-        MarbleIdAndTargetFieldKey result2 = new MarbleIdAndTargetFieldKey(marbleTeamMate.getMarbleNr(), fieldKeyNewTeamMate);
+        MarbleIdAndTargetFieldKey result1 = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleId(), targetField.getFieldKey());
+        MarbleIdAndTargetFieldKey result2 = new MarbleIdAndTargetFieldKey(marbleTeamMate.getMarbleId(), fieldKeyNewTeamMate);
         marbleIdAndTargetFieldKeys.add(result1);
         marbleIdAndTargetFieldKeys.add(result2);
         game.getPlayingBoard().makeJackMove(targetField, marbleToMove);

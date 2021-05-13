@@ -7,18 +7,17 @@ import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
-import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.WaitingRoomUserObjDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomChooseColorDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomSendOutCurrentUsersDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +36,7 @@ public class GameEngine{
     private final UserService userService;
     private final WebSocketService webSocketService;
     private final GameService gameService;
+    private static final int PLAYER_AMOUNT = 4;
     Logger log = LoggerFactory.getLogger(GameEngine.class);
 
 
@@ -94,9 +94,16 @@ public class GameEngine{
             Game createdGame = createGameFromWaitingRoom();
             for(User userInWaitingRoom : waitingRoom.getUserQueue()) {
                 String userIdentity = userInWaitingRoom.getSessionIdentity();
-                webSocketService.sendGameAssignmentMessage(userIdentity, createdGame.getPlayerList(), createdGame.getGameId());
+                webSocketService.sendGameAssignmentMessageToWaitingRoom(userIdentity, createdGame.getPlayers(), createdGame.getGameId());
             }
         }
+    }
+
+    public void addinvitedUserToGameSession(User user, UUID gameSessionId){
+        GameSession gameSession = findGameSessionByID(gameSessionId);
+        assert gameSession != null;
+        gameSession.addInvitedUser(user);
+
     }
 
     public void removeUserFromWaitingRoom(User user){
@@ -153,7 +160,8 @@ public class GameEngine{
             this.gameSessionList.remove(findGameSessionByID(gameSessionId));
         }
     };
-    private GameSession findGameSessionByID(UUID id){
+
+    public GameSession findGameSessionByID(UUID id){
         try {
             for (GameSession gameSession : gameSessionList) {
                 if (gameSession.getID().equals(id)) {
@@ -250,7 +258,7 @@ public class GameEngine{
     public UUID findGameIdByPlayerName(String playerName){
         try {
             for (Game game : runningGamesList) {
-                for (Player player : game.getPlayerList()) {
+                for (Player player : game.getPlayers()) {
                     log.info(player.getPlayerName());
                     if (playerName.equals(player.getPlayerName())) {
                         return game.getGameId();
@@ -265,12 +273,88 @@ public class GameEngine{
 
     /** check needs to happen if user available before calling method **/
     public void newGameSession(User host) {
-        if(host.getStatus().equals(UserStatus.FREE)){
+        if(host.getStatus().equals(UserStatus.Free)){
             GameSession gameSession = new GameSession(host);
             try {
                 gameSessionList.add(gameSession);
             }catch(NullPointerException e){
                 System.out.println("Something went wrong in newGameSession");
+            }
+        }
+    }
+
+    public boolean userInWaitingRoom(String username) {
+        return waitingRoom.userInHere(userService.findByUsername(username));
+    }
+
+    public boolean isUserInGameSession(String username) {
+        for(GameSession gameSession: gameSessionList){
+            if(userInGameSession(userService.findByUsername(username),gameSession.getID())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean userIsHost(String username) {
+        for(GameSession gameSession: gameSessionList){
+            if(userInGameSession(userService.findByUsername(username),gameSession.getID())){
+                if(gameSession.isHost(username)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public GameSession findGameSessionByHostName(String hostName){
+        for(GameSession gs: gameSessionList){
+            if(gs.getHostName().equals(hostName)){
+                return gs;
+            }
+        }
+        return null;
+    }
+
+
+    public boolean userInGame(String username) {
+        return true;
+    }
+
+    public Player findPlayerbyUsername(Game game, String playerName){
+        for(Player p: game.getPlayers()){
+            if(p.getPlayerName().equals(playerName)){
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public void createGameFromGameSessionAndFillUp(GameSession gameSession){
+
+        int numberOfUsersToInvite = PLAYER_AMOUNT - gameSession.getUserList().size();
+
+        if(!gameSession.getInvitedUsers().isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cant use FillUp while there are still pending gameRequests");
+        }
+        else if(numberOfUsersToInvite > waitingRoom.getUserCount()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There are too few users in WaitingRoom to fillUp");
+        }
+        else {
+
+            List<User> usersFromWaitingRoomToFillup = waitingRoom.getXNumberOfUsers(numberOfUsersToInvite);
+            List<User> usersInGameSession = gameSession.getUserList();
+
+            gameSession.getUserList().addAll(usersFromWaitingRoomToFillup);
+            Game createdGame = createGameFromGameSession(gameSession);
+
+            for (User userForFillup : usersFromWaitingRoomToFillup) {
+                String userIdentity = userForFillup.getSessionIdentity();
+                webSocketService.sendGameAssignmentMessageToWaitingRoom(userIdentity, createdGame.getPlayers(), createdGame.getGameId());
+            }
+            for(User usersGameSession: usersInGameSession){
+                String userIdentity = usersGameSession.getSessionIdentity();
+                webSocketService.sendGameAssignmentMessageToGameSession(userIdentity, createdGame.getPlayers(), createdGame.getGameId());
             }
         }
     }

@@ -28,6 +28,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+
     @Autowired
     public UserService(@Qualifier("userRepository") UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -42,7 +43,6 @@ public class UserService {
     }
 
     public User findByUsername(String username) {
-        log.info("foooo");
         return this.userRepository.findByUsername(username);
     }
 
@@ -52,7 +52,7 @@ public class UserService {
 
     public User createUser(User newUser) {
         newUser.setToken(UUID.randomUUID().toString());
-        newUser.setStatus(UserStatus.FREE);
+        newUser.setStatus(UserStatus.Free);
 
         checkIfUserExists(newUser);
 
@@ -95,7 +95,7 @@ public class UserService {
         // 0 means user logged in with emailadress, 1 means user logged in with username
         User userToUpdate = usernameOrEmail == 0 ? userRepository.findByEmail(user.getUsername()): userRepository.findByUsername(user.getUsername());
         userToUpdate.setToken(UUID.randomUUID().toString());
-        userToUpdate.setStatus(UserStatus.FREE);
+        userToUpdate.setStatus(UserStatus.Free);
 
         userToUpdate = userRepository.save(userToUpdate);
         userRepository.flush();
@@ -147,11 +147,27 @@ public class UserService {
         }
     }
 
+    public String convertTokenToUsername(String token){
+        return this.userRepository.findByToken(token).getUsername();
+    }
+
+    public String convertUserNameToToken(String username){
+        return this.userRepository.findByUsername(username).getToken();
+    }
+
+    public String convertSessionIdentityToUserName(String sessionIdentity){
+        return this.userRepository.findBySessionIdentity(sessionIdentity).getUsername();
+    }
+
+    public String convertUserNameToSessionIdentity(String userName){
+        return this.userRepository.findByUsername(userName).getSessionIdentity();
+    }
+
     public void logOutUser(User user){
 
         User userToUpdate = userRepository.getOne(userRepository.findByToken(user.getToken()).getId());
         userToUpdate.setToken(null);
-        userToUpdate.setStatus(UserStatus.OFFLINE);
+        userToUpdate.setStatus(UserStatus.Offline);
 
         userRepository.save(userToUpdate);
         userRepository.flush();

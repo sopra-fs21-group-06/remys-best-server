@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
+import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 
 import java.util.ArrayList;
@@ -19,6 +20,15 @@ public class Player {
     private Player teamMate;
     private boolean isReady;
     private String cardToChangeCode = null;
+    private boolean isFinished;
+
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    public void setFinished(boolean finished) {
+        isFinished = finished;
+    }
 
     public void layDownCard(Card c){
         hand.deleteCardFromHand(c);
@@ -41,6 +51,7 @@ public class Player {
 
     public Player(String playerName) {
         this.playerName=playerName;
+        this.setFinished(FALSE);
     }
 
     public Color getColor() {
@@ -107,10 +118,10 @@ public class Player {
         return marblesOnField;
     }
     //returns the marbles on the field (Not home and not in finish sector and not on Start)
-    public List<Marble> getmarblesOnFieldNotHomeNotOnStart(){
+    public List<Marble> getMarblesOnFieldNotHomeNotOnStart(){
         List<Marble> marblesOnField = new ArrayList<>();
         for(Marble m: this.getMarbleList()){
-            if(!(m.getHome()) && !(m.getCurrentField() instanceof FinishField) && !(m.getCurrentField() instanceof StartField)){
+            if(!m.getHome() && !(m.getCurrentField() instanceof FinishField) && !m.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)){
                 marblesOnField.add(m);
             }
         }

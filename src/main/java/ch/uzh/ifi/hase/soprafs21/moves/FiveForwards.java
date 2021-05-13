@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
-import ch.uzh.ifi.hase.soprafs21.objects.Field;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.Marble;
 import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
@@ -9,7 +8,7 @@ import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FiveForwards extends AbstractForwards{
+public class FiveForwards extends AbstractForwards {
     private static final int NUMBER_TO_GO_FORWARDS = 5;
 
     @Override
@@ -28,7 +27,7 @@ public class FiveForwards extends AbstractForwards{
     }
 
     @Override
-    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Marble marbleToMove, Field targetField, Game game) {
-        return super.executeMove(marbleToMove, targetField, game);
+    public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList) {
+        return super.executeMove(game, marbleIdAndTargetFieldKeyArrayList);
     }
 }

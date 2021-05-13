@@ -2,20 +2,11 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
-import ch.uzh.ifi.hase.soprafs21.moves.AbstractForwards;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.geo.Circle;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
-import org.w3c.dom.Node;
-
-import javax.persistence.criteria.CriteriaBuilder;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-
 import java.util.List;
 import java.util.Stack;
 
@@ -121,6 +112,10 @@ public class PlayingBoard {
         return yellowMarbles;
     }
 
+    public LinkedList<Field> getListPlayingFields() {
+        return listPlayingFields;
+    }
+
     public Boolean hasMarbleOnHomeStack(Color color){
         if(color == Color.GREEN){
             return (!(greenHome.isEmpty()));
@@ -132,10 +127,20 @@ public class PlayingBoard {
             return (!(yellowHome.isEmpty()));
         }
     }
+    public int getNumberMarblesAtHome(Color color){
+        if(color == Color.GREEN){
+            return greenHome.size();
+        } else if (color == Color.RED){
+            return redHome.size();
+        } else if (color == Color.BLUE){
+            return blueHome.size();
+        } else {
+            return yellowHome.size();
+        }
+    }
 
     public Marble getFirstHomeMarble(Color color, boolean removeFromStack){
         Marble m = null;
-
         if(color == Color.GREEN){
             if(removeFromStack) {
                 m = greenHome.pop();
@@ -194,8 +199,6 @@ public class PlayingBoard {
         }
         if (isNull(fieldToSend)) {
             System.out.println("Something went wrong in getField()");
-        } else {
-            System.out.println("all ok  getField()");
         }
         return fieldToSend;
 
@@ -230,15 +233,16 @@ public class PlayingBoard {
         }
         return fieldToSend;
     }
+
     // Marble m is the first on the stack,
-    public String makeStartMove(Color color) {
+    public Marble makeStartMove(Color color) {
         Marble marble = getFirstHomeMarble(color, true);
         StartField targetField = getRightColorStartField(color);
         targetField.setFieldStatus(FieldStatus.BLOCKED);
         targetField.setMarble(marble);
         marble.setCurrentField(targetField);
         marble.setHome(FALSE);
-        return targetField.getFieldKey();
+        return marble;
     }
 
     public void makeJackMove(Field fieldToChange, Marble m){
@@ -279,7 +283,7 @@ public class PlayingBoard {
             return TRUE;
         } else {
             log.info("Finishfield" + finishField.getFieldKey() + "is not finishfield in finsifieldmove");
-            return TRUE;
+            return FALSE;
         }
     }
 
@@ -323,17 +327,15 @@ public class PlayingBoard {
     public void sendHome(Marble m){
         if(m.getColor() == Color.GREEN){
             greenHome.push(m);
-            m.setHome(TRUE);
         } else if (m.getColor() == Color.RED){
             redHome.push(m);
-            m.setHome(TRUE);
         } else if (m.getColor() == Color.BLUE){
             blueHome.push(m);
-            m.setHome(TRUE);
         } else if (m.getColor() == Color.YELLOW) {
             yellowHome.push(m);
-            m.setHome(TRUE);
         }
+        m.setHome(TRUE);
+        m.setCurrentField(null);
     }
 
     public List<Field> getFinishFields(Color color){
