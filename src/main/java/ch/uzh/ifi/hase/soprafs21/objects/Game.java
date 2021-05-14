@@ -85,7 +85,7 @@ public class Game {
     }
 
     public void setCardExchange(String playerName, String cardToChangeCode){
-        // TODO check if card is in player's name
+        // TODO ONLY one exchange per team!!
         for(Player p: players){
             if(p.getPlayerName().equals(playerName)){
                 p.setCardToChangeCode(cardToChangeCode);

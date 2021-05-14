@@ -74,10 +74,12 @@ public class GameService {
                 List<Marble> possibleMarbles = getPlayableMarblesOfMove(move, game, this, new ArrayList<>());
                 if (!possibleMarbles.isEmpty()){
                     playableCardCodes.add(c.getCode());
+                    log.info((c.getCode()));
                 }
             }
         }
         if(playableCardCodes.isEmpty()) {
+            log.info("Player cant Play");
             webSocketService.broadcastThrowAway(game.getGameId(), p.getPlayerName(), handAsCardCode);
             p.getHand().throwAwayHand();
             game.getCurrentRound().changeCurrentPlayer();
@@ -213,7 +215,7 @@ public class GameService {
             throw new Exception("Something strange happened");
         }
         ArrayList<MarbleIdAndTargetFieldKey> executedMarbleIdsAndTargetFieldKeys = moveToExecute.executeMove(game,marbleIdAndTargetFieldKeys );
-        game.getCurrentRound().getCurrentPlayer().layDownCard(cardToPlay);
+
         String s = String.valueOf(mIdAndFieldKey.getMarbleId());
         Field f = game.getPlayingBoard().getFieldByFieldKey(mIdAndFieldKey.getFieldKey());
         String status = f.getFieldStatus().name();
@@ -227,9 +229,8 @@ public class GameService {
         String mafinish = String.valueOf(ma.getFinish());
         log.info("Marble :" + s + "Field :" + mIdAndFieldKey.getFieldKey() + "FieldStatus: "+ status +  "Marble is home :" + mahome + "Marble is finsih: " + mafinish);
         webSocketService.broadcastPlayedMessage(playerName, cardCodeToPlay, executedMarbleIdsAndTargetFieldKeys, game.getGameId());
-
         checkEndTurnAndEndRound(game);
-
+        game.getCurrentRound().getCurrentPlayer().layDownCard(cardToPlay);
         return executedMarbleIdsAndTargetFieldKeys;
     }
 
@@ -239,6 +240,7 @@ public class GameService {
             log.info("round finsihed(checkEndTurnAndEndRound)");
             endRound(game);
         } else {
+
             game.getCurrentRound().changeCurrentPlayer();
         }
     }
@@ -372,18 +374,25 @@ public class GameService {
 
     public int getRemainingSevenMoves(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeys) {
         int fieldCounter = 0;
-
+        ArrayList<Marble> marbleList = new ArrayList<>();
+        ArrayList<Field> fieldList = new ArrayList<>();
         for(MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey : marbleIdsAndTargetFieldKeys) {
             Marble marble = getMarbleByMarbleId(game, marbleIdAndTargetFieldKey.getMarbleId());
             Field startField = marble.getCurrentField();
+            for(int i = 0; i < marbleList.size(); i++){
+                if(marbleList.get(i).getMarbleId() == marble.getMarbleId()){
+                    startField = fieldList.get(i);
+                }
+            }
             Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
             fieldCounter += getDistanceBetweenFields(startField, targetField);
+            marbleList.add(marble);
+            fieldList.add(targetField);
         }
-
         return 7 - fieldCounter;
     }
 
-    private int getDistanceBetweenFields(Field startField, Field targetField) {
+    public int getDistanceBetweenFields(Field startField, Field targetField) {
         int startFieldValue = startField.getFieldValue();
         int targetFieldValue = targetField.getFieldValue();
         int distance = targetFieldValue - startFieldValue;

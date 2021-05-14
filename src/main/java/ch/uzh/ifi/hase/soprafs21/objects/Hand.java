@@ -22,8 +22,14 @@ public class Hand {
         handDeck.addAll(cardList);
     }
     public void deleteCardFromHand(Card c){
-        if(this.handDeck.contains(c)){
-            this.handDeck.remove(c);
+        String valueC = c.getCode();
+        for(Card card: this.handDeck){
+            String valueCard = card.getCode();
+
+            if(valueC.equals(valueCard)) {
+                this.handDeck.remove(card);
+                break;
+            }
         }
     }
     public void throwAwayHand(){
