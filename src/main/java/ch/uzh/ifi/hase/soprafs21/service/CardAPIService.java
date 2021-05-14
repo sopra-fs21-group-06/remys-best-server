@@ -4,51 +4,84 @@ import ch.uzh.ifi.hase.soprafs21.objects.Card;
 import ch.uzh.ifi.hase.soprafs21.objects.CardAPICardJson;
 import ch.uzh.ifi.hase.soprafs21.objects.CardAPICardResponseObject;
 import ch.uzh.ifi.hase.soprafs21.objects.CardAPIDeckResponseObject;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class CardAPIService {
 
-    @Autowired
-    public CardAPIService(){
+    private final String deckId;
+    private int remaining;
+    private final RestTemplate restTemplate;
 
+    public CardAPIService() {
+        this.restTemplate = createRestTemplate();
+        CardAPIDeckResponseObject deckResponseObject = createDeck();
+        this.deckId = deckResponseObject.getDeck_id();
+        this.remaining = deckResponseObject.getRemaining();
     }
 
-    public CardAPIDeckResponseObject createDeck(){
+    private RestTemplate createRestTemplate() {
+        RestTemplateBuilder builder = new RestTemplateBuilder();
+        return builder
+                .setConnectTimeout(Duration.ofSeconds(3000))
+                .setReadTimeout(Duration.ofSeconds(3000))
+                .build();
+    }
+
+    private CardAPIDeckResponseObject createDeck() {
         //To generate the full shuffled deck with jokers
-        final String uri = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1&jokers_enabled=true";
+        String uri = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1&jokers_enabled=true";
 
+        CardAPIDeckResponseObject cardAPIDeckResponseObject = this.restTemplate.getForObject(uri, CardAPIDeckResponseObject.class);
 
-      //To generate only partial deck with working cards for M3
-       // final String uri = "https://deckofcardsapi.com/api/deck/new/shuffle/?cards=AS,2S,3S,4S,5S,6S,7S,8S,9S,10S,QS,KS,AD,2D,3D,4D,5D,6D,7D,8D,9D,10D,QD,KD,AC,2C,3C,4C,5C,6C,7C,8C,9C,10C,QC,KC,AH,2H,3H,4H,5H,6H,7H,8H,9H,10H,QH,KH";*/
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        return restTemplate.getForObject(uri, CardAPIDeckResponseObject.class);
+        return cardAPIDeckResponseObject;
     }
 
-    public ArrayList<Card> drawCards(String deckID, String amountOfCards){
-        final String uri = String.format("https://deckofcardsapi.com/api/deck/%s/draw/?count=%s", deckID, amountOfCards);
-        RestTemplate restTemplate = new RestTemplate();
+    private synchronized void shuffle() {
+        String uri = String.format("https://deckofcardsapi.com/api/deck/%s/shuffle/", this.deckId);
 
-        CardAPICardResponseObject cardAPICardResponseObject = restTemplate.getForObject(uri, CardAPICardResponseObject.class);
-        assert cardAPICardResponseObject != null;
-        List<CardAPICardJson> cardList = cardAPICardResponseObject.getCards();
+        CardAPIDeckResponseObject cardAPIDeckResponseObject = this.restTemplate.getForObject(uri, CardAPIDeckResponseObject.class);
 
+        this.remaining = cardAPIDeckResponseObject.getRemaining();
+    }
+
+    private synchronized ArrayList<Card> drawCardsInternal(int amountOfCards) {
+        String uri = String.format("https://deckofcardsapi.com/api/deck/%s/draw/?count=%s", this.deckId, amountOfCards);
+
+        CardAPICardResponseObject cardAPICardResponseObject = this.restTemplate.getForObject(uri, CardAPICardResponseObject.class);
+
+        // transform cardCodes to cards
         ArrayList<Card> drawnCards = new ArrayList<>();
-
-        for (CardAPICardJson card : cardList) {
+        for (CardAPICardJson card : cardAPICardResponseObject.getCards()) {
             drawnCards.add(new Card(card.getCode()));
         }
+
+        // update remaining
+        this.remaining = cardAPICardResponseObject.getRemaining();
+
         return drawnCards;
     }
 
-    public void shuffle(String deckID){
-        final String uri = String.format("https://deckofcardsapi.com/api/deck/%s/shuffle/", deckID);
+    public ArrayList<Card> drawCards(int amountOfCardsToDraw) {
+        int currentRemaining = this.remaining;
+        ArrayList<Card> drawnCards = new ArrayList<>();
+
+        if(amountOfCardsToDraw > currentRemaining) {
+            ArrayList<Card> lastCardsOfDeck = drawCardsInternal(currentRemaining);
+            drawnCards.addAll(lastCardsOfDeck);
+            shuffle();
+            amountOfCardsToDraw -= currentRemaining;
+        }
+
+        ArrayList<Card> cardsFromDeck = drawCardsInternal(amountOfCardsToDraw);
+        drawnCards.addAll(cardsFromDeck);
+
+        return drawnCards;
     }
+
 }

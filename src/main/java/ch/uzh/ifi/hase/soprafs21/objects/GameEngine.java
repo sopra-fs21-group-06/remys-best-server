@@ -27,11 +27,11 @@ import java.util.UUID;
 @Service
 @Scope("singleton")
 @Transactional
-public class GameEngine{
+public class GameEngine {
     private static GameEngine gameEngine;
-    private List<GameSession> gameSessionList;
-    private List<Game> runningGamesList;
-    private GameSessionRequestList gameSessionRequestList;
+    private List<GameSession> gameSessionList = new ArrayList<>();
+    private List<Game> runningGamesList = new ArrayList<>();
+    private GameSessionRequestList gameSessionRequestList = new GameSessionRequestList();
     private final WaitingRoom waitingRoom;
     private final UserService userService;
     private final WebSocketService webSocketService;
@@ -39,15 +39,11 @@ public class GameEngine{
     private static final int PLAYER_AMOUNT = 4;
     Logger log = LoggerFactory.getLogger(GameEngine.class);
 
-
     @Autowired
     public GameEngine(WaitingRoom waitingRoom, UserService userService, WebSocketService webSocketService, GameService gameService){
         this.webSocketService = webSocketService;
         this.gameService = gameService;
-        this.gameSessionList= new ArrayList<GameSession>();
-        this.runningGamesList= new ArrayList<Game>();
-        this.gameSessionRequestList=new GameSessionRequestList();
-        this.waitingRoom= waitingRoom;
+        this.waitingRoom = waitingRoom;
         this.userService = userService;
         gameEngine = this;
     }

@@ -21,12 +21,10 @@ import java.util.List;
 
 @RestController
 public class RESTFriendRequestController {
-
     private final FriendRequestService friendRequestService;
     private final UserService userService;
 
-
-    RESTFriendRequestController(FriendRequestService friendRequestService, UserService userService) {
+    public RESTFriendRequestController(FriendRequestService friendRequestService, UserService userService) {
         this.friendRequestService = friendRequestService;
         this.userService = userService;
     }

@@ -46,7 +46,7 @@ public class GameService {
 
     // New Round initiated, then Send Card to Player and GameStats
     public void initiateRound(Game game) {
-        Round currentRound = new Round(game.getPlayers(),game.getStartPlayer(),game.getCurrentCardAmountForRound(),game, cardAPIService, webSocketService, userService);
+        Round currentRound = new Round(game, cardAPIService, webSocketService, userService);
         game.incrementRoundNumber();
         game.setCurrentRound(currentRound);
     }

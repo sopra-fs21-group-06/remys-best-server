@@ -21,7 +21,7 @@ public class RESTUserController {
 
     private final UserService userService;
 
-    RESTUserController(UserService userService) {
+    public RESTUserController(UserService userService) {
         this.userService = userService;
     }
 
