@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
@@ -24,11 +25,10 @@ public class Game {
     private final UUID gameId = UUID.randomUUID();
     private int roundNumber = 0;
     private Round currentRound;
-    private int cardCount = 54;
     private GameService gameService = GameService.getInstance();
     private final WebSocketService webSocketService;
+    private final CardAPIService cardAPIService = new CardAPIService();
 
-    /**can throw nullPointerException **/
     public Game(List<User> users, WebSocketService webSocketService) {
         this.webSocketService = webSocketService;
         for(User user : users){
@@ -231,14 +231,6 @@ public class Game {
         }
     }
 
-    public int getCardCount() {
-        return cardCount;
-    }
-
-    public void setCardCount(int cardCount) {
-        this.cardCount = cardCount;
-    }
-
     public void broadcastFactsMessage(){
         webSocketService.broadcastFactsMessage(roundNumber, currentRound.getCurrentPlayer().getPlayerName(), getNextCardAmount(), currentRound.getNextPlayerName(), gameId);
     }
@@ -261,6 +253,10 @@ public class Game {
 
     public GameService getGameService() {
         return gameService;
+    }
+
+    public CardAPIService getCardAPIService() {
+        return cardAPIService;
     }
 
     public WebSocketService getWebSocketService() {

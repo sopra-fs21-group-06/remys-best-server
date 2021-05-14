@@ -23,13 +23,11 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-
 public class RESTGameController {
     Logger log = LoggerFactory.getLogger(WSGameController.class);
     private final GameEngine gameEngine;
     private final UserService userService;
     private final  GameService gameService;
-
 
     public RESTGameController(GameEngine gameEngine, UserService userService, GameService gameService) {
         this.gameEngine = gameEngine;

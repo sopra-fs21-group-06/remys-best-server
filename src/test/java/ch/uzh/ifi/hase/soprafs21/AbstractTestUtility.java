@@ -38,11 +38,7 @@ public abstract class AbstractTestUtility {
     @BeforeEach
     public void clearDatabase() {
         userService.getUserRepository().deleteAll();
-
-        CardAPIDeckResponseObject mockedCardAPIDeckResponseObject = new CardAPIDeckResponseObject();
-        mockedCardAPIDeckResponseObject.setDeck_id("test");
-        given(cardAPIService.createDeck()).willReturn(mockedCardAPIDeckResponseObject);
-        given(cardAPIService.drawCards(Mockito.any(), Mockito.any())).willReturn(new ArrayList<>());
+        given(cardAPIService.drawCards(Mockito.any())).willReturn(new ArrayList<>());
     }
 
     private User createTestUser(String username, String email) {
