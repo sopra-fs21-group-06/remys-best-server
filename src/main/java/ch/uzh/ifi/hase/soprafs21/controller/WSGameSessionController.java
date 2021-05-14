@@ -15,6 +15,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameRequestAcceptDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameRequestDeniedDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameSessionIdDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameSessionUserListDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.RejectUserDTO;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -94,11 +95,12 @@ public class WSGameSessionController {
     @MessageMapping("/game-session-request/{gameSessionId}/accept")
     @SendTo("/topic/game-session/{gameSessionId}")
     public synchronized GameSessionUserListDTO acceptInvitation(@DestinationVariable UUID gameSessionId, SimpMessageHeaderAccessor sha, GameRequestAcceptDTO dto){
-        String username = DogUtils.convertSessionIdentityToUserName(sha.getSessionId(), userService);
+
+        String username = DogUtils.convertSessionIdentityToUserName(sha.getSessionId(), GameEngine.instance().getUserService());
         try {
-            gameEngine.addUserToSession(userService.findByUsername(username), gameSessionId);
-            userService.findByUsername(username).setStatus(UserStatus.Busy);
-            return convertPlayersToGameSessionUserListDTO(gameEngine.getUsersByGameSessionId(gameSessionId));
+            GameEngine.instance().addUserToSession(GameEngine.instance().getUserService().findByUsername(username), gameSessionId);
+            GameEngine.instance().getUserService().findByUsername(username).setStatus(UserStatus.Busy);
+            return convertPlayersToGameSessionUserListDTO(GameEngine.instance().getUsersByGameSessionId(gameSessionId));
         }catch(NullPointerException e){
             return null;
         }
@@ -107,8 +109,8 @@ public class WSGameSessionController {
     @MessageMapping("/game-session-request/{gameSessionId}/reject")
     @SendTo("/topic/game-session/{gameSessionId}")
     public synchronized RejectUserDTO rejectInvitation(@DestinationVariable UUID gameSessionId, SimpMessageHeaderAccessor sha, GameRequestDeniedDTO dto){
-        String username = DogUtils.convertSessionIdentityToUserName(sha.getSessionId(), userService);
-        gameEngine.clearRequestByUser(userService.findByUsername(username).getId(),gameSessionId);
+        String username = DogUtils.convertSessionIdentityToUserName(sha.getSessionId(), GameEngine.instance().getUserService());
+        GameEngine.instance().clearRequestByUser(GameEngine.instance().getUserService().findByUsername(username).getId(),gameSessionId);
         return new RejectUserDTO(username);
     }
 }

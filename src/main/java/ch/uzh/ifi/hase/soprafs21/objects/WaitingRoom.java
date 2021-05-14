@@ -42,7 +42,7 @@ public class WaitingRoom {
 
     public boolean userInHere(User user){
         for(User iterator: userQueue){
-            if(iterator.equals(user)){
+            if(iterator.getUsername().equals(user.getUsername())){
                 return true;
             }
         }

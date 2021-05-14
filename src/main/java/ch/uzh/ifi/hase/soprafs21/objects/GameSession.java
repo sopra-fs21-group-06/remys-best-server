@@ -64,7 +64,16 @@ public class GameSession {
 
     public void addUser(User user){if(user!=null){userList.add(user);userCount++;};}
 
-    public boolean userInHere(User user){if(user!=null){return userList.contains(user);}else{return false;}}
+    public boolean userInHere(User user){
+        if(user!=null) {
+            for (User iterator : getUserList()) {
+                if(iterator.getUsername().equals(user.getUsername())){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     public void deleteUser(User user) {if(user!=null){if(userInHere(user)&& !user.getUsername().equals(hostName)){userList.remove(user);userCount--;}}}
 
