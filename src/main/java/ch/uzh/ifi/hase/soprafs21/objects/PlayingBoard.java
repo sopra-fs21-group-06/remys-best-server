@@ -373,5 +373,20 @@ public class PlayingBoard {
             return Color.RED;
         }
     }
+    //Only for marbles outside finishpsot
+    public boolean marbleCanGetToFinishSpot(Marble marble, Field field, int valueCard){
+        boolean marbleCanFinish = FALSE;
+        int distanceToStart = 16 - field.getFieldValue();
+        int distanceFreeFinish = nrStepsToNextFreeFinishSpot(field);
+        if(marble.getColor().equals(field.getColor()) && !field.getFieldStatus().equals(FieldStatus.BLOCKED) && !getNextStartFieldIsBlocked(field.getColor())){
+            if(distanceToStart + distanceFreeFinish >= valueCard && distanceToStart < valueCard){
+                String s = String.valueOf(marble.getMarbleId());
+                log.info("Marlbe " + s +" can finish");
+                marbleCanFinish = TRUE;
+            }
+        }
+        return marbleCanFinish;
+    }
+
 }
 

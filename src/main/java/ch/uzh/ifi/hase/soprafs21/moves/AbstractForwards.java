@@ -40,26 +40,33 @@ public abstract class AbstractForwards implements INormalMove {
         int stepsNextFreeSpot = 16 - marbleToMove.getCurrentField().getFieldValue() +game.getPlayingBoard().nrStepsToNextFreeFinishSpot(marbleToMove.getCurrentField());
         // check if possibleEndfield is on next Part of Game -> CHange color and Value
         // Case 2 fields into home and not
-        if (stepsNextFreeSpot >= numberToGoForwards && marbleToMove.getCurrentField().getFieldValue() + numberToGoForwards < 21 && marbleToMove.getCurrentField().getFieldValue() + numberToGoForwards > 16 && marbleToMove.getCurrentField().getColor().equals(marbleToMove.getColor()) && !marbleToMove.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)){
-
-            int valueFieldNew1 = numberToGoForwards - distanceNextStartField;
-            int valueFieldNew2 = marbleToMove.getCurrentField().getFieldValue() + numberToGoForwards;
-            Color cFieldNew1 = game.getPlayingBoard().getNextColor(colorFieldCurrentField);
-            Color cFieldNew2 = marbleToMove.getColor();
-            Field targetField1 = game.getPlayingBoard().getField(valueFieldNew1, cFieldNew1);
-            possibleTargetFieldKeys.add(targetField1.getFieldKey());
-            Field targetField2 = game.getPlayingBoard().getField(valueFieldNew2, cFieldNew2);
-            possibleTargetFieldKeys.add(targetField2.getFieldKey());
-        } else if ( marbleToMove.getCurrentField().getFieldValue() + numberToGoForwards > 16){
-            colorNextField= game.getPlayingBoard().getNextColor(colorFieldCurrentField);
-            valueFieldNew = numberToGoForwards - distanceNextStartField;
-            targetField = game.getPlayingBoard().getField(valueFieldNew, colorNextField);
+        if(marbleToMove.getCurrentField() instanceof FinishField){
+            targetField = game.getPlayingBoard().getField(marbleToMove.getCurrentField().getFieldValue() + numberToGoForwards, marbleToMove.getColor());
             possibleTargetFieldKeys.add(targetField.getFieldKey());
         } else {
-            valueFieldNew = marbleToMove.getCurrentField().getFieldValue() + numberToGoForwards;
-            colorNextField = colorFieldCurrentField;
-            targetField = game.getPlayingBoard().getField(valueFieldNew, colorNextField);
-            possibleTargetFieldKeys.add(targetField.getFieldKey());
+            if (stepsNextFreeSpot >= numberToGoForwards && marbleToMove.getCurrentField().getFieldValue() + numberToGoForwards < 21 && marbleToMove.getCurrentField().getFieldValue() + numberToGoForwards > 16 && marbleToMove.getCurrentField().getColor().equals(marbleToMove.getColor()) && !marbleToMove.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)) {
+
+                int valueFieldNew1 = numberToGoForwards - distanceNextStartField;
+                int valueFieldNew2 = marbleToMove.getCurrentField().getFieldValue() + numberToGoForwards;
+                Color cFieldNew1 = game.getPlayingBoard().getNextColor(colorFieldCurrentField);
+                Color cFieldNew2 = marbleToMove.getColor();
+                Field targetField1 = game.getPlayingBoard().getField(valueFieldNew1, cFieldNew1);
+                possibleTargetFieldKeys.add(targetField1.getFieldKey());
+                Field targetField2 = game.getPlayingBoard().getField(valueFieldNew2, cFieldNew2);
+                possibleTargetFieldKeys.add(targetField2.getFieldKey());
+            }
+            else if (marbleToMove.getCurrentField().getFieldValue() + numberToGoForwards > 16) {
+                colorNextField = game.getPlayingBoard().getNextColor(colorFieldCurrentField);
+                valueFieldNew = numberToGoForwards - distanceNextStartField;
+                targetField = game.getPlayingBoard().getField(valueFieldNew, colorNextField);
+                possibleTargetFieldKeys.add(targetField.getFieldKey());
+            }
+            else {
+                valueFieldNew = marbleToMove.getCurrentField().getFieldValue() + numberToGoForwards;
+                colorNextField = colorFieldCurrentField;
+                targetField = game.getPlayingBoard().getField(valueFieldNew, colorNextField);
+                possibleTargetFieldKeys.add(targetField.getFieldKey());
+            }
         }
         return possibleTargetFieldKeys;
     }
