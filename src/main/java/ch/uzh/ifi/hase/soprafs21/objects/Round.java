@@ -83,5 +83,9 @@ public class Round {
     public void broadcastCurrentTurnMessage(){
         webSocketService.broadcastCurrentTurnMessage(currentPlayer.getPlayerName(), game.getGameId());
     }
+
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
 }
 

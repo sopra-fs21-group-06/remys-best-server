@@ -103,6 +103,7 @@ public class SplitSeven implements ISplitMove {
     @Override
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKey) {
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
+        ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeysEating = new ArrayList<>();
         //find out nr marbles in array list and minus getRemaining seven
         if(game.getGameService().getRemainingSevenMoves(game, marbleIdAndTargetFieldKey) != 0){
             return marbleIdAndTargetFieldKeys;
@@ -111,9 +112,10 @@ public class SplitSeven implements ISplitMove {
             Marble marble = game.getGameService().getMarbleByMarbleId(game, marbleIdandTargetKey.getMarbleId());
             Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdandTargetKey.getFieldKey());
             Field startField = marble.getCurrentField();
-            marbleIdAndTargetFieldKeys.addAll(eatSeven(targetField, startField, game));
+            marbleIdAndTargetFieldKeysEating.addAll(eatSeven(targetField, startField, game));
             MarbleIdAndTargetFieldKey result = new MarbleIdAndTargetFieldKey(marble.getMarbleId(), targetField.getFieldKey());
             marbleIdAndTargetFieldKeys.add(result);
+            marbleIdAndTargetFieldKeys.addAll(marbleIdAndTargetFieldKeysEating);
             game.getPlayingBoard().makeMove(targetField, marble);
         }
         return marbleIdAndTargetFieldKeys;
