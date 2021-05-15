@@ -8,6 +8,8 @@ import ch.uzh.ifi.hase.soprafs21.objects.Player;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.util.reflection.Fields;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -21,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 public class ExchangeMoveTest extends AbstractTestUtility {
 
+    Logger log = LoggerFactory.getLogger(FourBackwards.class);
     @Test
     public void testExchange() {
         //SetUp
@@ -70,4 +73,47 @@ public class ExchangeMoveTest extends AbstractTestUtility {
 
 
     }
+
+    @Test
+    public void testExchangeNoPossibleMarbles() {
+        //SetUp Player 1 moves into finish and has marble on start ->no marble to exchange with for player2
+        Game game = setupGame();
+        Marble marble1Player1 = goToStart(game);
+        Player player1 = game.getCurrentRound().getCurrentPlayer();
+
+        String targetFieldKeyPlayer1 = "12BLUE";
+        INormalMove fourBackwards = new FourBackwards();
+        ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
+        marbleIdAndTargetFieldKeys.add(new MarbleIdAndTargetFieldKey(marble1Player1.getMarbleId(), targetFieldKeyPlayer1));
+        fourBackwards.executeMove(game, marbleIdAndTargetFieldKeys);
+        targetFieldKeyPlayer1 = "20BLUE";
+        INormalMove eightForward = new EightForwards();
+        ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys1 = new ArrayList<>();
+        marbleIdAndTargetFieldKeys1.add(new MarbleIdAndTargetFieldKey(marble1Player1.getMarbleId(), targetFieldKeyPlayer1));
+        eightForward.executeMove(game, marbleIdAndTargetFieldKeys1);
+
+        Marble marble2Player1 = goToStart(game);
+
+
+
+
+        game.getCurrentRound().changeCurrentPlayer();
+        Marble marble1Player2 = goToStart(game);
+        Player player2 = game.getCurrentRound().getCurrentPlayer();
+        INormalMove oneForwards = new OneForwards();
+        game.getCurrentRound().setCurrentPlayer(player2);
+        String targetFieldKeyPlayer2 = "1RED";
+        ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys2 = new ArrayList<>();
+        marbleIdAndTargetFieldKeys2.add(new MarbleIdAndTargetFieldKey(marble1Player2.getMarbleId(), targetFieldKeyPlayer2));
+        oneForwards.executeMove(game, marbleIdAndTargetFieldKeys2);
+        //CurrentPlayer player 2
+        INormalMove exchange = new Exchange();
+        List<Marble> playableMarbles = exchange.getPlayableMarbles(game, game.getGameService());
+        for(Marble m: playableMarbles){
+            log.info(m.getCurrentField().getFieldKey() + "Marble " + String.valueOf(m.getMarbleId()));
+        }
+        assertEquals(playableMarbles.size(), 0);
+
+    }
+
 }
