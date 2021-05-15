@@ -145,7 +145,6 @@ public class WebSocketService {
     }
 
     public void broadcastGameSessionEndMessage(String gameSessionId, String hostName) {
-
         String path = "/gamesession/%s/gamesession-end";
         broadcastToTopic(String.format(path, gameSessionId),
                     DogUtils.generateGameSessionHostLeftDTO(hostName));
