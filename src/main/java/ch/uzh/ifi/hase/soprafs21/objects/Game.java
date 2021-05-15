@@ -100,12 +100,23 @@ public class Game {
             }
         }
         if(allPlayerPerformedCardexchange) {
-
+            Player player1Team1 = null;
+            Player player2Team1 = null;
+            Player player1Team2 = null;
+            Player player2Team2 = null;
             for(Player p: players){
-                if(p.getCardToChangeCode()!= null){
-                    performCardExchange(p, p.getTeamMate());
+                if(p.getColor().equals(Color.BLUE)) {
+                    player1Team1 = p;
+                } else if (p.getColor().equals((Color.RED))){
+                    player2Team1 = p;
+                } else if(p.getColor().equals(Color.GREEN)){
+                    player1Team2 = p;
+                } else {
+                    player2Team2 = p;
                 }
             }
+            performCardExchange(player1Team1, player2Team1);
+            performCardExchange(player1Team2, player2Team2);
             broadcastCurrentTurnAndUpdatedFacts();
         }
     }
