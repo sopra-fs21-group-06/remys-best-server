@@ -39,6 +39,10 @@ public class WSGameSessionController {
             log.info("Player " + getIdentity(sha) + ": Made an invitation to" + gameRequestDTO.getUsername());
             User invitedUser = userService.getUserRepository().findByUsername(gameRequestDTO.getUsername());
             String sessionIdentityInvitedUser = invitedUser.getSessionIdentity();
+            if(invitedUser.getStatus() == UserStatus.Busy || invitedUser.getStatus() == UserStatus.Offline){
+                webSocketService.sendGameSessionInviteError(sessionIdentityInvitedUser);
+                return;
+            }
 
             userService.updateStatus(userService.convertUserNameToToken(invitedUser.getUsername()), UserStatus.Busy);
 

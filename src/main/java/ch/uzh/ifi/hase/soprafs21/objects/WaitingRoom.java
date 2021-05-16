@@ -66,8 +66,11 @@ public class WaitingRoom {
         return userQueue.size();
     }
 
-    public List<User> getXNumberOfUsers(int numberOfUsers){
+    public synchronized List<User> getXNumberOfUsers(int numberOfUsers) throws Exception {
         List<User> usersToAddToGameSession = new ArrayList<>();
+        if(getUserCount() < numberOfUsers){
+            throw new Exception();
+        }
         for(int i = 0; i < numberOfUsers; i++){
             User newUserToAddToGamesession = userQueue.remove(0);
             usersToAddToGameSession.add(newUserToAddToGamesession);
