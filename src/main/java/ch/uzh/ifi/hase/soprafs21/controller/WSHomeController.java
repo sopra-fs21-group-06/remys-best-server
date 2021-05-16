@@ -32,9 +32,14 @@ public class WSHomeController {
         gameEngine.getUserService().updateUserIdentity(getIdentity(sha), homeRegisterDTO.getToken());
         gameEngine.getUserService().updateStatus(homeRegisterDTO.getToken(), UserStatus.Free);
     }
+
     @MessageMapping("home/unregister")
     public synchronized void unregisterUser(SimpMessageHeaderAccessor sha, HomeRegisterDTO homeRegisterDTO){
         log.info("Player" + getIdentity(sha) + ": Left HomeScreen");
-        gameEngine.getUserService().updateStatus(homeRegisterDTO.getToken(), UserStatus.Busy);
+        String token = homeRegisterDTO.getToken();
+        // if user is not logging out
+        if(token != null) {
+            gameEngine.getUserService().updateStatus(homeRegisterDTO.getToken(), UserStatus.Busy);
+        }
     }
 }

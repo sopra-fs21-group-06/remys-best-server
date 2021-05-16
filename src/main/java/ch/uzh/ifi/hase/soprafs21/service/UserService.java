@@ -89,7 +89,6 @@ public class UserService {
     }
 
     public User logInUser(User user){
-
         int usernameOrEmail = checkIfLoginDataCorrect(user);
 
         // 0 means user logged in with emailadress, 1 means user logged in with username
@@ -101,6 +100,10 @@ public class UserService {
         userRepository.flush();
 
         return userToUpdate;
+    }
+
+    public void logOutUser(String token) {
+        updateStatus(token, UserStatus.Offline);
     }
 
     public void updateUserIdentity(String identity, String token){
@@ -161,11 +164,5 @@ public class UserService {
 
     public String convertUserNameToSessionIdentity(String userName){
         return userRepository.findByUsername(userName).getSessionIdentity();
-    }
-
-    public void logOutUser(String token) {
-        User userToLogout = userRepository.findByToken(token);
-        userToLogout.setStatus(UserStatus.Offline);
-        userRepository.saveAndFlush(userToLogout);
     }
 }
