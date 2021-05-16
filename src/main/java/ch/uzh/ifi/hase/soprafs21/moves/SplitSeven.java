@@ -22,82 +22,57 @@ public class SplitSeven implements ISplitMove {
     public String getName() {
         return "Split 7";
     }
-
     @Override
     //Cases done: Marble ist im finishsector (alle die drin sind)
     public List<String> getPossibleTargetFields(Game game, Marble marbleToMove, ArrayList<MarbleIdAndTargetFieldKey> sevenMoves) {
         int countToRemainSeven = game.getGameService().getRemainingSevenMoves(game, sevenMoves);
+        log.info("remains seven:" + String.valueOf(countToRemainSeven));
         List<String> possibleTargetFieldKeys = new ArrayList<>();
         Field marbleCurrentField = marbleToMove.getCurrentField();
-        Field startField = game.getPlayingBoard().getRightColorStartField(marbleToMove.getColor());
         for (MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey : sevenMoves) {
-            if (marbleIdAndTargetFieldKey.getMarbleId() == marbleToMove.getMarbleId() && countToRemainSeven!= 7) {
+            Marble marble = game.getGameService().getMarbleByMarbleId(game, marbleIdAndTargetFieldKey.getMarbleId());
+            if (marbleIdAndTargetFieldKey.getMarbleId() == marbleToMove.getMarbleId() && countToRemainSeven!= 7){
                 marbleCurrentField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
             }
-            if (!startField.getFieldKey().equals(marbleIdAndTargetFieldKey.getFieldKey()) && startField.getFieldStatus().equals(FieldStatus.BLOCKED) && marbleIdAndTargetFieldKey.getMarbleId() == startField.getMarble().getMarbleId() && countToRemainSeven != 7) {
-                game.getPlayingBoard().getRightColorStartField(marbleToMove.getColor()).setFieldStatus(FieldStatus.FREE);
+            if (marble.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)){
+                game.getPlayingBoard().getRightColorStartField(marble.getColor()).setFieldStatus(FieldStatus.FREE);
             }
         }
-        Boolean conditionMarbleInFinishSector = marbleCurrentField instanceof FinishField;
-        Boolean conditionMarbleIsOnStartSecondTime = marbleCurrentField instanceof StartField &&  !marbleCurrentField.equals(FieldStatus.BLOCKED);
-        Boolean conditionMarbleCanMakeItIntoFinish = marbleCurrentField.getColor().equals(marbleToMove.getColor()) && 16 - marbleCurrentField.getFieldValue() < countToRemainSeven && 16 - marbleCurrentField.getFieldValue() > 0 ;
-        //Add all finishsector field
-        if(conditionMarbleCanMakeItIntoFinish || conditionMarbleIsOnStartSecondTime || conditionMarbleInFinishSector){
-            // count to remain seven changes into the remaining size of steps after going to start
-            int remainSeven = countToRemainSeven;
-            if (conditionMarbleCanMakeItIntoFinish){
-                remainSeven = countToRemainSeven - 16 + marbleCurrentField.getFieldValue();
-            }
-            List<Field> finishFields= game.getPlayingBoard().getFinishFields(marbleToMove.getColor());
-            int count = 0;
-            for(Field f: finishFields){
-                // field is further away
-                if(marbleCurrentField.getFieldValue() < f.getFieldValue()){
-                    //case if next finishfield is blocked
-                    if(f.getFieldStatus().equals(FieldStatus.OCCUPIED)){
-                        count = remainSeven + 1;
-                    } else {
-                        // if remain seven is bigger than count add field key else there are still free spots but no more seven to move
-                        if(count < remainSeven){
-                            possibleTargetFieldKeys.add(f.getFieldKey());
-                            count++;
-                        }
-                    }
+
+        if (!(marbleCurrentField instanceof FinishField)){
+            int fieldValCurrentField = marbleCurrentField.getFieldValue();
+            Color colorCurrentField = marbleCurrentField.getColor();
+            for(int i = 1; i <= countToRemainSeven; i++){
+                int fieldValToCheck = fieldValCurrentField + i;
+                Color colorFieldToCheck = colorCurrentField;
+                if(fieldValToCheck > 16){
+                    fieldValToCheck = fieldValToCheck - 16;
+                    colorFieldToCheck = game.getPlayingBoard().getNextColor(colorCurrentField);
+                }
+                Field fieldToCheck = game.getPlayingBoard().getField(fieldValToCheck, colorFieldToCheck);
+                if(!fieldToCheck.getFieldStatus().equals(FieldStatus.BLOCKED)){
+                    possibleTargetFieldKeys.add(fieldToCheck.getFieldKey());
+                } else {
+                    break;
                 }
             }
-            List<Field> playingFields = game.getPlayingBoard().getListPlayingFields();
-            // case of marbles outside finishsector, countrestseven zählt wieviel noch
-            int countRestSeven = countToRemainSeven;
-            Boolean fieldIsFound = FALSE;
-            if(!(marbleToMove.getCurrentField() instanceof FinishField)) {
-                for(Field f: playingFields){
-                    if(f.getFieldKey().equals(marbleToMove.getCurrentField().getFieldKey())){
-                        fieldIsFound = TRUE;
-                    }
-                    if (fieldIsFound) {
-                        // wenn ganz am schluss vom playingfield
-                        if (f instanceof StartField && f.getColor().equals(Color.YELLOW)) {
-                            for (Field field : playingFields) {
-                                if (field.getFieldStatus().equals(FieldStatus.BLOCKED) && !field.getFieldKey().equals(marbleCurrentField.getFieldKey())) {
-                                    countRestSeven = 0;
-                                }
-                                if (!field.getFieldKey().equals(marbleCurrentField.getFieldKey()) && countRestSeven > 0) {
-                                    possibleTargetFieldKeys.add(field.getFieldKey());
-                                    countRestSeven--;
-                                }
-
-                            }
-                        }
-                        else {
-                            if (f.getFieldStatus().equals(FieldStatus.BLOCKED) && !f.getFieldKey().equals(marbleCurrentField.getFieldKey())) {
-                                countRestSeven = 0;
-                            }
-                            if (countRestSeven > 0 && !f.getFieldKey().equals(marbleCurrentField.getFieldKey())) {
-                                possibleTargetFieldKeys.add(f.getFieldKey());
-                                countRestSeven--;
-                            }
-                        }
-                    }
+        }
+        if(marbleCurrentField instanceof FinishField || game.getPlayingBoard().marbleCanGetToFinishSpot(marbleToMove, marbleCurrentField, countToRemainSeven)){
+            List<Field> finishFields= game.getPlayingBoard().getFinishFields(marbleToMove.getColor());
+            boolean condition = TRUE;
+            int countSteps = 1;
+            if(marbleCurrentField.getFieldValue() < 17){
+                countSteps = 16 - marbleCurrentField.getFieldValue();
+            }
+            for (Field f: finishFields){
+                if(f.getFieldStatus().equals(FieldStatus.BLOCKED)){
+                    condition = FALSE;
+                }
+                if (condition && countSteps < countToRemainSeven){
+                    possibleTargetFieldKeys.add(f.getFieldKey());
+                    countSteps++;
+                } else {
+                    break;
                 }
             }
         }
@@ -128,17 +103,19 @@ public class SplitSeven implements ISplitMove {
     @Override
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKey) {
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
+        ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeysEating = new ArrayList<>();
+        //find out nr marbles in array list and minus getRemaining seven
         if(game.getGameService().getRemainingSevenMoves(game, marbleIdAndTargetFieldKey) != 0){
-            //more or less than 7 moves
             return marbleIdAndTargetFieldKeys;
         }
         for(MarbleIdAndTargetFieldKey marbleIdandTargetKey : marbleIdAndTargetFieldKey) {
             Marble marble = game.getGameService().getMarbleByMarbleId(game, marbleIdandTargetKey.getMarbleId());
             Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdandTargetKey.getFieldKey());
             Field startField = marble.getCurrentField();
-            marbleIdAndTargetFieldKeys.addAll(eatSeven(targetField, startField, game));
+            marbleIdAndTargetFieldKeysEating.addAll(eatSeven(targetField, startField, game));
             MarbleIdAndTargetFieldKey result = new MarbleIdAndTargetFieldKey(marble.getMarbleId(), targetField.getFieldKey());
             marbleIdAndTargetFieldKeys.add(result);
+            marbleIdAndTargetFieldKeys.addAll(marbleIdAndTargetFieldKeysEating);
             game.getPlayingBoard().makeMove(targetField, marble);
         }
         return marbleIdAndTargetFieldKeys;
@@ -147,41 +124,20 @@ public class SplitSeven implements ISplitMove {
     private ArrayList<MarbleIdAndTargetFieldKey> eatSeven(Field targetField, Field startField, Game game){
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
         MarbleIdAndTargetFieldKey result = null;
-        Boolean fieldIsFound = FALSE;
-        for(Field f: game.getPlayingBoard().getListPlayingFields()){
-            if(fieldIsFound){
-                // wenn ganz am schluss vom playingfield
-                if(f instanceof StartField && f.getColor().equals(Color.YELLOW)){
-                    for(Field field: game.getPlayingBoard().getListPlayingFields()){
-                        if(field.getFieldKey().equals(targetField.getFieldKey())){
-                            result = game.getGameService().eat(targetField, game);
-                            if(!(result == null)){
-                                marbleIdAndTargetFieldKeys.add(result);
-                            }
-                            return marbleIdAndTargetFieldKeys;
-                        } else {
-                            result = game.getGameService().eat(field,game);
-                            if(!(result == null)){
-                                marbleIdAndTargetFieldKeys.add(result);
-                            }
-                        }
-                    }
-                } else {
-                    if(f.getFieldKey().equals(targetField.getFieldKey())){
-                        result = game.getGameService().eat(targetField, game);
-                        if(!(result == null)){
-                            marbleIdAndTargetFieldKeys.add(result);
-                        }
-                        return marbleIdAndTargetFieldKeys;
-                    } else {
-                        if(!(result == null)){
-                            marbleIdAndTargetFieldKeys.add(result);
-                        }
-                    }
-                }
+        int fieldValCurrentField = startField.getFieldValue();
+        Color colorCurrentField = startField.getColor();
+        int distanceFields = game.getGameService().getDistanceBetweenFields(startField,targetField);
+        for(int i = 1; i <= distanceFields; i++){
+            int fieldValToCheck = fieldValCurrentField + i;
+            Color colorFieldToCheck = colorCurrentField;
+            if(fieldValToCheck > 16){
+                fieldValToCheck = fieldValToCheck - 16;
+                colorFieldToCheck = game.getPlayingBoard().getNextColor(colorCurrentField);
             }
-            if(f.getFieldKey().equals(startField.getFieldKey())){
-                fieldIsFound = TRUE;
+            Field fieldToCheck = game.getPlayingBoard().getField(fieldValToCheck, colorFieldToCheck);
+            result = game.getGameService().eat(fieldToCheck, game);
+            if(!(result == null)){
+                marbleIdAndTargetFieldKeys.add(result);
             }
         }
         return marbleIdAndTargetFieldKeys;
