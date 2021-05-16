@@ -48,15 +48,11 @@ public interface DTOMapper {
     @Mapping(source = "status", target = "status")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
-    @Mapping(source="token", target="token")
-    User convertUserLogOutPostDTOtoEntity(UserLogoutPostDTO userLogoutPostDTO);
-
     @Mapping(source = "username", target="username")
     WaitingRoomUserObjDTO convertUsertoWaitingRoomUserObjDTO(User user);
 
 
     //Game
-
     @Mapping(source = "playerName", target="playerName")
     @Mapping(source = "color", target="color")
     ChooseColorPlayerDTO convertPlayertoChooseColorPlayerDTO(Player player);

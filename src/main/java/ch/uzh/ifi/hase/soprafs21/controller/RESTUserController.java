@@ -49,10 +49,9 @@ public class RESTUserController {
     @PostMapping("/users/logout")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public void logoutUser(@RequestBody UserLogoutPostDTO userLogoutPostDTO, HttpServletRequest request){
+    public void logoutUser(HttpServletRequest request){
         String token = request.getHeader("Authorization");
-        User userInput = userService.getUserRepository().findByToken(token);
-        userService.logOutUser(userInput);
+        userService.logOutUser(token);
     }
 
     @PostMapping("/users")
