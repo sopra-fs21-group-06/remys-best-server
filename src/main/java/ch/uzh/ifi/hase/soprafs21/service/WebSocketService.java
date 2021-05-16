@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 
+import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.objects.Card;
 import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
 import ch.uzh.ifi.hase.soprafs21.objects.Player;
@@ -40,6 +41,11 @@ public class WebSocketService {
 
     @Autowired
     public SimpMessagingTemplate simp;
+    private final UserService userService;
+
+    public WebSocketService(UserService userService) {
+        this.userService = userService;
+    }
 
     private void sendToPlayer(String identity, String path, Object dto) {
         this.simp.convertAndSendToUser(identity, "/queue" + path, dto);
@@ -159,10 +165,12 @@ public class WebSocketService {
                 RequestCountDownDTO requestCountDownDTO = DogUtils.generateRequestCountDownDTO(counter[0], invitedUser.getUsername());
                 broadcastRequestCountdown(gameSession.getID(),requestCountDownDTO );
                 sendRequestCountdown(sessionIdentity, requestCountDownDTO);
-                counter[0]--;
+                --counter[0];
+
                 if(counter[0] < 0 || !gameSession.userInInvitedUsers(invitedUser.getUsername())){
                     cancel();
                     gameSession.getInvitedUsers().remove(invitedUser);
+                    userService.updateStatus(invitedUser.getToken(), UserStatus.Free);
                     broadcastGameSessionInvitedUserList(gameSession.getID(), gameSession.getInvitedUsers());
                 }
             }
@@ -172,7 +180,7 @@ public class WebSocketService {
         long delay = 1000L;
         long period = 1000L;
         executor.scheduleAtFixedRate(task, delay, period, TimeUnit.MILLISECONDS);
-        Thread.sleep(1000L*16);
+        Thread.sleep(1000L*17);
         executor.shutdown();
 
     }
@@ -201,6 +209,24 @@ public class WebSocketService {
         broadcastToTopic(String.format(path, gameId.toString()),
                     DogUtils.generateGameThrowAwayDTO(playerName, cardCodes));
 
+    }
+
+    public void sendGameSessionInviteError(String sessionIdentity){
+        String msg = "Invited User must be online and free to join your game.";
+        String path = "/gamesession/error/invite";
+
+        sendErrorMsg(sessionIdentity, msg, path);
+    }
+
+    public void sendGameSessionFillUpError(String sessionIdentity, String msg){
+        String path = "/gamesession/error/fill-up";
+        sendErrorMsg(sessionIdentity, msg, path);
+    }
+
+    private void sendErrorMsg(String sessionIdentitiy, String msg, String path){
+        ErrorDTO errorDTO = new ErrorDTO();
+        errorDTO.setMsg(msg);
+        sendToPlayer(sessionIdentitiy, path, errorDTO);
     }
 
 }

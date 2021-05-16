@@ -76,7 +76,7 @@ public class RESTGameControllerTest {
         users.add(user1);
         users.add(user2);
 
-        WebSocketService webSocketService = new WebSocketService();
+        WebSocketService webSocketService = new WebSocketService(userService);
         //CardAPIService cardAPIService = new CardAPIService();
         //UserService userService = new UserService();
         //GameService gameService = new GameService(cardAPIService, userService(), webSocketService);
@@ -124,7 +124,7 @@ public class RESTGameControllerTest {
         users.add(user1);
         users.add(user2);
 
-        WebSocketService webSocketService = new WebSocketService();
+        WebSocketService webSocketService = new WebSocketService(userService);
 
         Game currentRunningGame = new Game(users, webSocketService);
         UUID gameID = currentRunningGame.getGameId();
@@ -183,7 +183,7 @@ public class RESTGameControllerTest {
         users.add(user1);
         users.add(user2);
 
-        WebSocketService webSocketService = new WebSocketService();
+        WebSocketService webSocketService = new WebSocketService(userService);
 
         Game currentRunningGame = new Game(users, webSocketService);
         UUID gameID = currentRunningGame.getGameId();
