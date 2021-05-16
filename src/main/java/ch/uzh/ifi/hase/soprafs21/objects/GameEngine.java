@@ -89,7 +89,7 @@ public class GameEngine {
     public void addUserToWaitingRoom(User user){
         if(waitingRoom.addUser(user)==PLAYER_AMOUNT){
             try {
-                List<User> userQueue = waitingRoom.getXNumberOfUsers(2);
+                List<User> userQueue = waitingRoom.getXNumberOfUsers(PLAYER_AMOUNT);
                 Game createdGame = createGameFromWaitingRoom();
                 for (User userInWaitingRoom : userQueue) {
                     String userIdentity = userInWaitingRoom.getSessionIdentity();
@@ -358,8 +358,7 @@ public class GameEngine {
                 }
             }
             catch (Exception e){
-                String msg = "There are too few users in WaitingRoom to fillUp";
-                webSocketService.sendGameSessionFillUpError(userService.convertUserNameToSessionIdentity(gameSession.getHostName()), msg);
+                webSocketService.sendGameSessionFillUpError(userService.convertUserNameToSessionIdentity(gameSession.getHostName()), e.getMessage());
             }
         }
     }

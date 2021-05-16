@@ -69,7 +69,7 @@ public class WaitingRoom {
     public synchronized List<User> getXNumberOfUsers(int numberOfUsers) throws Exception {
         List<User> usersToAddToGameSession = new ArrayList<>();
         if(getUserCount() < numberOfUsers){
-            throw new Exception();
+            throw new Exception("There are too few users in WaitingRoom to fillUp");
         }
         for(int i = 0; i < numberOfUsers; i++){
             User newUserToAddToGamesession = userQueue.remove(0);
