@@ -38,7 +38,7 @@ public abstract class AbstractTestUtility {
     @BeforeEach
     public void clearDatabase() {
         userService.getUserRepository().deleteAll();
-        given(cardAPIService.drawCards(Mockito.any())).willReturn(new ArrayList<>());
+        //given(cardAPIService.drawCards(Mockito.any())).willReturn(new ArrayList<>());
     }
 
     private User createTestUser(String username, String email) {

@@ -58,14 +58,15 @@ public class GoToStart implements INormalMove {
             }
         }
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
-        MarbleIdAndTargetFieldKey result = game.getGameService().eat(targetField,game);
-        if(!(result == null)){
-            marbleIdAndTargetFieldKeys.add(result);
-        }
+        MarbleIdAndTargetFieldKey resultEating = game.getGameService().eat(targetField,game);
+
         marbleToMove = game.getPlayingBoard().makeStartMove(marbleToMove.getColor());
         log.info("marble start successful");
-        result = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleId(), targetField.getFieldKey());
+        MarbleIdAndTargetFieldKey result = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleId(), targetField.getFieldKey());
         marbleIdAndTargetFieldKeys.add(result);
+        if(!(resultEating == null)){
+            marbleIdAndTargetFieldKeys.add(resultEating);
+        }
         return marbleIdAndTargetFieldKeys;
     }
 }

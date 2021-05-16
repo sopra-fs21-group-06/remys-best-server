@@ -194,10 +194,10 @@ public class SplitSevenMoveTest extends AbstractTestUtility {
         assertEquals(executedMoves.size(), 3);
         assertEquals(executedMoves.get(0).getMarbleId(), marble1.getMarbleId());
         assertEquals(executedMoves.get(0).getFieldKey(), "4GREEN");
-        assertEquals(executedMoves.get(1).getMarbleId(), marble1.getMarbleId());
-        assertEquals(executedMoves.get(1).getFieldKey(), "22BLUE");
-        assertEquals(executedMoves.get(2).getMarbleId(), marble2.getMarbleId());
-        assertEquals(executedMoves.get(2).getFieldKey(), "4GREEN");
+        assertEquals(executedMoves.get(1).getMarbleId(), marble2.getMarbleId());
+        assertEquals(executedMoves.get(1).getFieldKey(), "4GREEN");
+        assertEquals(executedMoves.get(2).getMarbleId(), marble1.getMarbleId());
+        assertEquals(executedMoves.get(2).getFieldKey(), "22BLUE");
 
 
     }
@@ -227,9 +227,10 @@ public class SplitSevenMoveTest extends AbstractTestUtility {
         assertEquals(executedMoves.size(), 3);
         assertEquals(executedMoves.get(0).getMarbleId(), marble1.getMarbleId());
         assertEquals(executedMoves.get(0).getFieldKey(), "2GREEN");
-        assertEquals(executedMoves.get(1).getMarbleId(), marble1.getMarbleId());
-        assertEquals(executedMoves.get(1).getFieldKey(), "22BLUE");
-        assertEquals(executedMoves.get(2).getMarbleId(), marble2.getMarbleId());
-        assertEquals(executedMoves.get(2).getFieldKey(), "6GREEN");
+        assertEquals(executedMoves.get(1).getMarbleId(), marble2.getMarbleId());
+        assertEquals(executedMoves.get(1).getFieldKey(), "6GREEN");
+        assertEquals(executedMoves.get(2).getMarbleId(), marble1.getMarbleId());
+        assertEquals(executedMoves.get(2).getFieldKey(), "22BLUE");
+
     }
 }
