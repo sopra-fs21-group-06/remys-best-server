@@ -61,6 +61,7 @@ public class WSGameController {
 
    @EventListener
     public synchronized void handleSessionDisconnect(SessionDisconnectEvent event) {
+
         String p = Objects.requireNonNull(event.getUser()).getName();
         if (p != null) {
             log.info("Player " + p + ": Connection lost");
@@ -69,12 +70,14 @@ public class WSGameController {
             if(gameEngine.isUserInGameSession(username)){
                 if(gameEngine.userIsHost(username)){
                     log.info("Player" + p + ":Has disconnected from GameSession as Host");
-                    webSocketService.sendAbruptEndOfGameSessionMessage(gameEngine.findGameSessionIdByUsername(username));
+                    webSocketService.sendAbruptEndOfGameSessionMessage(gameEngine.findGameSessionIdByUsername(username), username);
                     gameEngine.deleteGameSessionByHostName(username);
                 }else{
                     log.info("Player" + p + ":Has disconnected from GameSession as Player");
+                    log.info(gameEngine.findGameSessionIdByUsername(username).toString());
+                    log.info(userService.findByUsername(username).getUsername());
                     gameEngine.deleteUserFromSession(userService.findByUsername(username), gameEngine.findGameSessionIdByUsername(username));
-                    webSocketService.sendUserLeftGameSessionMessage(username, gameEngine.findGameSessionIdByUsername(username));
+                    //webSocketService.sendUserLeftGameSessionMessage(username, gameEngine.findGameSessionIdByUsername(username));
                 }
             }else if(gameEngine.userInWaitingRoom(username)){
                 log.info("Player" + p + ":Has disconnected from waitingRoom");

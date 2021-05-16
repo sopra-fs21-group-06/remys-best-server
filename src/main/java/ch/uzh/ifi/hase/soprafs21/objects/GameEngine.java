@@ -133,6 +133,11 @@ public class GameEngine {
                 if (gameSession.getUserList().size() == 4) {
                     gameSessionList.remove(gameSession);
                     Game game = new Game(gameSession.getUserList(), webSocketService, new CardAPIService());
+
+                    for(User user:gameSession.getUserList()) {
+                        webSocketService.sendGameAssignmentMessageToGameSession(user.getSessionIdentity(),game.getPlayers(),game.getGameId(),gameSession.getID());
+                    }
+                    gameSessionList.remove(gameSession);
                     runningGamesList.add(game);
                     return game;
                 }
@@ -227,9 +232,18 @@ public class GameEngine {
 
     public void addUserToSession(User user,UUID gameSessionID){
         try {
-            for (GameSession gameSession : gameSessionList) {
-                if (gameSession.getID().equals(gameSessionID)) {
-                    gameSession.addUser(user);
+            if(gameEngine.findGameSessionByID(gameSessionID).getUserList().size()==4){
+                gameEngine.createGameFromGameSession(findGameSessionByID(gameSessionID));
+
+            }else {
+                for (GameSession gameSession : gameSessionList) {
+                    if (gameSession.getID().equals(gameSessionID)) {
+                        gameSession.addUser(user);
+                    }
+                }
+                if(gameEngine.findGameSessionByID(gameSessionID).getUserList().size()==4) {
+                    log.info("GameSession user list size 4");
+                    gameEngine.createGameFromGameSession(findGameSessionByID(gameSessionID));
                 }
             }
         }catch(NullPointerException e){
@@ -359,10 +373,9 @@ public class GameEngine {
                 }
                 for(User usersGameSession: usersInGameSession){
                     String userIdentity = usersGameSession.getSessionIdentity();
-                    webSocketService.sendGameAssignmentMessageToGameSession(userIdentity, createdGame.getPlayers(), createdGame.getGameId());
+                    webSocketService.sendGameAssignmentMessageToGameSession(userIdentity, createdGame.getPlayers(), createdGame.getGameId(),gameSession.getID());
                 }
-            }
-            catch (Exception e){
+            }catch (Exception e) {
                 webSocketService.sendGameSessionFillUpError(userService.convertUserNameToSessionIdentity(gameSession.getHostName()), e.getMessage());
             }
         }

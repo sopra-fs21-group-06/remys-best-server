@@ -156,15 +156,23 @@ public class DogUtils {
         GameSessionUserListDTO dto = new GameSessionUserListDTO();
 
         List<GameSessionUserDTO> gameSessionUserDTOS = new ArrayList<GameSessionUserDTO>();
-        boolean enoughUsers = true;
+        boolean enoughUsers = false;
+        int counter=0;
         for (User user : users) {
-            if (user.getUsername() == null) {
-                enoughUsers = false;
+            if (user.getUsername() != null) {
+                counter++;
+                if(counter==4){
+                    enoughUsers = true;
+                }
             }
             gameSessionUserDTOS.add(DTOMapper.INSTANCE.convertUserToGameSessionUserDTO(user));
         }
         dto.setUsers(gameSessionUserDTOS);
-        dto.setStartGame(enoughUsers);
+        if(enoughUsers){
+            dto.setStartGame("true");
+        }else{
+            dto.setStartGame("false");
+        }
 
         return dto;
     }

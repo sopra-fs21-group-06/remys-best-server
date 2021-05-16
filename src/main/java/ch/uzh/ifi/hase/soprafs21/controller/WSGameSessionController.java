@@ -44,7 +44,7 @@ public class WSGameSessionController {
     @MessageMapping("/gamesession/{gamesessionId}/invite")
     public void inviteUser(@DestinationVariable UUID gamesessionId, SimpMessageHeaderAccessor sha, GameRequestDTO gameRequestDTO) {
         try{
-            log.info("Player " + getIdentity(sha) + ": Made an invitation to" + gameRequestDTO.getUsername());
+            log.info("Player " + getIdentity(sha) + ": Made an invitation to " + gameRequestDTO.getUsername());
             User invitedUser = userService.getUserRepository().findByUsername(gameRequestDTO.getUsername());
             String sessionIdentityInvitedUser = invitedUser.getSessionIdentity();
             if(invitedUser.getStatus() != UserStatus.Free){
@@ -79,29 +79,32 @@ public class WSGameSessionController {
         }
         else{
             userService.updateStatus(userLeaver.getToken(), UserStatus.Free);
-            currentGameSession.deleteUser(userLeaver);
+            if (currentGameSession != null) {
+                currentGameSession.deleteUser(userLeaver);
+            }
             //webSocketService.sendCurrentUserListOutAgain
         }
     }
 
-    @MessageMapping("/gamesession/{gamesessionId}/fill-up")
-    public synchronized void fillUpGameSession(@DestinationVariable UUID gameSessionid, SimpMessageHeaderAccessor sha) {
+    @MessageMapping("/gamesession/{gameSessionId}/fill-up")
+    public synchronized void fillUpGameSession(@DestinationVariable UUID gameSessionId, SimpMessageHeaderAccessor sha) {
         log.info("Player" + getIdentity(sha) + ": Triggered gameSession Fill-Up");
-        GameSession currentGameSession = gameEngine.findGameSessionByID(gameSessionid);
+        GameSession currentGameSession = gameEngine.findGameSessionByID(gameSessionId);
         gameEngine.createGameFromGameSessionAndFillUp(currentGameSession);
     }
 
 
     @MessageMapping("/game-session-request/{gameSessionId}/accept")
-    @SendTo("/topic/game-session/{gameSessionId}")
+    @SendTo("/topic/game-session/{gameSessionId}/accepted")
     public synchronized GameSessionUserListDTO acceptInvitation(@DestinationVariable UUID gameSessionId, SimpMessageHeaderAccessor sha, GameRequestAcceptDTO dto){
-
-        String username = DogUtils.convertSessionIdentityToUserName(sha.getSessionId(), GameEngine.instance().getUserService());
+        log.info("Player" + getIdentity(sha) + ": Accepted invitation");
+        String username = DogUtils.convertSessionIdentityToUserName(getIdentity(sha), GameEngine.instance().getUserService());
         try {
             GameEngine.instance().addUserToSession(GameEngine.instance().getUserService().findByUsername(username), gameSessionId);
             GameEngine.instance().getUserService().findByUsername(username).setStatus(UserStatus.Busy);
+            wait(1000);
             return convertPlayersToGameSessionUserListDTO(GameEngine.instance().getUsersByGameSessionId(gameSessionId));
-        }catch(NullPointerException e){
+        }catch(NullPointerException | InterruptedException e){
             return null;
         }
     }
@@ -109,7 +112,10 @@ public class WSGameSessionController {
     @MessageMapping("/game-session-request/{gameSessionId}/reject")
     @SendTo("/topic/game-session/{gameSessionId}")
     public synchronized RejectUserDTO rejectInvitation(@DestinationVariable UUID gameSessionId, SimpMessageHeaderAccessor sha, GameRequestDeniedDTO dto){
-        String username = DogUtils.convertSessionIdentityToUserName(sha.getSessionId(), GameEngine.instance().getUserService());
+        if(gameSessionId==null){
+            return null;
+        }
+        String username = DogUtils.convertSessionIdentityToUserName(getIdentity(sha), GameEngine.instance().getUserService());
         GameEngine.instance().clearRequestByUser(GameEngine.instance().getUserService().findByUsername(username).getId(),gameSessionId);
         return new RejectUserDTO(username);
     }

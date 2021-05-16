@@ -121,9 +121,9 @@ public class WebSocketService {
         sendGameAssignmentMessage(userSessionIdentity, players, gameId, path);
     }
 
-    public void sendGameAssignmentMessageToGameSession(String userSessionIdentity, List<Player> players, UUID gameId) {
-        String path = "/gamesession/ready";
-        sendGameAssignmentMessage(userSessionIdentity, players, gameId, path);
+    public void sendGameAssignmentMessageToGameSession(String userSessionIdentity, List<Player> players, UUID gameId,UUID gameSessionID) {
+        String path = "/gamesession/%s/ready";
+        sendGameAssignmentMessage(userSessionIdentity, players, gameId,String.format(path, gameSessionID.toString()));
     }
 
     private void sendGameAssignmentMessage(String userSessionIdentity, List<Player> players, UUID gameId, String path){
@@ -235,9 +235,9 @@ public class WebSocketService {
 
 
 
-    public void sendAbruptEndOfGameSessionMessage(UUID gameSessionIdByUsername) {
+    public void sendAbruptEndOfGameSessionMessage(UUID gameSessionIdByUsername, String username) {
         String path = "/game-session/%s";
-        GameSessionEndDTO dto = new GameSessionEndDTO();
+        GameSessionEndDTO dto = new GameSessionEndDTO(username);
         broadcastToTopic(String.format(path, gameSessionIdByUsername.toString()), dto);
     }
 

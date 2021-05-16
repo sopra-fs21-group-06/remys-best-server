@@ -6,7 +6,7 @@ import java.util.List;
 
 public class GameSessionUserListDTO {
     private List<GameSessionUserDTO> users;
-    private Boolean startGame;
+    private String startGame;
 
     public List<GameSessionUserDTO> getUsers() {
         return users;
@@ -16,7 +16,7 @@ public class GameSessionUserListDTO {
         this.users = users;
     }
 
-    public void setStartGame(boolean enoughUsers) {
+    public void setStartGame(String enoughUsers) {
         this.startGame=enoughUsers;
     }
 }
