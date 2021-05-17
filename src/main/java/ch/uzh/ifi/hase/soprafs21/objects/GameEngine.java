@@ -3,20 +3,17 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
-
+import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
-import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.WaitingRoomUserObjDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomSendOutCurrentUsersDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -89,14 +86,16 @@ public class GameEngine {
     public void addUserToWaitingRoom(User user){
         if(waitingRoom.addUser(user)==PLAYER_AMOUNT){
             try {
-                List<User> userQueue = waitingRoom.getXNumberOfUsers(PLAYER_AMOUNT);
-                Game createdGame = createGameFromWaitingRoom();
-                for (User userInWaitingRoom : userQueue) {
+                List<User> usersForGame = waitingRoom.getXNumberOfUsers(PLAYER_AMOUNT);
+                Game createdGame = createGameFromWaitingRoom(usersForGame);
+                for (User userInWaitingRoom : usersForGame) {
                     String userIdentity = userInWaitingRoom.getSessionIdentity();
                     webSocketService.sendGameAssignmentMessageToWaitingRoom(userIdentity, createdGame.getPlayers(), createdGame.getGameId());
                 }
             }
-            catch (Exception ignored){}
+            catch (Exception e){
+                log.info(e.getMessage());
+            }
         }
     }
 
@@ -116,14 +115,14 @@ public class GameEngine {
         List<WaitingRoomUserObjDTO> userList = new ArrayList<>();
         for(User user : waitingRoom.getUserQueue()){
             log.info(user.toString());
-            userList.add(DTOMapper.INSTANCE.convertUsertoWaitingRoomUserObjDTO(user));
+            userList.add(DTOMapper.INSTANCE.convertUserToWaitingRoomUserObjDTO(user));
         }
         waitingRoomSendOutCurrentUsersDTO.setCurrentUsers(userList);
         return waitingRoomSendOutCurrentUsersDTO;
     }
 
-    private Game createGameFromWaitingRoom() {
-        Game createdGame = new Game(this.waitingRoom.getFirstFour(), webSocketService);
+    private Game createGameFromWaitingRoom(List<User> usersForGame) {
+        Game createdGame = new Game(usersForGame, webSocketService, new CardAPIService());
         runningGamesList.add(createdGame);
         return createdGame;
     }
@@ -133,7 +132,7 @@ public class GameEngine {
             if (gameSessionList.contains(gameSession)) {
                 if (gameSession.getUserList().size() == 4) {
                     gameSessionList.remove(gameSession);
-                    Game game = new Game(gameSession.getUserList(), webSocketService);
+                    Game game = new Game(gameSession.getUserList(), webSocketService, new CardAPIService());
                     runningGamesList.add(game);
                     return game;
                 }

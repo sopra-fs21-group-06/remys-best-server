@@ -70,7 +70,7 @@ public class RESTFriendRequestController {
 
         // convert each user to the API representation
         for (FriendRequest f : friendRequests) {
-            friendRequestSentGetDTOs.add(DTOMapper.INSTANCE.convertFriendRequestToFriendRequestSentdGetDTO(f));
+            friendRequestSentGetDTOs.add(DTOMapper.INSTANCE.convertFriendRequestToFriendRequestSentGetDTO(f));
         }
         return friendRequestSentGetDTOs;
     }

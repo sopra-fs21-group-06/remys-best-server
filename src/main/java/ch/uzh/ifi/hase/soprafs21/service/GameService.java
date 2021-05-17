@@ -107,7 +107,7 @@ public class GameService {
 
     private void checkIsYourMarble(Card cardToPlay, String moveName, Game game, Marble marbleToMove) throws Exception {
         String playerName = game.getCurrentRound().getCurrentPlayer().getPlayerName();
-        if (!(getPlayableMarble(game, playerName, cardToPlay, moveName).contains(marbleToMove))){
+        if (!(getPlayableMarbles(game, playerName, cardToPlay, moveName).contains(marbleToMove))){
             throw new Exception("Invalid Move: Not your marble");
         }
     }
@@ -161,11 +161,11 @@ public class GameService {
         }
     }
 
-    public List<Marble> getPlayableMarble(Game game, String playerName, Card cardToPlay, String moveName) {
-        return getPlayableMarble(game, playerName, cardToPlay, moveName, new ArrayList<>());
+    public List<Marble> getPlayableMarbles(Game game, String playerName, Card cardToPlay, String moveName) {
+        return getPlayableMarbles(game, playerName, cardToPlay, moveName, new ArrayList<>());
     }
 
-    public List<Marble> getPlayableMarble(Game game, String playerName, Card cardToPlay, String moveName, ArrayList<MarbleIdAndTargetFieldKey> sevenMoves) {
+    public List<Marble> getPlayableMarbles(Game game, String playerName, Card cardToPlay, String moveName, ArrayList<MarbleIdAndTargetFieldKey> sevenMoves) {
         IMove moveToGetPlayableMarbles = null;
         for(IMove imove : cardToPlay.getMoves()) {
             if (imove.getName().equals(moveName)) {

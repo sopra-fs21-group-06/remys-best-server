@@ -103,7 +103,7 @@ public class WebSocketService {
         GameListOfCardsDTO gameListOfCardsDTO = new GameListOfCardsDTO();
         List<GameCardDTO> cardList = new ArrayList<>();
         for(Card c : cards) {
-            GameCardDTO gameCardDTO = DTOMapper.INSTANCE.convertCardtoGameCardDTO(c);
+            GameCardDTO gameCardDTO = DTOMapper.INSTANCE.convertCardToGameCardDTO(c);
             if(idx > -1) {
                 gameCardDTO.setIdx(idx);
             }

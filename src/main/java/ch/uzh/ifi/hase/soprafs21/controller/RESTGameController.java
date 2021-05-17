@@ -44,8 +44,7 @@ public class RESTGameController {
         Card card = new Card(code);
         List<CardMove> moves = new ArrayList<>();
         for(IMove move : card.getMoves()) {
-            CardMove cardMove = new CardMove();
-            cardMove.setMoveName(move.getName());
+            CardMove cardMove = new CardMove(move.getName());
             moves.add(cardMove);
         }
 
@@ -61,7 +60,7 @@ public class RESTGameController {
         Card card = new Card(possibleMarblesDTO.getCode());
         String playerName = userService.convertTokenToUsername(token);
         ArrayList<MarbleIdAndTargetFieldKey> sevenMoves = DogUtils.generateMarbleIdsAndTargetFieldKeys(possibleMarblesDTO.getSevenMoves());
-        List<Marble> marbleList = currentGame.getGameService().getPlayableMarble(currentGame, playerName, card, possibleMarblesDTO.getMoveName(), sevenMoves);
+        List<Marble> marbleList = currentGame.getGameService().getPlayableMarbles(currentGame, playerName, card, possibleMarblesDTO.getMoveName(), sevenMoves);
         return DogUtils.generateRoundMarblesListDTO(marbleList);
     }
 

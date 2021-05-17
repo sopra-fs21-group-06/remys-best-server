@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-
 public class Game {
     /** should game have a Round ? such that we just instantiate a new variable of round that automatically is created with right number of cards etc?**/
     private List<Player> players = new ArrayList<>();
@@ -31,9 +30,9 @@ public class Game {
     private final WebSocketService webSocketService;
     private final CardAPIService cardAPIService;
 
-    public Game(List<User> users, WebSocketService webSocketService) {
+    public Game(List<User> users, WebSocketService webSocketService, CardAPIService cardAPIService) {
         this.webSocketService = webSocketService;
-        this.cardAPIService = new CardAPIService();
+        this.cardAPIService = cardAPIService;
         for(User user : users){
             players.add(userToPlayer(user));
         }
@@ -43,6 +42,7 @@ public class Game {
     public void setGameService(GameService gameService) {
         this.gameService = gameService;
     }
+
 
     /*
     public boolean getGameIsFinished(){return GameIsFinished;}
@@ -268,6 +268,7 @@ public class Game {
     public WebSocketService getWebSocketService() {
         return webSocketService;
     }
+
     public void changeStartingPlayer() {
         for (Player p : players) {
             if (p.getPlayerName().equals(getNextPlayerName())) {

@@ -67,7 +67,7 @@ public class CardAPIService {
         return drawnCards;
     }
 
-    public ArrayList<Card> drawCards(int amountOfCardsToDraw) {
+    public synchronized ArrayList<Card> drawCards(int amountOfCardsToDraw) {
         int currentRemaining = this.remaining;
         ArrayList<Card> drawnCards = new ArrayList<>();
 
