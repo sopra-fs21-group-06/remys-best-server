@@ -61,11 +61,9 @@ public class WSGameController {
 
    @EventListener
     public synchronized void handleSessionDisconnect(SessionDisconnectEvent event) {
-
         String p = Objects.requireNonNull(event.getUser()).getName();
         if (p != null) {
             log.info("Player " + p + ": Connection lost");
-            SimpMessageHeaderAccessor header = SimpMessageHeaderAccessor.wrap(event.getMessage());
             String username = DogUtils.convertSessionIdentityToUserName(p,gameEngine.getUserService());
             if(gameEngine.isUserInGameSession(username)){
                 if(gameEngine.userIsHost(username)){
@@ -76,8 +74,9 @@ public class WSGameController {
                     log.info("Player" + p + ":Has disconnected from GameSession as Player");
                     log.info(gameEngine.findGameSessionIdByUsername(username).toString());
                     log.info(userService.findByUsername(username).getUsername());
-                    gameEngine.deleteUserFromSession(userService.findByUsername(username), gameEngine.findGameSessionIdByUsername(username));
-                    //webSocketService.sendUserLeftGameSessionMessage(username, gameEngine.findGameSessionIdByUsername(username));
+                    UUID gameSessionId = gameEngine.findGameSessionIdByUsername(username);
+                    gameEngine.deleteUserFromSession(userService.findByUsername(username), gameSessionId);
+                    webSocketService.broadcastUsersInGameSession(gameSessionId);
                 }
             }else if(gameEngine.userInWaitingRoom(username)){
                 log.info("Player" + p + ":Has disconnected from waitingRoom");

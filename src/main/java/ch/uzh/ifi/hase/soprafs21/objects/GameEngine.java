@@ -16,10 +16,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -381,12 +378,14 @@ public class GameEngine {
         }
     }
 
-    public void deleteGameSessionByHostName(String username) {
-        for(GameSession gameSession: gameSessionList){
-            if(userIsHost(username)&& userInGameSession(userService.getUserRepository().findByUsername(username),gameSession.getID())){
-                deleteGameSession(gameSession.getID());
+    public synchronized void deleteGameSessionByHostName(String username) {
+        try {
+            for (GameSession gameSession : gameSessionList) {
+                if (userIsHost(username) && userInGameSession(userService.getUserRepository().findByUsername(username), gameSession.getID())) {
+                    deleteGameSession(gameSession.getID());
+                }
             }
-        }
+        }catch(ConcurrentModificationException | NullPointerException ignored){}
     }
 
     public UUID findGameSessionIdByUsername(String username) {

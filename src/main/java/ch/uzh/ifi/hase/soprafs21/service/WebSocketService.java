@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.convertPlayersToGameSessionUserListDTO;
 
+
 /**
  * - Handles general WebSocket stuff (chat, reconnect)
  * - Provides utility functions for sending packets
@@ -236,7 +237,7 @@ public class WebSocketService {
 
 
     public void sendAbruptEndOfGameSessionMessage(UUID gameSessionIdByUsername, String username) {
-        String path = "/game-session/%s";
+        String path = "/gamesession/%s/gamesession-end";
         GameSessionEndDTO dto = new GameSessionEndDTO(username);
         broadcastToTopic(String.format(path, gameSessionIdByUsername.toString()), dto);
     }
