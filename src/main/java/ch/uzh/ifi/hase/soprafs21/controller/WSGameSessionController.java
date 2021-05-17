@@ -99,6 +99,7 @@ public class WSGameSessionController {
             GameEngine.instance().getUserService().findByUsername(username).setStatus(UserStatus.Busy);
             wait(1000);
             webSocketService.broadcastUsersInGameSession(gameSessionId);
+            webSocketService.broadcastGameSessionInvitedUserList(gameSessionId,gameEngine.findGameSessionByID(gameSessionId).getInvitedUsers());
         }catch(NullPointerException | InterruptedException e){
             log.info("Something went wrong whilst accepting the invitation");
         }
@@ -109,7 +110,9 @@ public class WSGameSessionController {
         if(gameSessionId!=null){
             String username = DogUtils.convertSessionIdentityToUserName(getIdentity(sha), GameEngine.instance().getUserService());
             GameEngine.instance().clearRequestByUser(GameEngine.instance().getUserService().findByUsername(username).getId(),gameSessionId);
+            gameEngine.findGameSessionByID(gameSessionId).deleteInvitedUser(userService.findByUsername(username));
             webSocketService.broadcastUsersInGameSession(gameSessionId);
+            webSocketService.broadcastGameSessionInvitedUserList(gameSessionId,gameEngine.findGameSessionByID(gameSessionId).getInvitedUsers());
             GameEngine.instance().getUserService().findByUsername(username).setStatus(UserStatus.Free);
         }
 

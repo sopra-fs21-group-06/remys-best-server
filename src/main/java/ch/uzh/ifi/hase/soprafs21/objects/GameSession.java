@@ -1,7 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
+import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.controller.WSGameController;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,10 +16,11 @@ public class GameSession {
     Logger log = LoggerFactory.getLogger(WSGameController.class);
 
     private final UUID GameSessionId = UUID.randomUUID();
+    private final UserService userService = GameEngine.instance().getUserService();
     private final String hostName;
     private int userCount;
     private List<User> userList= new ArrayList<User>();
-    private List<User> invitedUsers = new ArrayList<>();
+    private final List<User> invitedUsers = new ArrayList<>();
 
     public GameSession(User host){
         this.hostName = host.getUsername();
@@ -62,8 +65,12 @@ public class GameSession {
     }
 
     public void deleteInvitedUser(User user){
-        if(user != null && invitedUsers.contains(user)){
-            invitedUsers.remove(user);
+        for(User u: invitedUsers){
+            if(u.getUsername().equals(user.getUsername())) {
+                invitedUsers.remove(u);
+                userService.updateStatus(user.getToken(), UserStatus.Free);
+                break;
+            }
         }
     }
 

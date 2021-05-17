@@ -164,15 +164,17 @@ public class WebSocketService {
         TimerTask task = new TimerTask() {
             public void run() {
                 RequestCountDownDTO requestCountDownDTO = DogUtils.generateRequestCountDownDTO(counter[0], invitedUser.getUsername());
-                broadcastRequestCountdown(gameSession.getID(),requestCountDownDTO );
-                sendRequestCountdown(sessionIdentity, requestCountDownDTO);
                 --counter[0];
 
                 if(counter[0] < 0 || !gameSession.userInInvitedUsers(invitedUser.getUsername())){
-                    cancel();
-                    gameSession.getInvitedUsers().remove(invitedUser);
-                    userService.updateStatus(invitedUser.getToken(), UserStatus.Free);
+                    if(gameSession.userInInvitedUsers(invitedUser.getUsername())){
+                        gameSession.deleteInvitedUser(invitedUser);
+                    }
                     broadcastGameSessionInvitedUserList(gameSession.getID(), gameSession.getInvitedUsers());
+                    cancel();
+                }else{
+                    broadcastCountdownToGameSession(gameSession.getID(),requestCountDownDTO );
+                    sendCountdownToHome(sessionIdentity, requestCountDownDTO);
                 }
             }
         };
@@ -186,13 +188,13 @@ public class WebSocketService {
 
     }
 
-    private void broadcastRequestCountdown(UUID gameSessionId, RequestCountDownDTO requestCountDownDTO){
+    private void broadcastCountdownToGameSession(UUID gameSessionId, RequestCountDownDTO requestCountDownDTO){
         String path = "/gamesession/%s/countdown";
         broadcastToTopic(String.format(path, gameSessionId.toString()),
                     requestCountDownDTO);
     }
 
-    private void sendRequestCountdown(String sessionIdentity, RequestCountDownDTO requestCountDownDTO){
+    private void sendCountdownToHome(String sessionIdentity, RequestCountDownDTO requestCountDownDTO){
         String path = "/countdown";
         sendToPlayer(sessionIdentity, path,
                     requestCountDownDTO);
@@ -244,13 +246,13 @@ public class WebSocketService {
 
 
     public void sendUserLeftGameSessionMessage(String username,UUID gameSessionId) {
-        String path = "/game-session/%s";
+        String path = "/gamesession/%s";
         UserLeftGameSessionDTO dto = new UserLeftGameSessionDTO(username);
         broadcastToTopic(String.format(path, gameSessionId.toString()), dto);
     }
 
     public void broadcastUsersInGameSession(UUID gameSessionId) {
-        String path ="/game-session/%s/accepted";
+        String path ="/gamesession/%s/accepted";
         broadcastToTopic(String.format(path, gameSessionId.toString()), convertPlayersToGameSessionUserListDTO(GameEngine.instance().getUsersByGameSessionId(gameSessionId)));
         log.info("User list was broadcasted");
     }

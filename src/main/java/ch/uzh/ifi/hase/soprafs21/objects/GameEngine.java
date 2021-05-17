@@ -31,7 +31,7 @@ public class GameEngine {
     private final UserService userService;
     private final WebSocketService webSocketService;
     private final GameService gameService;
-    private static final int PLAYER_AMOUNT = 2;
+    private static final int PLAYER_AMOUNT = 4;
     Logger log = LoggerFactory.getLogger(GameEngine.class);
 
     @Autowired
@@ -229,6 +229,7 @@ public class GameEngine {
 
     public void addUserToSession(User user,UUID gameSessionID){
         try {
+            gameEngine.findGameSessionByID(gameSessionID).deleteInvitedUser(user);
             if(gameEngine.findGameSessionByID(gameSessionID).getUserList().size()==PLAYER_AMOUNT){
                 gameEngine.createGameFromGameSession(findGameSessionByID(gameSessionID));
 
@@ -239,7 +240,6 @@ public class GameEngine {
                     }
                 }
                 if(gameEngine.findGameSessionByID(gameSessionID).getUserList().size()== PLAYER_AMOUNT) {
-                    log.info("GameSession user list size 4");
                     gameEngine.createGameFromGameSession(findGameSessionByID(gameSessionID));
                 }
             }

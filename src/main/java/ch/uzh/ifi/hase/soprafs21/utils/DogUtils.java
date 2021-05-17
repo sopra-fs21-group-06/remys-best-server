@@ -155,6 +155,7 @@ public class DogUtils {
     public static GameSessionUserListDTO convertPlayersToGameSessionUserListDTO(List<User> users) {
         GameSessionUserListDTO dto = new GameSessionUserListDTO();
 
+
         List<GameSessionUserDTO> gameSessionUserDTOS = new ArrayList<GameSessionUserDTO>();
         boolean enoughUsers = false;
         int counter=0;
