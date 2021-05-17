@@ -138,7 +138,7 @@ public class WebSocketService {
                         DogUtils.generateMarbleExecutedCardDTO(marbleIdsAndTargetFieldKeys)));
     }
 
-    public void sentGameEndMessage(String gameId, GameEndDTO gameEndDTO) {
+    public void broadcastGameEndMessage(String gameId, GameEndDTO gameEndDTO) {
         String path = "/game/%s/game-end";
         broadcastToTopic(String.format(path, gameId), gameEndDTO);
     }

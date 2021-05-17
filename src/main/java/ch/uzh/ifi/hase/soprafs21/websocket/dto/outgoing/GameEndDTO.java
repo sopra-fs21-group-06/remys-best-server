@@ -1,19 +1,22 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing;
 
-import ch.uzh.ifi.hase.soprafs21.objects.Player;
+import java.util.List;
 
 public class GameEndDTO {
-    String won[];
-    String lost[];
+    List<String> won;
     String aborted;
 
-    public String[] getWon() {
+    public List<String> getWon() {
         return won;
     }
 
-   public String getAborted() {
-        return this.aborted;
-   }
+    public void setWon(List<String> won) {
+        this.won = won;
+    }
+
+    public String getAborted() {
+        return aborted;
+    }
 
     public void setAborted(String aborted) {
         this.aborted = aborted;
