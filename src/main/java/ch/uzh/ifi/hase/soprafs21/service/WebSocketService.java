@@ -200,7 +200,7 @@ public class WebSocketService {
 
     public void sendGameSessionInvitation(UUID gameSessionId, String sessionIdentityOfInvitedUser, String hostName){
         String path = "/invitation";
-        sendToPlayer(sessionIdentityOfInvitedUser, path, DogUtils.generateGameSessoinInviteUserDTO(gameSessionId, hostName));
+        sendToPlayer(sessionIdentityOfInvitedUser, path, DogUtils.generateGameSessionInviteUserDTO(gameSessionId, hostName));
     }
 
     public void broadcastThrowAway(UUID gameId, String playerName, List<String> cardCodes){
