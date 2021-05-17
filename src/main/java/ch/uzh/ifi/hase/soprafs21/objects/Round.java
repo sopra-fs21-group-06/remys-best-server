@@ -18,7 +18,7 @@ public class Round {
     private final WebSocketService webSocketService;
     private final UserService userService;
 
-    public Round(Game game, CardAPIService cardAPIService, WebSocketService webSocketService, UserService userService){
+    public Round(Game game, WebSocketService webSocketService, UserService userService, CardAPIService cardAPIService){
         this.game = game;
         this.players = game.getPlayers();
         this.currentPlayer = game.getStartPlayer();

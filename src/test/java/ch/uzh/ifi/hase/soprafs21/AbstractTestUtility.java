@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.BDDMockito.given;
-
 @SpringBootTest
 public abstract class AbstractTestUtility {
 
@@ -38,7 +36,7 @@ public abstract class AbstractTestUtility {
     @BeforeEach
     public void clearDatabase() {
         userService.getUserRepository().deleteAll();
-        //given(cardAPIService.drawCards(Mockito.any())).willReturn(new ArrayList<>());
+        Mockito.when(cardAPIService.drawCards(Mockito.anyInt())).thenReturn(new ArrayList<>());
     }
 
     private User createTestUser(String username, String email) {

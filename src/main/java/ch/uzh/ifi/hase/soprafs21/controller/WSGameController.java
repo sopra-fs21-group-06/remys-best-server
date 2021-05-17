@@ -43,7 +43,7 @@ public class WSGameController {
     public synchronized void cardExchange(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha, GameCardExchange gameCardExchange){
         log.info("Player" + getIdentity(sha) + ": Has cardExchangePerformed");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
-        currentGame.setCardExchange(userService.convertTokenToUsername(gameCardExchange.getToken()), gameCardExchange.getCode());
+        currentGame.setCardCodeToExchange(userService.convertTokenToUsername(gameCardExchange.getToken()), gameCardExchange.getCode());
     }
 
     @MessageMapping("game/{gameId}/play")

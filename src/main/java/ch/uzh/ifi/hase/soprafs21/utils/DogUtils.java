@@ -177,7 +177,7 @@ public class DogUtils {
         return gameSessionHostLeftDTO;
     }
 
-    public static GameSessionInviteUserDTO generateGameSessoinInviteUserDTO(UUID gameSessionIdentity, String hostName){
+    public static GameSessionInviteUserDTO generateGameSessionInviteUserDTO(UUID gameSessionIdentity, String hostName){
         GameSessionInviteUserDTO gameSessionInviteUserDTO = new GameSessionInviteUserDTO();
         gameSessionInviteUserDTO.setGameSessionId(gameSessionIdentity);
         gameSessionInviteUserDTO.setHostName(hostName);
