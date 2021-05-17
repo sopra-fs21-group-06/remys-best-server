@@ -400,6 +400,10 @@ public class GameEngine {
     }
 
     public List<User> getUsersByGameSessionId(UUID gameSessionId){
-        return Objects.requireNonNull(findGameSessionByID(gameSessionId)).getUserList();
+        try {
+            return Objects.requireNonNull(findGameSessionByID(gameSessionId)).getUserList();
+        }catch(NullPointerException e){
+            return null;
+        }
     }
 }
