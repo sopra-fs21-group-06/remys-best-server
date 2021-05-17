@@ -48,34 +48,30 @@ public interface DTOMapper {
     @Mapping(source = "status", target = "status")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
-    @Mapping(source="token", target="token")
-    User convertUserLogOutPostDTOtoEntity(UserLogoutPostDTO userLogoutPostDTO);
-
     @Mapping(source = "username", target="username")
-    WaitingRoomUserObjDTO convertUsertoWaitingRoomUserObjDTO(User user);
+    WaitingRoomUserObjDTO convertUserToWaitingRoomUserObjDTO(User user);
 
 
     //Game
-
     @Mapping(source = "playerName", target="playerName")
     @Mapping(source = "color", target="color")
-    ChooseColorPlayerDTO convertPlayertoChooseColorPlayerDTO(Player player);
+    ChooseColorPlayerDTO convertPlayerToChooseColorPlayerDTO(Player player);
 
     @Mapping(source = "code", target = "code")
-    GameCardDTO convertCardtoGameCardDTO(Card card);
+    GameCardDTO convertCardToGameCardDTO(Card card);
 
     @Mapping(source = "moveName", target = "moveName")
-    MoveDTO convertCardMovetoMoveDTO(CardMove cardMove);
+    MoveDTO convertCardMoveToMoveDTO(CardMove cardMove);
 
     @Mapping(source = "marbleId", target = "marbleId")
-    MarbleDTO convertMarbletoMarbleDTO(Marble marble);
+    MarbleDTO convertMarbleToMarbleDTO(Marble marble);
 
     //FriendRequests
     @Mapping(source = "senderName", target = "senderName")
     FriendRequestReceivedGetDTO convertFriendRequestToFriendRequestReceivedGetDTO(FriendRequest friendRequest);
 
     @Mapping(source = "receiverName", target = "receiverName")
-    FriendRequestSentGetDTO convertFriendRequestToFriendRequestSentdGetDTO(FriendRequest friendRequest);
+    FriendRequestSentGetDTO convertFriendRequestToFriendRequestSentGetDTO(FriendRequest friendRequest);
 
     @Mapping(source = "status", target = "status")
     @Mapping(source = "username",  target = "username")

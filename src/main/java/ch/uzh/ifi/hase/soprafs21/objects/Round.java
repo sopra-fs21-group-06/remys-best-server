@@ -11,60 +11,29 @@ import java.util.List;
 public class Round {
     private final CardAPIService cardAPIService;
     private Game game;
-    private int nrCards;
+    private int currentCardAmount;
     private Player currentPlayer;
     private List<Player> players;
     private Player winner = null;
-    private String deckId;
     private final WebSocketService webSocketService;
     private final UserService userService;
 
-    public Round(List<Player> players, Player startPlayer, int nrCards, Game game, CardAPIService cardAPIService, WebSocketService webSocketService, UserService userService){
+    public Round(Game game, WebSocketService webSocketService, UserService userService, CardAPIService cardAPIService){
         this.game = game;
-        this.players = players;
-        this.currentPlayer = startPlayer;
-        this.nrCards = nrCards;
+        this.players = game.getPlayers();
+        this.currentPlayer = game.getStartPlayer();
+        this.currentCardAmount = game.getCurrentCardAmountForRound();
         this.cardAPIService = cardAPIService;
-        this.deckId = cardAPIService.createDeck().getDeck_id();
         this.webSocketService = webSocketService;
         this.userService = userService;
         initializeRound();
     }
 
-    public void initializeRound () {
-
+    public void initializeRound() {
         for (Player p : players) {
-            if (getGame().getCardCount() == 0) {
-                cardAPIService.shuffle(deckId);
-                getGame().setCardCount(53);
-            }
-            else if (getGame().getCardCount() < nrCards) {
-                String firstDraw = String.valueOf(getGame().getCardCount());
-                String secondDraw = String.valueOf(nrCards - getGame().getCardCount());
-
-                //first draw
-                Hand hand = new Hand(cardAPIService.drawCards(deckId, firstDraw));
-                p.setHand(hand);
-
-                cardAPIService.shuffle(deckId);
-
-                //second draw
-                p.getHand().addCardsToHand(cardAPIService.drawCards(deckId, secondDraw));
-                sendCardsToPlayer(p);
-
-                getGame().setCardCount(53 - (nrCards - getGame().getCardCount()));
-            }
-
-            else {
-                String str = String.valueOf(nrCards);
-                Hand hand = new Hand(cardAPIService.drawCards(deckId, str));
-                p.setHand(hand);
-
-                sendCardsToPlayer(p);
-
-                getGame().setCardCount(getGame().getCardCount() - nrCards);
-
-            }
+            Hand hand = new Hand(cardAPIService.drawCards(this.currentCardAmount));
+            p.setHand(hand);
+            sendCardsToPlayer(p);
         }
     }
 
@@ -90,8 +59,7 @@ public class Round {
     }
 
     public String getNextPlayerName() {
-        String nextPlayerName = DogUtils.getNextPlayerName(this.currentPlayer, this.players);
-        return nextPlayerName;
+        return DogUtils.getNextPlayerName(this.currentPlayer, this.players);
     }
 
     public Game getGame () {
@@ -114,6 +82,10 @@ public class Round {
 
     public void broadcastCurrentTurnMessage(){
         webSocketService.broadcastCurrentTurnMessage(currentPlayer.getPlayerName(), game.getGameId());
+    }
+
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
     }
 }
 

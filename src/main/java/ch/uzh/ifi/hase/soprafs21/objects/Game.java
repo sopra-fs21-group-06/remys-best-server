@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
@@ -12,11 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-
 public class Game {
     /** should game have a Round ? such that we just instantiate a new variable of round that automatically is created with right number of cards etc?**/
     private List<Player> players = new ArrayList<>();
-    private int currentCardAmountForRound = 7;
+    private int currentCardAmountForRound = MAX_NUMBER_OF_CARDS;
+    private static int MIN_NUMBER_OF_CARDS = 2;
+    private static int MAX_NUMBER_OF_CARDS = 6;
     private boolean GameIsFinished = false;
     private String deckId;
     private Player startPlayer;
@@ -24,13 +26,13 @@ public class Game {
     private final UUID gameId = UUID.randomUUID();
     private int roundNumber = 0;
     private Round currentRound;
-    private int cardCount = 54;
     private GameService gameService = GameService.getInstance();
     private final WebSocketService webSocketService;
+    private final CardAPIService cardAPIService;
 
-    /**can throw nullPointerException **/
-    public Game(List<User> users, WebSocketService webSocketService) {
+    public Game(List<User> users, WebSocketService webSocketService, CardAPIService cardAPIService) {
         this.webSocketService = webSocketService;
+        this.cardAPIService = cardAPIService;
         for(User user : users){
             players.add(userToPlayer(user));
         }
@@ -40,6 +42,7 @@ public class Game {
     public void setGameService(GameService gameService) {
         this.gameService = gameService;
     }
+
 
     /*
     public boolean getGameIsFinished(){return GameIsFinished;}
@@ -84,27 +87,31 @@ public class Game {
         return players;
     }
 
-    public void setCardExchange(String playerName, String cardToChangeCode){
-        // TODO check if card is in player's name
-        for(Player p: players){
+    public void setCardCodeToExchange(String playerName, String cardCodeToExchange){
+        for(Player p: players) {
             if(p.getPlayerName().equals(playerName)){
-                p.setCardToChangeCode(cardToChangeCode);
+                p.setCardCodeToExchange(cardCodeToExchange);
                 break;
             }
         }
-        boolean allPlayerPerformedCardexchange = true;
-        for(Player p: players){
-            if (p.getCardToChangeCode() == null) {
-                allPlayerPerformedCardexchange = false;
-                break;
-            }
-        }
-        if(allPlayerPerformedCardexchange) {
 
-            for(Player p: players){
-                if(p.getCardToChangeCode()!= null){
-                    performCardExchange(p, p.getTeamMate());
+        boolean haveAllPlayersPerformedTheCardExchange = true;
+        for(Player p: players){
+            if (p.getCardCodeToExchange() == null) {
+                haveAllPlayersPerformedTheCardExchange = false;
+                break;
+            }
+        }
+
+        if(haveAllPlayersPerformedTheCardExchange) {
+            List<Player> playersWithTeamMate = new ArrayList<>();
+            for(Player p: players) {
+                if(!playersWithTeamMate.contains(p) && !playersWithTeamMate.contains(p.getTeamMate())) {
+                    playersWithTeamMate.add(p);
                 }
+            }
+            for(Player player: playersWithTeamMate) {
+                performCardExchange(player, player.getTeamMate());
             }
             broadcastCurrentTurnAndUpdatedFacts();
         }
@@ -135,8 +142,8 @@ public class Game {
     }
 
     private void performCardExchange(Player player1, Player player2){
-        String player1CardCode = player1.getCardToChangeCode();
-        String player2CardCode = player2.getCardToChangeCode();
+        String player1CardCode = player1.getCardCodeToExchange();
+        String player2CardCode = player2.getCardCodeToExchange();
         Card player1Card = null;
         Card player2Card = null;
         int player1CardIdx = 0;
@@ -146,7 +153,6 @@ public class Game {
             if(player1.getHand().getHandDeck().get(i).getCode().equals(player1CardCode)){
                 player1Card = player1.getHand().getHandDeck().get(i);
                 player1CardIdx = i;
-                player1.getHand().getHandDeck().remove(i);
                 break;
             }
         }
@@ -155,20 +161,20 @@ public class Game {
             if(player2.getHand().getHandDeck().get(i).getCode().equals(player2CardCode)){
                 player2Card = player2.getHand().getHandDeck().get(i);
                 player2CardIdx = i;
-                player2.getHand().getHandDeck().remove(i);
                 break;
             }
         }
 
+        player1.getHand().getHandDeck().remove(player1CardIdx);
+        player2.getHand().getHandDeck().remove(player2CardIdx);
+
         player1.getHand().getHandDeck().add(player1CardIdx, player2Card);
         player2.getHand().getHandDeck().add(player2CardIdx, player1Card);
 
-        player1.setCardToChangeCode(null);
-        player2.setCardToChangeCode(null);
+        player1.setCardCodeToExchange(null);
+        player2.setCardCodeToExchange(null);
 
-        assert player2Card != null;
         currentRound.sendCardsToPlayer(player1, player2Card, player1CardIdx);
-        assert player1Card != null;
         currentRound.sendCardsToPlayer(player2, player1Card, player2CardIdx);
     }
 
@@ -224,19 +230,11 @@ public class Game {
     }
 
     private int getNextCardAmount() {
-        if (this.currentCardAmountForRound == 2){
-            return 7;
+        if (this.currentCardAmountForRound == MIN_NUMBER_OF_CARDS){
+            return MAX_NUMBER_OF_CARDS;
         } else {
             return this.currentCardAmountForRound - 1;
         }
-    }
-
-    public int getCardCount() {
-        return cardCount;
-    }
-
-    public void setCardCount(int cardCount) {
-        this.cardCount = cardCount;
     }
 
     public void broadcastFactsMessage(){
@@ -263,9 +261,14 @@ public class Game {
         return gameService;
     }
 
+    public CardAPIService getCardAPIService() {
+        return cardAPIService;
+    }
+
     public WebSocketService getWebSocketService() {
         return webSocketService;
     }
+
     public void changeStartingPlayer() {
         for (Player p : players) {
             if (p.getPlayerName().equals(getNextPlayerName())) {

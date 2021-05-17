@@ -39,6 +39,10 @@ public class WSGameSessionController {
             log.info("Player " + getIdentity(sha) + ": Made an invitation to" + gameRequestDTO.getUsername());
             User invitedUser = userService.getUserRepository().findByUsername(gameRequestDTO.getUsername());
             String sessionIdentityInvitedUser = invitedUser.getSessionIdentity();
+            if(invitedUser.getStatus() != UserStatus.Free){
+                webSocketService.sendGameSessionInviteError(sessionIdentityInvitedUser);
+                return;
+            }
 
             userService.updateStatus(userService.convertUserNameToToken(invitedUser.getUsername()), UserStatus.Busy);
 
@@ -47,7 +51,7 @@ public class WSGameSessionController {
             gameEngine.addinvitedUserToGameSession(invitedUser, gamesessionId);
             webSocketService.sendGameSessionInvitation(gamesessionId,  userService.convertUserNameToSessionIdentity(gameRequestDTO.getUsername()), userService.convertTokenToUsername(gameRequestDTO.getToken()));
             webSocketService.broadcastGameSessionInvitedUserList(gamesessionId, currentGameSession.getInvitedUsers());
-            webSocketService.sendGameSessionInvitedUserCounter(currentGameSession, invitedUser.getUsername(), sessionIdentityInvitedUser);}
+            webSocketService.sendGameSessionInvitedUserCounter(currentGameSession, invitedUser, sessionIdentityInvitedUser);}
         catch (Exception e){
             log.info(e.toString());
         }

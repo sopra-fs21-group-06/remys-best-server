@@ -38,7 +38,8 @@ public class WaitingRoom {
     public List<User> getFirstFour(){
         userCount=0;
         return new ArrayList<User>(userQueue);
-    };
+    }
+
     public boolean userInHere(User user){
         if(user!=null){
             return userQueue.contains(user);
@@ -66,8 +67,11 @@ public class WaitingRoom {
         return userQueue.size();
     }
 
-    public List<User> getXNumberOfUsers(int numberOfUsers){
+    public synchronized List<User> getXNumberOfUsers(int numberOfUsers) throws Exception {
         List<User> usersToAddToGameSession = new ArrayList<>();
+        if(getUserCount() < numberOfUsers){
+            throw new Exception("There are too few users in WaitingRoom to fillUp");
+        }
         for(int i = 0; i < numberOfUsers; i++){
             User newUserToAddToGamesession = userQueue.remove(0);
             usersToAddToGameSession.add(newUserToAddToGamesession);

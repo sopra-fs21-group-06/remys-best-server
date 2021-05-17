@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import ch.uzh.ifi.hase.soprafs21.AbstractTestUtility;
+import ch.uzh.ifi.hase.soprafs21.AbstractTest;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.Player;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class GameServiceTest extends AbstractTestUtility {
+public class GameServiceTest extends AbstractTest {
 
     @Test
     public void testCanPlay_goToStart_UserCanPlayOneCard() {

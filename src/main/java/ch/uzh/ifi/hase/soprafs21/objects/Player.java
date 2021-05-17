@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 
 public class Player {
 
@@ -19,8 +18,13 @@ public class Player {
     private List<Marble> marbleList = new ArrayList<>();
     private Player teamMate;
     private boolean isReady;
-    private String cardToChangeCode = null;
+    private String cardCodeToExchange = null;
     private boolean isFinished;
+
+    public Player(String playerName) {
+        this.playerName = playerName;
+        this.setFinished(FALSE);
+    }
 
     public boolean isFinished() {
         return isFinished;
@@ -33,12 +37,13 @@ public class Player {
     public void layDownCard(Card c){
         hand.deleteCardFromHand(c);
     }
-    public String getCardToChangeCode() {
-        return cardToChangeCode;
+
+    public String getCardCodeToExchange() {
+        return cardCodeToExchange;
     }
 
-    public void setCardToChangeCode(String cardToChangeCode) {
-        this.cardToChangeCode = cardToChangeCode;
+    public void setCardCodeToExchange(String cardToChangeCode) {
+        this.cardCodeToExchange = cardToChangeCode;
     }
 
     public boolean isReady() {
@@ -47,11 +52,6 @@ public class Player {
 
     public void setReady(boolean ready) {
         isReady = ready;
-    }
-
-    public Player(String playerName) {
-        this.playerName=playerName;
-        this.setFinished(FALSE);
     }
 
     public Color getColor() {
@@ -86,7 +86,6 @@ public class Player {
         this.hand = hand;
     }
 
-
     public void setMarbleList(List<Marble> marbleList) {
         this.marbleList = marbleList;
     }
@@ -98,6 +97,7 @@ public class Player {
     public void setTeamMate(Player teamMate) {
         this.teamMate = teamMate;
     }
+    
     public ArrayList<Marble> getMarblesAtHome(){
         ArrayList<Marble> marblesOnField = new ArrayList<>();
         for(Marble m: this.getMarbleList()){

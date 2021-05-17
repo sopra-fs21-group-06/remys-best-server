@@ -21,12 +21,10 @@ import java.util.List;
 
 @RestController
 public class RESTFriendRequestController {
-
     private final FriendRequestService friendRequestService;
     private final UserService userService;
 
-
-    RESTFriendRequestController(FriendRequestService friendRequestService, UserService userService) {
+    public RESTFriendRequestController(FriendRequestService friendRequestService, UserService userService) {
         this.friendRequestService = friendRequestService;
         this.userService = userService;
     }
@@ -72,7 +70,7 @@ public class RESTFriendRequestController {
 
         // convert each user to the API representation
         for (FriendRequest f : friendRequests) {
-            friendRequestSentGetDTOs.add(DTOMapper.INSTANCE.convertFriendRequestToFriendRequestSentdGetDTO(f));
+            friendRequestSentGetDTOs.add(DTOMapper.INSTANCE.convertFriendRequestToFriendRequestSentGetDTO(f));
         }
         return friendRequestSentGetDTOs;
     }

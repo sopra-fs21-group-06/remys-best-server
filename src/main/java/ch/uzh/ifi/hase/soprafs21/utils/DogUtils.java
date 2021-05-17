@@ -45,7 +45,7 @@ public class DogUtils {
             if (p.getColor() == null) {
                 areAllColorsAssigned = false;
             }
-            chooseColorPlayers.add(DTOMapper.INSTANCE.convertPlayertoChooseColorPlayerDTO(p));
+            chooseColorPlayers.add(DTOMapper.INSTANCE.convertPlayerToChooseColorPlayerDTO(p));
         }
         waitingRoomChooseColorDTO.setPlayers(chooseColorPlayers);
         waitingRoomChooseColorDTO.setStartGame(areAllColorsAssigned);
@@ -84,7 +84,7 @@ public class DogUtils {
        List<MoveDTO> moveListDTO = new ArrayList<>();
 
        for(CardMove cM: moveList){
-           moveListDTO.add(DTOMapper.INSTANCE.convertCardMovetoMoveDTO(cM));
+           moveListDTO.add(DTOMapper.INSTANCE.convertCardMoveToMoveDTO(cM));
        }
        roundMoveListDTO.setMoves(moveListDTO);
        return roundMoveListDTO;
@@ -95,7 +95,7 @@ public class DogUtils {
        List<MarbleDTO> marbleDTOList = new ArrayList<>();
 
        for(Marble m: marbleList){
-           marbleDTOList.add(DTOMapper.INSTANCE.convertMarbletoMarbleDTO(m));
+           marbleDTOList.add(DTOMapper.INSTANCE.convertMarbleToMarbleDTO(m));
        }
        roundMarbleListDTO.setMarbles(marbleDTOList);
        return roundMarbleListDTO;
@@ -158,7 +158,7 @@ public class DogUtils {
         GameSessionInvitedUsersDTO gameSessionInvitedUsersDTO = new GameSessionInvitedUsersDTO();
         List<WaitingRoomUserObjDTO> invitedUsersList = new ArrayList<>();
         for(User u: invitedUsers){
-            invitedUsersList.add(DTOMapper.INSTANCE.convertUsertoWaitingRoomUserObjDTO(u));
+            invitedUsersList.add(DTOMapper.INSTANCE.convertUserToWaitingRoomUserObjDTO(u));
         }
         gameSessionInvitedUsersDTO.setInvitedUsers(invitedUsersList);
         return gameSessionInvitedUsersDTO;
@@ -177,7 +177,7 @@ public class DogUtils {
         return gameSessionHostLeftDTO;
     }
 
-    public static GameSessionInviteUserDTO generateGameSessoinInviteUserDTO(UUID gameSessionIdentity, String hostName){
+    public static GameSessionInviteUserDTO generateGameSessionInviteUserDTO(UUID gameSessionIdentity, String hostName){
         GameSessionInviteUserDTO gameSessionInviteUserDTO = new GameSessionInviteUserDTO();
         gameSessionInviteUserDTO.setGameSessionId(gameSessionIdentity);
         gameSessionInviteUserDTO.setHostName(hostName);

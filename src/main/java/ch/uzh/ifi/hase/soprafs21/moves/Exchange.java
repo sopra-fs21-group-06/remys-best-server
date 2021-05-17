@@ -36,19 +36,16 @@ public class Exchange implements INormalMove {
     @Override
     public List<Marble> getPlayableMarbles(Game game, GameService gameService) {
         List<Marble> possibleMarbles = new ArrayList<>();
-        for (Marble m : game.getCurrentRound().getCurrentPlayer().getMarblesOnFieldNotHomeNotOnStart()) {
-            if (!(m.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED))) {
-                possibleMarbles.add(m);
-            }
-        }
+        List<Marble> marblesPlayer =  game.getCurrentRound().getCurrentPlayer().getMarblesOnFieldNotHomeNotOnStart();
+
         int count = 0;
-        for(Marble m: possibleMarbles){
-            if(!getPossibleTargetFields(game,m).equals(null)){
+        for(Marble m: marblesPlayer){
+            if(!getPossibleTargetFields(game,m).isEmpty()){
                 count++;
             }
         }
         if (count != 0){
-            return possibleMarbles;
+            possibleMarbles = marblesPlayer;
         }
         return possibleMarbles;
     }

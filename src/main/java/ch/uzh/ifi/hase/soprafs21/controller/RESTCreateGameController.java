@@ -19,7 +19,7 @@ public class RESTCreateGameController {
     private final GameEngine gameEngine;
     private final UserService userService;
 
-    RESTCreateGameController(GameEngine gameEngine, UserService userService) {
+    public RESTCreateGameController(GameEngine gameEngine, UserService userService) {
         this.gameEngine = gameEngine;
         this.userService = userService;
     }
