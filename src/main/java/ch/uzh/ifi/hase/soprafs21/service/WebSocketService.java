@@ -93,6 +93,10 @@ public class WebSocketService {
 
         String path = "/game/%s/turn";
         broadcastToTopic(String.format(path, gameId.toString()), roundCurrentPlayerDTO);
+        //to-do needs to be done.
+        //User player = userService.findByUsername(playerName);
+        //GameSession gameSession =
+        //sendCurrentTurnCardMarbleCounter(gameId, player, userService.convertUserNameToSessionIdentity(playerName));
     }
 
     public void sendCardsToPlayer(String sessionIdentity, List<Card> cards, UUID gameId) {
@@ -183,6 +187,40 @@ public class WebSocketService {
         Thread.sleep(1000L*17);
         executor.shutdown();
 
+    }
+
+    public void sendCurrentTurnCardMarbleCounter(UUID gameID, User currentUser, String sessionIdentity) throws InterruptedException {
+
+        final int[] counter = {30};
+        TimerTask task = new TimerTask() {
+            public void run() {
+                TurnCountDownDTO turnCountDownDTO = DogUtils.generateTurnCountDownDTO(counter[0], currentUser.getUsername());
+                broadcastCurrentTurnCardMarbleCounter(gameID, turnCountDownDTO );
+                sendCurrentTurnCardMarbleCounter(sessionIdentity, turnCountDownDTO);
+                --counter[0];
+
+                if(counter[0] < 0){
+                    cancel();
+                }
+            }
+        };
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        long delay = 1000L;
+        long period = 1000L;
+        executor.scheduleAtFixedRate(task, delay, period, TimeUnit.MILLISECONDS);
+        Thread.sleep(1000L*30);
+        executor.shutdown();
+    }
+
+    private void broadcastCurrentTurnCardMarbleCounter(UUID gameSessionId, TurnCountDownDTO turnCountDownDTO) {
+        String path = "/gamesession/%s/turn-counter";
+        broadcastToTopic(String.format(path, gameSessionId.toString()), turnCountDownDTO);
+    }
+
+    private void sendCurrentTurnCardMarbleCounter(String sessionIdentity, TurnCountDownDTO turnCountDownDTO) {
+        String path = "/turn-counter";
+        sendToPlayer(sessionIdentity, path, turnCountDownDTO);
     }
 
     private void broadcastRequestCountdown(UUID gameSessionId, RequestCountDownDTO requestCountDownDTO){

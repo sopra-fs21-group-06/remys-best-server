@@ -171,6 +171,13 @@ public class DogUtils {
         return requestCountDownDTO;
     }
 
+    public static TurnCountDownDTO generateTurnCountDownDTO(int currentCounter, String userName) {
+        TurnCountDownDTO turnCountDownDTO = new TurnCountDownDTO();
+        turnCountDownDTO.setCurrentCounter(currentCounter);
+        turnCountDownDTO.setUsername(userName);
+        return turnCountDownDTO;
+    }
+
     public static GameSessionHostLeftDTO generateGameSessionHostLeftDTO(String hostName){
         GameSessionHostLeftDTO gameSessionHostLeftDTO = new GameSessionHostLeftDTO();
         gameSessionHostLeftDTO.setHostName(hostName);
