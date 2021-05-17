@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
-import ch.uzh.ifi.hase.soprafs21.AbstractTestUtility;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.Marble;
 import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
@@ -12,11 +11,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ForwardsMoveTest extends AbstractTestUtility {
+public class ForwardsMoveTest extends AbstractMoveTest {
 
     @Test
     public void testGoForwardsFromHomeBase() {

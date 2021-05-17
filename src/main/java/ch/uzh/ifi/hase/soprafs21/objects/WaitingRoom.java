@@ -38,7 +38,8 @@ public class WaitingRoom {
     public List<User> getFirstFour(){
         userCount=0;
         return new ArrayList<User>(userQueue);
-    };
+    }
+
     public boolean userInHere(User user){
         if(user!=null){
             return userQueue.contains(user);

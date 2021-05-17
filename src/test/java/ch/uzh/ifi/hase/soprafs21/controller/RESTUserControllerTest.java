@@ -5,8 +5,6 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserManagment.UserLoginPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserManagment.UserRegisterPostDTO;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 
 @WebMvcTest(RESTUserController.class)
-public class RESTUserControllerTest {
+public class RESTUserControllerTest extends AbstractRESTControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -205,19 +203,4 @@ public class RESTUserControllerTest {
 //    }
 
 
-    /**
-     * Helper Method to convert userPostDTO into a JSON string such that the input can be processed
-     * Input will look like this: {"name": "Test User", "username": "testUsername"}
-     * @param object
-     * @return string
-     */
-
-    private String asJsonString(final Object object) {
-        try {
-            return new ObjectMapper().writeValueAsString(object);
-        }
-        catch (JsonProcessingException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("The request body could not be created.%s", e.toString()));
-        }
-    }
 }

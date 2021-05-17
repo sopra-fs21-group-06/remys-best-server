@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
-import ch.uzh.ifi.hase.soprafs21.AbstractTestUtility;
-import ch.uzh.ifi.hase.soprafs21.objects.Field;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.Marble;
 import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
@@ -18,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class SplitSevenMoveTest extends AbstractTestUtility {
+public class SplitSevenMoveTest extends AbstractMoveTest {
 
     @Test
     public void testSplitSeven() {

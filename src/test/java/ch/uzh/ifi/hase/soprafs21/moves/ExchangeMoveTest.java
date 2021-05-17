@@ -1,13 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
-import ch.uzh.ifi.hase.soprafs21.AbstractTestUtility;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.Marble;
 import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
 import ch.uzh.ifi.hase.soprafs21.objects.Player;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.internal.util.reflection.Fields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ExchangeMoveTest extends AbstractTestUtility {
+public class ExchangeMoveTest extends AbstractMoveTest {
 
     Logger log = LoggerFactory.getLogger(FourBackwards.class);
     @Test

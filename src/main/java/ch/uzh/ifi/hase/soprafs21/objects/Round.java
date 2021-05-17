@@ -29,7 +29,7 @@ public class Round {
         initializeRound();
     }
 
-    public void initializeRound () {
+    public void initializeRound() {
         for (Player p : players) {
             Hand hand = new Hand(cardAPIService.drawCards(this.currentCardAmount));
             p.setHand(hand);

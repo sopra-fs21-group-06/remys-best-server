@@ -2,72 +2,48 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
-import ch.uzh.ifi.hase.soprafs21.service.UserService;
-import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.WaitingRoomUserObjDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.WaitingRoomEnterDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomSendOutCurrentUsersDTO;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.socket.client.WebSocketClient;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
-import org.springframework.web.socket.sockjs.client.SockJsClient;
-import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TimeUnit;
-
-import static org.mockito.BDDMockito.given;
 
 //@Disabled("Disabled, needs additional work")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class WSWaitingRoomControllerTest {
-
-    WebSocketStompClient stompClient;
-
-    @Value("${local.server.port}")
-    private int port;
-
-    /*
-    @MockBean
-    private UserService userService;*/
+public class WSWaitingRoomControllerTest extends AbstractWSControllerTest {
 
     @Autowired
     private GameEngine gameEngine;
 
-    @MockBean
-    private WebSocketService webSocketService;
-
-    @BeforeEach
-    void setup() {
-        stompClient = new WebSocketStompClient(new SockJsClient(
-                Collections.singletonList(new WebSocketTransport(new StandardWebSocketClient()))));
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-    }
-
-    // TODO reset Database after every test!!
     @AfterEach
     void resetUserRepository() {
         gameEngine.getUserService().getUserRepository().deleteAll();
+
+        List<User> usersInWaitingRoom = gameEngine.getWaitingRoom().getUserQueue();
+        Iterator<User> iterator = usersInWaitingRoom.iterator();
+        while (iterator.hasNext()) {
+            iterator.next();
+            iterator.remove();
+        }
     }
-    // TODO clean up game engine state after every test!!
 
     private WaitingRoomEnterDTO generateWaitingRoomEnterDTO(User user) {
         WaitingRoomEnterDTO waitingRoomEnterDTO = new WaitingRoomEnterDTO();
@@ -89,10 +65,7 @@ public class WSWaitingRoomControllerTest {
     void waitingRoomRegister() throws Exception {
         //given
         BlockingQueue<WaitingRoomSendOutCurrentUsersDTO> bq = new LinkedBlockingDeque<>();
-        User user = new User();
-        user.setUsername("fooo");
-        user.setPassword("abcd");
-        user.setEmail("foooo@siddhantsahu.com");
+        User user = createTestUser("user1", "user1@siddhantsahu.com");
 
         //given(gameEngine.getUserService().updateUserIdentity(Mockito.any(), Mockito.any()));
         gameEngine = GameEngine.instance();
@@ -123,7 +96,7 @@ public class WSWaitingRoomControllerTest {
         //assertion
         //System.out.println(response);
         Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.getCurrentUsers().get(0).getUsername(), testUser.getUsername());
+        Assertions.assertEquals(testUser.getUsername(), response.getCurrentUsers().get(0).getUsername());
         Assertions.assertFalse(response.getCurrentUsers().isEmpty());
         //session.send("/app/waiting-room/unregister", waitingRoomSample);
     }
@@ -133,10 +106,7 @@ public class WSWaitingRoomControllerTest {
 
         //given
         BlockingQueue<WaitingRoomSendOutCurrentUsersDTO> bq = new LinkedBlockingDeque<>();
-        User user = new User();
-        user.setUsername("hahahaha");
-        user.setPassword("abcd");
-        user.setEmail("hahahah@siddhantsahu.com");
+        User user = createTestUser("hahahaha", "hahahah@siddhantsahu.com");
 
         //given(gameEngine.getUserService().updateUserIdentity(Mockito.any(), Mockito.any()));
         gameEngine = GameEngine.instance();
