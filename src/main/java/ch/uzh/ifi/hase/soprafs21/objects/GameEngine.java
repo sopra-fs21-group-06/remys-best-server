@@ -229,7 +229,7 @@ public class GameEngine {
 
     public void addUserToSession(User user,UUID gameSessionID){
         try {
-            if(gameEngine.findGameSessionByID(gameSessionID).getUserList().size()==4){
+            if(gameEngine.findGameSessionByID(gameSessionID).getUserList().size()==PLAYER_AMOUNT){
                 gameEngine.createGameFromGameSession(findGameSessionByID(gameSessionID));
 
             }else {
@@ -238,7 +238,7 @@ public class GameEngine {
                         gameSession.addUser(user);
                     }
                 }
-                if(gameEngine.findGameSessionByID(gameSessionID).getUserList().size()==4) {
+                if(gameEngine.findGameSessionByID(gameSessionID).getUserList().size()== PLAYER_AMOUNT) {
                     log.info("GameSession user list size 4");
                     gameEngine.createGameFromGameSession(findGameSessionByID(gameSessionID));
                 }

@@ -166,15 +166,6 @@ public class UserService {
         return userRepository.findByUsername(userName).getSessionIdentity();
     }
 
-    public void logOutUser(User user){
-
-        User userToUpdate = userRepository.getOne(userRepository.findByToken(user.getToken()).getId());
-        userToUpdate.setToken(null);
-        userToUpdate.setStatus(UserStatus.Offline);
-
-        userRepository.save(userToUpdate);
-        userRepository.flush();
-    }
 
     public void updateUser(User user) {
         User existingUser = userRepository.findByToken(user.getToken());
