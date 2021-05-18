@@ -242,6 +242,18 @@ public class DogUtils {
         }
     }
 
+    public static Color getPreviousColor(Color color){
+        if(color == Color.GREEN){
+            return Color.BLUE;
+        } else if (color == Color.RED){
+            return Color.GREEN;
+        } else if (color == Color.BLUE){
+            return Color.YELLOW;
+        } else {
+            return Color.RED;
+        }
+    }
+
     public static String convertSessionIdentityToUserName(String sessionIdentity, UserService userService){
         return userService.getUserRepository().findBySessionIdentity(sessionIdentity).getUsername();
     }

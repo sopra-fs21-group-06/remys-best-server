@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameChooseColorDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomChooseColorDTO;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,19 @@ public class WSChoosePlaceControllerTest extends AbstractWSControllerTest {
     @Autowired
     private GameEngine gameEngine;
 
+    private User user1;
+    private User user2;
+    private User user3;
+    private User user4;
+
+    @BeforeEach
+    public void setup() {
+        super.setup();
+        user1 = createTestUser("User 1", "user1@gmail.com");
+        user2 = createTestUser("User 2", "user2@gmail.com");
+        user3 = createTestUser("User 3", "user3@gmail.com");
+        user4 = createTestUser("User 4", "user4@gmail.com");
+    }
 
     private GameChooseColorDTO generateGameChooseColorDTO(User testUser) {
         GameChooseColorDTO gameChooseColorDTO = new GameChooseColorDTO();
@@ -38,27 +52,17 @@ public class WSChoosePlaceControllerTest extends AbstractWSControllerTest {
 
     @Test
     void registerPlayerSuccess() throws Exception {
-
         //given
         BlockingQueue<WaitingRoomChooseColorDTO> bq = new LinkedBlockingDeque<>();
-        User user_1 = createTestUser("iamsiddhantsahu", "hello@siddhantsahu.com");
-        User user_2 = createTestUser("pascal", "pascal@pascal.com");
-
-        //WaitingRoom waitingRoom = new WaitingRoom();
-        //waitingRoom.addUser(user_1);
-        //waitingRoom.addUser(user_2);
 
         gameEngine = GameEngine.instance();
-        gameEngine.getUserService().createUser(user_1);
-        gameEngine.getUserService().createUser(user_2);
-        gameEngine.addUserToWaitingRoom(user_1);
-        gameEngine.addUserToWaitingRoom(user_2);
+        gameEngine.addUserToWaitingRoom(user1);
+        gameEngine.addUserToWaitingRoom(user2);
+        gameEngine.addUserToWaitingRoom(user3);
+        gameEngine.addUserToWaitingRoom(user4);
         Game game = gameEngine.getRunningGamesList().get(0);
-        //gameEngine.getRunningGameByID(game.getGameId());
-        User testUser = gameEngine.getUserService().findByUsername(user_1.getUsername());
 
-        //ChooseColorPlayerDTO chooseColorPlayerDTO = generateChoosePlayerDTO(testUser);
-        GameChooseColorDTO gameChooseColorDTO = generateGameChooseColorDTO(testUser);
+        GameChooseColorDTO gameChooseColorDTO = generateGameChooseColorDTO(user1);
 
         StompSession session = stompClient.connect("ws://localhost:" + port + "/ws", new StompSessionHandlerAdapter() {
         }).get(1, TimeUnit.SECONDS);

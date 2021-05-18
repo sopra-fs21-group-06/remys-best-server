@@ -1,15 +1,10 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 
-import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs21.objects.Card;
-import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
-import ch.uzh.ifi.hase.soprafs21.objects.Player;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
-
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.FactDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.GameCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.*;
@@ -22,9 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimerTask;
 import java.util.UUID;
-
-import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -236,19 +230,10 @@ public class WebSocketService {
         sendToPlayer(sessionIdentitiy, path, errorDTO);
     }
 
-
-
     public void sendAbruptEndOfGameSessionMessage(UUID gameSessionIdByUsername, String username) {
         String path = "/gamesession/%s/gamesession-end";
         GameSessionEndDTO dto = new GameSessionEndDTO(username);
         broadcastToTopic(String.format(path, gameSessionIdByUsername.toString()), dto);
-    }
-
-
-    public void sendUserLeftGameSessionMessage(String username,UUID gameSessionId) {
-        String path = "/gamesession/%s";
-        UserLeftGameSessionDTO dto = new UserLeftGameSessionDTO(username);
-        broadcastToTopic(String.format(path, gameSessionId.toString()), dto);
     }
 
     public void broadcastUsersInGameSession(UUID gameSessionId) {

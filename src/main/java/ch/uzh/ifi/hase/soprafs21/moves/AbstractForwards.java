@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
+import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
@@ -48,7 +49,7 @@ public abstract class AbstractForwards implements INormalMove {
 
                 int valueFieldNew1 = numberToGoForwards - distanceNextStartField;
                 int valueFieldNew2 = marbleToMove.getCurrentField().getFieldValue() + numberToGoForwards;
-                Color cFieldNew1 = game.getPlayingBoard().getNextColor(colorFieldCurrentField);
+                Color cFieldNew1 = DogUtils.getNextColor(colorFieldCurrentField);
                 Color cFieldNew2 = marbleToMove.getColor();
                 Field targetField1 = game.getPlayingBoard().getField(valueFieldNew1, cFieldNew1);
                 possibleTargetFieldKeys.add(targetField1.getFieldKey());
@@ -56,7 +57,7 @@ public abstract class AbstractForwards implements INormalMove {
                 possibleTargetFieldKeys.add(targetField2.getFieldKey());
             }
             else if (marbleToMove.getCurrentField().getFieldValue() + numberToGoForwards > 16) {
-                colorNextField = game.getPlayingBoard().getNextColor(colorFieldCurrentField);
+                colorNextField = DogUtils.getNextColor(colorFieldCurrentField);
                 valueFieldNew = numberToGoForwards - distanceNextStartField;
                 targetField = game.getPlayingBoard().getField(valueFieldNew, colorNextField);
                 possibleTargetFieldKeys.add(targetField.getFieldKey());

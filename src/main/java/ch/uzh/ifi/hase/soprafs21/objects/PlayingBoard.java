@@ -112,10 +112,6 @@ public class PlayingBoard {
         return yellowMarbles;
     }
 
-    public LinkedList<Field> getListPlayingFields() {
-        return listPlayingFields;
-    }
-
     public Boolean hasMarbleOnHomeStack(Color color){
         if(color == Color.GREEN){
             return (!(greenHome.isEmpty()));
@@ -350,29 +346,6 @@ public class PlayingBoard {
         }
     }
 
-    public Color getNextColor(Color color){
-        if(color == Color.GREEN){
-            return Color.RED;
-        } else if (color == Color.RED){
-            return Color.YELLOW;
-        } else if (color == Color.BLUE){
-            return Color.GREEN;
-        } else {
-            return Color.BLUE;
-        }
-    }
-
-    public Color getPreviousColor(Color color){
-        if(color == Color.GREEN){
-            return Color.BLUE;
-        } else if (color == Color.RED){
-            return Color.GREEN;
-        } else if (color == Color.BLUE){
-            return Color.YELLOW;
-        } else {
-            return Color.RED;
-        }
-    }
     //Only for marbles outside finishpsot
     public boolean marbleCanGetToFinishSpot(Marble marble, Field field, int valueCard){
         boolean marbleCanFinish = FALSE;

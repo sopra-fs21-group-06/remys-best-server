@@ -19,8 +19,6 @@ public class Game {
     private int currentCardAmountForRound = MAX_NUMBER_OF_CARDS;
     private static int MIN_NUMBER_OF_CARDS = 2;
     private static int MAX_NUMBER_OF_CARDS = 6;
-    private boolean GameIsFinished = false;
-    private String deckId;
     private Player startPlayer;
     private PlayingBoard playingBoard = new PlayingBoard();
     private final UUID gameId = UUID.randomUUID();
@@ -43,27 +41,6 @@ public class Game {
         this.gameService = gameService;
     }
 
-
-    /*
-    public boolean getGameIsFinished(){return GameIsFinished;}
-    public void setGameIsFinished(boolean gameIsFinished) {
-        GameIsFinished = gameIsFinished;
-        if(gameIsFinished){
-            GameEndDTO dto = new GameEndDTO();
-            //TO-DO defining DTO will be done once Game, Player, PlayingBoard are finished
-            webSocketService.sentGameEndMessage(this.gameId.toString(),dto);
-        }
-    }
-
-    private void setDeckId(String deckid){
-        this.deckId = deckid;
-    }
-    private String getDeckId(){
-        return this.deckId;
-    }
-    public int getRoundCount() {
-        return roundCount;
-    }*/
     public void setCurrentRound(Round currentRound) {
         this.currentRound = currentRound;
     }

@@ -1,8 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
@@ -12,15 +10,10 @@ import java.util.List;
 public class WaitingRoom {
     private int userCount;
     private List<User> userQueue;
-    Logger log = LoggerFactory.getLogger(WaitingRoom.class);
 
     public WaitingRoom(){
         userCount = 0;
-        userQueue = new ArrayList<User>();
-    }
-
-    public void setUserCount(int userCount) {
-        this.userCount = userCount;
+        userQueue = new ArrayList<>();
     }
 
     public int getUserCount() {
@@ -31,15 +24,6 @@ public class WaitingRoom {
         return userQueue;
     }
 
-    public void setUserQueue(List<User> userQueue) {
-        this.userQueue = userQueue;
-    }
-
-    public List<User> getFirstFour(){
-        userCount=0;
-        return new ArrayList<User>(userQueue);
-    }
-
     public boolean userInHere(User user){
         for(User iterator: userQueue){
             if(iterator.getUsername().equals(user.getUsername())){
@@ -47,11 +31,6 @@ public class WaitingRoom {
             }
         }
         return false;
-        /**if(user!=null){
-            return userQueue.contains(user);
-        }else{
-            return false;
-        }**/
     }
     public void removeUser(User userToRemove){
         if(userToRemove!=null){
