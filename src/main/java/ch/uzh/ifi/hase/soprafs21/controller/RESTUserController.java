@@ -62,4 +62,12 @@ public class RESTUserController {
         User createdUser = userService.createUser(userInput);
         return DTOMapper.INSTANCE.convertEntityToUserLoginGetDTO(createdUser);
     }
+    @PutMapping("/users")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void modifyUser(@RequestBody UserPutDTO userPutDTO){
+        User user = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+        userService.updateUser(user);
+
+    }
 }

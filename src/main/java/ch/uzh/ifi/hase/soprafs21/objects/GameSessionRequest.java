@@ -5,8 +5,8 @@ import ch.uzh.ifi.hase.soprafs21.constant.RequestStatus;
 import java.util.UUID;
 
 public class GameSessionRequest{
-    private UUID hostID;
-    private UUID receiverID;
+    private Long hostID;
+    private Long receiverID;
     private UUID gameSessionID;
     private RequestStatus requestStatus;
 
@@ -17,7 +17,7 @@ public class GameSessionRequest{
     public UUID getGameSessionID() {return gameSessionID;
     }
 
-    public UUID getHostID() {
+    public Long getHostID() {
         return hostID;
     }
 
@@ -29,15 +29,15 @@ public class GameSessionRequest{
         this.gameSessionID = gameSessionID;
     }
 
-    public UUID getReceiverID() {
+    public Long getReceiverID() {
         return receiverID;
     }
 
-    public void setHostID(UUID hostID) {
+    public void setHostID(Long hostID) {
         this.hostID = hostID;
     }
 
-    public void setReceiverID(UUID receiverID) {
+    public void setReceiverID(Long receiverID) {
         this.receiverID = receiverID;
     }
 

@@ -16,10 +16,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -34,7 +31,7 @@ public class GameEngine {
     private final UserService userService;
     private final WebSocketService webSocketService;
     private final GameService gameService;
-    private static final int PLAYER_AMOUNT = 2;
+    private static final int PLAYER_AMOUNT = 4;
     Logger log = LoggerFactory.getLogger(GameEngine.class);
 
     @Autowired
@@ -133,6 +130,11 @@ public class GameEngine {
                 if (gameSession.getUserList().size() == 4) {
                     gameSessionList.remove(gameSession);
                     Game game = new Game(gameSession.getUserList(), webSocketService, new CardAPIService());
+
+                    for(User user:gameSession.getUserList()) {
+                        webSocketService.sendGameAssignmentMessageToGameSession(user.getSessionIdentity(),game.getPlayers(),game.getGameId(),gameSession.getID());
+                    }
+                    gameSessionList.remove(gameSession);
                     runningGamesList.add(game);
                     return game;
                 }
@@ -218,18 +220,27 @@ public class GameEngine {
     }
 
 
-    public void clearRequestsByHost(UUID hostID){gameSessionRequestList.clearByHostID(hostID);}
+    public void clearRequestsByHost(Long hostID){gameSessionRequestList.clearByHostID(hostID);}
 
-    public void clearRequestByUser(UUID userID, UUID gameSessionID){gameSessionRequestList.clearByUserAndGameSessionID(userID,gameSessionID);}
+    public void clearRequestByUser(Long userID, UUID gameSessionID){gameSessionRequestList.clearByUserAndGameSessionID(gameSessionID, userID);}
 
 
     public void addRequest(GameSessionRequest gameSessionRequest){gameSessionRequestList.addRequest(gameSessionRequest);}
 
     public void addUserToSession(User user,UUID gameSessionID){
         try {
-            for (GameSession gameSession : gameSessionList) {
-                if (gameSession.getID().equals(gameSessionID)) {
-                    gameSession.addUser(user);
+            gameEngine.findGameSessionByID(gameSessionID).deleteInvitedUser(user);
+            if(gameEngine.findGameSessionByID(gameSessionID).getUserList().size()==PLAYER_AMOUNT){
+                gameEngine.createGameFromGameSession(findGameSessionByID(gameSessionID));
+
+            }else {
+                for (GameSession gameSession : gameSessionList) {
+                    if (gameSession.getID().equals(gameSessionID)) {
+                        gameSession.addUser(user);
+                    }
+                }
+                if(gameEngine.findGameSessionByID(gameSessionID).getUserList().size()== PLAYER_AMOUNT) {
+                    gameEngine.createGameFromGameSession(findGameSessionByID(gameSessionID));
                 }
             }
         }catch(NullPointerException e){
@@ -238,7 +249,7 @@ public class GameEngine {
     }
 
 
-    public List<GameSessionRequest> getRequestByUserID(UUID userID){return gameSessionRequestList.getRequestsByUserID(userID);}
+    public List<GameSessionRequest> getRequestByUserID(Long userID){return gameSessionRequestList.getRequestsByUserID(userID);}
 
     public void deleteUserFromSession(User user, UUID gameSessionID){
         try {
@@ -316,9 +327,15 @@ public class GameEngine {
         return null;
     }
 
-
     public boolean userInGame(String username) {
-        return true;
+        for(Game game: runningGamesList){
+            for(Player player: game.getPlayers()){
+                if(player.getPlayerName().equals(username)){
+                    return true;
+                }
+        }
+    }
+        return false;
     }
 
     public Player findPlayerbyUsername(Game game, String playerName){
@@ -353,12 +370,40 @@ public class GameEngine {
                 }
                 for(User usersGameSession: usersInGameSession){
                     String userIdentity = usersGameSession.getSessionIdentity();
-                    webSocketService.sendGameAssignmentMessageToGameSession(userIdentity, createdGame.getPlayers(), createdGame.getGameId());
+                    webSocketService.sendGameAssignmentMessageToGameSession(userIdentity, createdGame.getPlayers(), createdGame.getGameId(),gameSession.getID());
                 }
-            }
-            catch (Exception e){
+            }catch (Exception e) {
                 webSocketService.sendGameSessionFillUpError(userService.convertUserNameToSessionIdentity(gameSession.getHostName()), e.getMessage());
             }
+        }
+    }
+
+    public synchronized void deleteGameSessionByHostName(String username) {
+        try {
+            for (GameSession gameSession : gameSessionList) {
+                if (userIsHost(username) && userInGameSession(userService.getUserRepository().findByUsername(username), gameSession.getID())) {
+                    deleteGameSession(gameSession.getID());
+                }
+            }
+        }catch(ConcurrentModificationException | NullPointerException ignored){}
+    }
+
+    public UUID findGameSessionIdByUsername(String username) {
+        for(GameSession gameSession: gameSessionList) {
+            for (User user : gameSession.getUserList()) {
+                if (user.getUsername().equals(username)) {
+                    return gameSession.getID();
+                }
+            }
+        }
+        return null;
+    }
+
+    public List<User> getUsersByGameSessionId(UUID gameSessionId){
+        try {
+            return Objects.requireNonNull(findGameSessionByID(gameSessionId)).getUserList();
+        }catch(NullPointerException e){
+            return null;
         }
     }
 }

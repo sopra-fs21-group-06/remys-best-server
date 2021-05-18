@@ -41,11 +41,17 @@ public class WaitingRoom {
     }
 
     public boolean userInHere(User user){
-        if(user!=null){
+        for(User iterator: userQueue){
+            if(iterator.getUsername().equals(user.getUsername())){
+                return true;
+            }
+        }
+        return false;
+        /**if(user!=null){
             return userQueue.contains(user);
         }else{
             return false;
-        }
+        }**/
     }
     public void removeUser(User userToRemove){
         if(userToRemove!=null){

@@ -8,13 +8,19 @@ import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.ExecutePlayCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameCardExchange;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameReadyDTO;
+import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameEndDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomSendOutCurrentUsersDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
@@ -52,44 +58,42 @@ public class WSGameController {
         Game currentGame = gameEngine.getRunningGameByID(gameId);
         currentGame.executeMove(executePlayCardDTO);
     }
-/*
+
    @EventListener
     public synchronized void handleSessionDisconnect(SessionDisconnectEvent event) {
         String p = Objects.requireNonNull(event.getUser()).getName();
         if (p != null) {
             log.info("Player " + p + ": Connection lost");
-            SimpMessageHeaderAccessor header = SimpMessageHeaderAccessor.wrap(event.getMessage());
-            String username = convertSessionIdentityToUserName(p,gameEngine.getUserService());
-
-            //status change with users
-            //sessionIdentity null
-            //token null
+            String username = DogUtils.convertSessionIdentityToUserName(p,gameEngine.getUserService());
             if(gameEngine.isUserInGameSession(username)){
                 if(gameEngine.userIsHost(username)){
-                    //deletes gameSession and redirects users
-                    //need an empty DTO
-                    DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+                    log.info("Player" + p + ":Has disconnected from GameSession as Host");
+                    webSocketService.sendAbruptEndOfGameSessionMessage(gameEngine.findGameSessionIdByUsername(username), username);
+                    gameEngine.deleteGameSessionByHostName(username);
                 }else{
-                    //deletes user from gameSession and notifies users
-                    //gameEngine.deleteUserFromSession(username);
-                    DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+                    log.info("Player" + p + ":Has disconnected from GameSession as Player");
+                    log.info(gameEngine.findGameSessionIdByUsername(username).toString());
+                    log.info(userService.findByUsername(username).getUsername());
+                    UUID gameSessionId = gameEngine.findGameSessionIdByUsername(username);
+                    gameEngine.deleteUserFromSession(userService.findByUsername(username), gameSessionId);
+                    webSocketService.broadcastUsersInGameSession(gameSessionId);
                 }
             }else if(gameEngine.userInWaitingRoom(username)){
-                // user deleted from waitingRoom;
-                //send list of current waiting users
-                DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
+                log.info("Player" + p + ":Has disconnected from waitingRoom");
+                gameEngine.removeUserFromWaitingRoom(userService.findByUsername(username));
+                WaitingRoomSendOutCurrentUsersDTO dto = gameEngine.createWaitingRoomUserList();
+                webSocketService.sendPlayerDisconnectedFromWaitingRoom(dto);
             }else if(gameEngine.userInGame(username)) {
+                log.info("Player" + p + ":Has disconnected from game");
                 GameEndDTO dto = new GameEndDTO();
-
                 dto.setAborted(username);
                 webSocketService.sentGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);
                 gameEngine.deleteGameByGameID(gameEngine.findGameIdByPlayerName(username));
-                DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
-            }else{
-                DogUtils.resetStatusTokenAndSessionIdentity(gameEngine.getUserService(), username);
             }
+            DogUtils.resetStatusAndSessionIdentity(gameEngine.getUserService(), username);
         }
-    }*/
+    }
+
 
 }
 

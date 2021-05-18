@@ -1,15 +1,16 @@
-/*package ch.uzh.ifi.hase.soprafs21.objects;
+package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import org.junit.jupiter.api.BeforeAll;
+import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs21.service.GameService;
+import ch.uzh.ifi.hase.soprafs21.service.UserService;
+import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
-public class GameEngineTest {
+    public class GameEngineTest {
 
     GameEngine gameEngine = GameEngine.instance();
     User user1 = new User();
@@ -27,7 +28,7 @@ public class GameEngineTest {
         gameEngine.addUserToWaitingRoom(user4);
         assertTrue(!gameEngine.getRunningGamesList().isEmpty());
         assertTrue(gameEngine.getWaitingRoom().getUserCount()==0);
-        gameEngine.deleteGameByGameID(gameEngine.getRunningGamesList().get(0).getGameID());
+        gameEngine.deleteGameByGameID(gameEngine.getRunningGamesList().get(0).getGameId());
     }
     @Test
     public void testCreateGameSession_Successful(){
@@ -45,7 +46,7 @@ public class GameEngineTest {
         gameEngine.createGameFromGameSession(gameEngine.getGameSessionList().get(0));
         assertTrue(!gameEngine.getRunningGamesList().isEmpty());
         assertTrue(gameEngine.getGameSessionList().isEmpty());
-        gameEngine.deleteGameSession(gameEngine.getRunningGamesList().get(0).getGameID());
+        gameEngine.deleteGameSession(gameEngine.getRunningGamesList().get(0).getGameId());
     }
 
     @Test
@@ -54,7 +55,7 @@ public class GameEngineTest {
         gameEngine.addUserToWaitingRoom(user2);
         gameEngine.addUserToWaitingRoom(user3);
         gameEngine.addUserToWaitingRoom(user4);
-        gameEngine.deleteGameByGameID(gameEngine.getRunningGamesList().get(0).getGameID());
+        gameEngine.deleteGameByGameID(gameEngine.getRunningGamesList().get(0).getGameId());
         assertTrue(gameEngine.getRunningGamesList().isEmpty());
     }
 
@@ -71,8 +72,8 @@ public class GameEngineTest {
         gameEngine.deleteGameSession(gameEngine.getGameSessionList().get(0).getID());
     }
 
-    *//** user does not get deleted if it is the host **//*
-    @Test
+    /** user does not get deleted if it is the host **/
+     @Test
     public void testDeletingHostFromGameSession(){
         user1.setId(1L);
         gameEngine.newGameSession(user1);
@@ -80,4 +81,4 @@ public class GameEngineTest {
         assertTrue(gameEngine.getGameSessionList().get(0).getUserList().contains(user1));
     }
 
-}*/
+}
