@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.FriendRequest;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.FriendDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.outgoing.FriendRequestCreatePostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.outgoing.FriendRequestResponsePostDTO;
 import ch.uzh.ifi.hase.soprafs21.service.FriendRequestService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -151,6 +152,24 @@ public class RESTFriendRequestTest {
 
         mockMvc.perform(postRequest)
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void declineFriendRequest() throws Exception {
+
+        FriendRequestResponsePostDTO friendRequestResponsePostDTO = new FriendRequestResponsePostDTO();
+        friendRequestResponsePostDTO.setSenderName("Siddhant");
+
+        //given(friendRequestService.createFriendRequest(Mockito.any()))
+        doNothing().when(friendRequestService).processResponseFriendRequest(friendRequestResponsePostDTO, RequestStatus.DECLINED , "abcdef");
+
+        MockHttpServletRequestBuilder postRequest = post("/friendrequests/decline")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "abcdef")
+                .content(asJsonString(friendRequestResponsePostDTO));
+
+        mockMvc.perform(postRequest)
+                .andExpect(status().isOk());
     }
 
     /**
