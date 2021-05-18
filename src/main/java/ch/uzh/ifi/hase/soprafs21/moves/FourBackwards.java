@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.moves;
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
+import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ public class FourBackwards implements INormalMove {
         Color colorEndField = marbleToMove.getCurrentField().getColor();
         if (fieldNr < 1){
             fieldNr = 16 + fieldNr;
-            colorEndField = game.getPlayingBoard().getPreviousColor(colorEndField);
+            colorEndField = DogUtils.getPreviousColor(colorEndField);
         }
         Field possTargetField = game.getPlayingBoard().getField(fieldNr, colorEndField);
         possibleTargetFieldKeys.add(possTargetField.getFieldKey());

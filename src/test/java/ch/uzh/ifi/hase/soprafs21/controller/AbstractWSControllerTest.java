@@ -1,9 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,10 +29,14 @@ public abstract class AbstractWSControllerTest {
     @MockBean
     private WebSocketService webSocketService;
 
+    @Autowired
+    private UserService userService;
+
     public WebSocketStompClient stompClient;
 
     @BeforeEach
     void setup() {
+        userService.getUserRepository().deleteAll();
         stompClient = new WebSocketStompClient(new SockJsClient(
                 Collections.singletonList(new WebSocketTransport(new StandardWebSocketClient()))));
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
@@ -42,6 +48,8 @@ public abstract class AbstractWSControllerTest {
         user.setEmail(email);
         user.setPassword("password");
         user.setSessionIdentity(UUID.randomUUID().toString());
+        user.setToken(UUID.randomUUID().toString());
+        userService.createUser(user);
         return user;
     }
 }

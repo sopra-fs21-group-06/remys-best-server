@@ -145,13 +145,37 @@ public class DogUtils {
 
         return possibleTargetFieldKeysListDTO;
     }
-    public static void resetStatusTokenAndSessionIdentity(UserService userService, String username){
+    public static void resetStatusAndSessionIdentity(UserService userService, String username){
         User user = userService.findByUsername(username);
-        user.setToken(null);
         user.setStatus(UserStatus.Offline);
         user.setSessionIdentity(null);
         userService.getUserRepository().saveAndFlush(user);
+    }
 
+    public static GameSessionUserListDTO convertPlayersToGameSessionUserListDTO(List<User> users) {
+        GameSessionUserListDTO dto = new GameSessionUserListDTO();
+
+
+        List<GameSessionUserDTO> gameSessionUserDTOS = new ArrayList<GameSessionUserDTO>();
+        boolean enoughUsers = false;
+        int counter=0;
+        for (User user : users) {
+            if (user.getUsername() != null) {
+                counter++;
+                if(counter==4){
+                    enoughUsers = true;
+                }
+            }
+            gameSessionUserDTOS.add(DTOMapper.INSTANCE.convertUserToGameSessionUserDTO(user));
+        }
+        dto.setUsers(gameSessionUserDTOS);
+        if(enoughUsers){
+            dto.setStartGame("true");
+        }else{
+            dto.setStartGame("false");
+        }
+
+        return dto;
     }
 
     public static GameSessionInvitedUsersDTO generateGameSessionInvitedUsersDTO(List<User> invitedUsers){
@@ -216,5 +240,21 @@ public class DogUtils {
         } else {
             return Color.BLUE;
         }
+    }
+
+    public static Color getPreviousColor(Color color){
+        if(color == Color.GREEN){
+            return Color.BLUE;
+        } else if (color == Color.RED){
+            return Color.GREEN;
+        } else if (color == Color.BLUE){
+            return Color.YELLOW;
+        } else {
+            return Color.RED;
+        }
+    }
+
+    public static String convertSessionIdentityToUserName(String sessionIdentity, UserService userService){
+        return userService.getUserRepository().findBySessionIdentity(sessionIdentity).getUsername();
     }
 }

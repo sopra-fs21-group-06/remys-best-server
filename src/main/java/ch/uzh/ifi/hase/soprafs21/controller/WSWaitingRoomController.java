@@ -50,9 +50,6 @@ public class WSWaitingRoomController {
         gameEngine.removeUserFromWaitingRoom(gameEngine.getUserService().getUserRepository().findByToken(waitingRoomEnterDTO.getToken()));
         WaitingRoomSendOutCurrentUsersDTO userObjDTOList = gameEngine.createWaitingRoomUserList();
         log.info(userObjDTOList.toString());
-
-        //this.webSocketService.sendToPlayer(getIdentity(sha), "user/queue/register", answer2);
-
         return userObjDTOList;
     }
 }

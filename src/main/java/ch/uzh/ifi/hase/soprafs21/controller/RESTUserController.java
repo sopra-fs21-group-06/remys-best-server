@@ -37,6 +37,23 @@ public class RESTUserController {
         return userGetDTOs;
     }
 
+    @PostMapping("/users")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public UserLoginGetDTO createUser(@RequestBody UserRegisterPostDTO userRegisterPostDTO, HttpServletRequest request) {
+        User userInput = DTOMapper.INSTANCE.convertUserRegisterPostDTOtoEntity(userRegisterPostDTO);
+        User createdUser = userService.createUser(userInput);
+        return DTOMapper.INSTANCE.convertEntityToUserLoginGetDTO(createdUser);
+    }
+
+    @PutMapping("/users")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void modifyUser(@RequestBody UserPutDTO userPutDTO){
+        User user = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+        userService.updateUser(user);
+    }
+
     @PostMapping("/users/login")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ResponseBody
@@ -52,14 +69,5 @@ public class RESTUserController {
     public void logoutUser(HttpServletRequest request){
         String token = request.getHeader("Authorization");
         userService.logOutUser(token);
-    }
-
-    @PostMapping("/users")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public UserLoginGetDTO createUser(@RequestBody UserRegisterPostDTO userRegisterPostDTO, HttpServletRequest request) {
-        User userInput = DTOMapper.INSTANCE.convertUserRegisterPostDTOtoEntity(userRegisterPostDTO);
-        User createdUser = userService.createUser(userInput);
-        return DTOMapper.INSTANCE.convertEntityToUserLoginGetDTO(createdUser);
     }
 }

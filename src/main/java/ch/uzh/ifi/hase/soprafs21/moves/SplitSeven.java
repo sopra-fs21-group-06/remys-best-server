@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
+import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
@@ -47,7 +48,7 @@ public class SplitSeven implements ISplitMove {
                 Color colorFieldToCheck = colorCurrentField;
                 if(fieldValToCheck > 16){
                     fieldValToCheck = fieldValToCheck - 16;
-                    colorFieldToCheck = game.getPlayingBoard().getNextColor(colorCurrentField);
+                    colorFieldToCheck = DogUtils.getNextColor(colorCurrentField);
                 }
                 Field fieldToCheck = game.getPlayingBoard().getField(fieldValToCheck, colorFieldToCheck);
                 if(!fieldToCheck.getFieldStatus().equals(FieldStatus.BLOCKED)){
@@ -132,7 +133,7 @@ public class SplitSeven implements ISplitMove {
             Color colorFieldToCheck = colorCurrentField;
             if(fieldValToCheck > 16){
                 fieldValToCheck = fieldValToCheck - 16;
-                colorFieldToCheck = game.getPlayingBoard().getNextColor(colorCurrentField);
+                colorFieldToCheck = DogUtils.getNextColor(colorCurrentField);
             }
             Field fieldToCheck = game.getPlayingBoard().getField(fieldValToCheck, colorFieldToCheck);
             result = game.getGameService().eat(fieldToCheck, game);

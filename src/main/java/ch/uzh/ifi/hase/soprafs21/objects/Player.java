@@ -97,26 +97,7 @@ public class Player {
     public void setTeamMate(Player teamMate) {
         this.teamMate = teamMate;
     }
-    
-    public ArrayList<Marble> getMarblesAtHome(){
-        ArrayList<Marble> marblesOnField = new ArrayList<>();
-        for(Marble m: this.getMarbleList()){
-            if (m.getHome()){
-                marblesOnField.add(m);
-            }
-        }
-        return marblesOnField;
-    }
-    //returns the marbles on the field (Not home and not in finish sector)
-    public List<Marble> getMarblesOnField(){
-        List<Marble> marblesOnField = new ArrayList<>();
-        for(Marble m: this.getMarbleList()){
-            if(!(m.getHome()) && !(m.getCurrentField() instanceof FinishField)){
-                marblesOnField.add(m);
-            }
-        }
-        return marblesOnField;
-    }
+
     //returns the marbles on the field (Not home and not in finish sector and not on Start)
     public List<Marble> getMarblesOnFieldNotHomeNotOnStart(){
         List<Marble> marblesOnField = new ArrayList<>();
@@ -137,15 +118,5 @@ public class Player {
             }
         }
         return marblesOnFieldAndFinished;
-    }
-    //Marbles who are in Finish sector who cant move anymore
-    public List<Marble> getMarblesInFinishFieldAndFinished(){
-        List<Marble> MarblesInFinishFieldAndFinished = new ArrayList<>();
-        for(Marble m: this.getMarbleList()){
-            if (m.getFinish()){
-                MarblesInFinishFieldAndFinished.add(m);
-            }
-        }
-        return MarblesInFinishFieldAndFinished;
     }
 }

@@ -28,8 +28,6 @@ import java.util.List;
 @Transactional
 public class FriendRequestService {
 
-    private final Logger log = LoggerFactory.getLogger(UserService.class);
-
     private final FriendRequestRepository friendRequestRepository;
     private final UserService userService;
 
@@ -38,7 +36,6 @@ public class FriendRequestService {
         this.friendRequestRepository = friendRequestRepository;
         this.userService = userService;
     }
-
 
     public List<FriendRequest> getAllFriendRequests(){
         return friendRequestRepository.findAll();
@@ -126,7 +123,6 @@ public class FriendRequestService {
     private boolean checkIfFriendRequestAlreadyExists(String senderToken, String receiverName){
 
         User sender = userService.getUserRepository().findByToken(senderToken);
-        User receiver = userService.getUserRepository().findByUsername(receiverName);
 
         FriendRequest friendRequestExists = friendRequestRepository.findBySenderNameAndReceiverName(sender.getUsername(), receiverName);
         FriendRequest friendRequestExistsInverted = friendRequestRepository.findBySenderNameAndReceiverName(receiverName, sender.getUsername());
@@ -150,7 +146,6 @@ public class FriendRequestService {
 
     private FriendRequest checkIfFriendRequestExists(String senderToken, String senderName){
         User sender = userService.getUserRepository().findByToken(senderToken);
-        User receiver = userService.getUserRepository().findByUsername(senderName);
 
         FriendRequest friendRequestExists = friendRequestRepository.findBySenderNameAndReceiverName(sender.getUsername(), senderName);
         FriendRequest friendRequestExistsInverted = friendRequestRepository.findBySenderNameAndReceiverName(senderName, sender.getUsername());

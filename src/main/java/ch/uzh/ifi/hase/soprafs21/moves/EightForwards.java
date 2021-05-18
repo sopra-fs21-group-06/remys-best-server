@@ -27,7 +27,6 @@ public class EightForwards extends AbstractForwards {
     }
 
     @Override
-
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeyArrayList) {
         return super.executeMove(game, marbleIdAndTargetFieldKeyArrayList);
     }

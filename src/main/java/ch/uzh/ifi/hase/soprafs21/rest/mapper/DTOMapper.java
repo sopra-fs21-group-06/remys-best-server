@@ -11,6 +11,7 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.incoming.Frien
 import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.incoming.FriendRequestSentGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserManagment.*;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.*;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameSessionUserDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -76,4 +77,12 @@ public interface DTOMapper {
     @Mapping(source = "status", target = "status")
     @Mapping(source = "username",  target = "username")
     FriendDTO convertUserToFriendDTO(User user);
+
+    @Mapping(source="username", target="username")
+    GameSessionUserDTO convertUserToGameSessionUserDTO(User user);
+
+    @Mapping(source="email", target="email")
+    @Mapping(source="password", target="password")
+    @Mapping(source= "token",target="token")
+    User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 }
