@@ -51,7 +51,7 @@ public class WSGameSessionController {
 
             GameSession currentGameSession = gameEngine.findGameSessionByID(gamesessionId);
 
-            gameEngine.addinvitedUserToGameSession(invitedUser, gamesessionId);
+            gameEngine.addInvitedUserToGameSession(invitedUser, gamesessionId);
             webSocketService.sendGameSessionInvitation(gamesessionId,  userService.convertUserNameToSessionIdentity(gameRequestDTO.getUsername()), userService.convertTokenToUsername(gameRequestDTO.getToken()));
             webSocketService.broadcastGameSessionInvitedUserList(gamesessionId, currentGameSession.getInvitedUsers());
             webSocketService.sendGameSessionInvitedUserCounter(currentGameSession, invitedUser, sessionIdentityInvitedUser);}
@@ -109,7 +109,6 @@ public class WSGameSessionController {
     public synchronized void rejectInvitation(@DestinationVariable UUID gameSessionId, SimpMessageHeaderAccessor sha, GameRequestDeniedDTO dto){
         if(gameSessionId!=null){
             String username = DogUtils.convertSessionIdentityToUserName(getIdentity(sha), GameEngine.instance().getUserService());
-            GameEngine.instance().clearRequestByUser(GameEngine.instance().getUserService().findByUsername(username).getId(),gameSessionId);
             gameEngine.findGameSessionByID(gameSessionId).deleteInvitedUser(userService.findByUsername(username));
             webSocketService.broadcastUsersInGameSession(gameSessionId);
             webSocketService.broadcastGameSessionInvitedUserList(gameSessionId,gameEngine.findGameSessionByID(gameSessionId).getInvitedUsers());

@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs21.moves.IMove;
 import ch.uzh.ifi.hase.soprafs21.moves.INormalMove;
 import ch.uzh.ifi.hase.soprafs21.moves.ISplitMove;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
+import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameEndDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -197,11 +198,10 @@ public class GameService {
         Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
         Card cardToPlay = new Card(cardCodeToPlay);
 
-        //for (MarbleIdAndTargetFieldKey mIdAndFieldKey: marbleIdAndTargetFieldKeys){
-           // checkValidityOfMove(playerName, cardToPlay, mIdAndFieldKey.getFieldKey(), getMarbleByMarbleId(game, mIdAndFieldKey.getMarbleId()), moveName, currentPlayer, game);
-        //}
+        // check move
         MarbleIdAndTargetFieldKey mIdAndFieldKey = marbleIdAndTargetFieldKeys.get(0);
         checkValidityOfMove(playerName, cardToPlay, mIdAndFieldKey.getFieldKey(), getMarbleByMarbleId(game, mIdAndFieldKey.getMarbleId()), moveName, currentPlayer, game);
+
         // execute move
         IMove moveToExecute = null;
         for(IMove move : cardToPlay.getMoves()) {
@@ -254,7 +254,7 @@ public class GameService {
         int newStartFieldVal;
         if (valueToCheck.contains(marble.getCurrentField().getFieldValue())) {
             newStartFieldVal = 20-marble.getCurrentField().getFieldValue();
-            c = game.getPlayingBoard().getPreviousColor(c);
+            c = DogUtils.getPreviousColor(c);
         }
         else {
             newStartFieldVal = marble.getCurrentField().getFieldValue() + numberToGoForwards;

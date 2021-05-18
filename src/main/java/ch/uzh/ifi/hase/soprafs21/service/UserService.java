@@ -158,14 +158,9 @@ public class UserService {
         return this.userRepository.findByUsername(username).getToken();
     }
 
-    public String convertSessionIdentityToUserName(String sessionIdentity){
-        return userRepository.findBySessionIdentity(sessionIdentity).getUsername();
-    }
-
     public String convertUserNameToSessionIdentity(String userName){
         return userRepository.findByUsername(userName).getSessionIdentity();
     }
-
 
     public void updateUser(User user) {
         User existingUser = userRepository.findByToken(user.getToken());

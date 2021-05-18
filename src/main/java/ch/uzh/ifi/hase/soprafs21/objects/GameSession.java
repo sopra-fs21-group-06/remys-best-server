@@ -15,11 +15,10 @@ public class GameSession {
 
     Logger log = LoggerFactory.getLogger(WSGameController.class);
 
-    private final UUID GameSessionId = UUID.randomUUID();
+    private final UUID gameSessionId = UUID.randomUUID();
     private final UserService userService = GameEngine.instance().getUserService();
     private final String hostName;
-    private int userCount;
-    private List<User> userList= new ArrayList<User>();
+    private List<User> userList= new ArrayList<>();
     private final List<User> invitedUsers = new ArrayList<>();
 
     public GameSession(User host){
@@ -31,11 +30,9 @@ public class GameSession {
         return hostName;
     }
 
-    public UUID getID(){return GameSessionId;}
-    public int getUserCount(){return userCount;}
+    public UUID getID(){return gameSessionId;}
+
     public List<User> getUserList(){return userList;}
-    public void setUserCount(int userCount){this.userCount = userCount;}
-    public void setUserList(List<User> userList){this.userList = userList;}
 
     public List<User> getInvitedUsers() {
         return invitedUsers;
@@ -47,14 +44,6 @@ public class GameSession {
                 return true;
             }
         }
-        return false;
-    }
-
-    public boolean userAlreadyExists(User user){
-        if(user==null){
-            return false;
-        }
-        for(User x: userList){if(x.equals(user)){return true;}}
         return false;
     }
 
@@ -74,7 +63,11 @@ public class GameSession {
         }
     }
 
-    public void addUser(User user){if(user!=null){userList.add(user);userCount++;};}
+    public void addUser(User user) {
+        if(user!=null){
+            userList.add(user);
+        }
+    }
 
     public boolean userInHere(User user){
         if(user!=null) {
@@ -92,7 +85,6 @@ public class GameSession {
             if(userInHere(user)&& !user.getUsername().equals(hostName)){
                 userList.removeIf(iterator -> iterator.getUsername().equals(user.getUsername()));
                 log.info("user was removed");
-                userCount--;
             }
         }
     }

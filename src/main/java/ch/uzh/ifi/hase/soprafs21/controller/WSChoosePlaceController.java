@@ -4,7 +4,6 @@ import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.objects.Player;
-import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameChooseColorDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomChooseColorDTO;
@@ -26,11 +25,9 @@ public class WSChoosePlaceController {
     Logger log = LoggerFactory.getLogger(WSChoosePlaceController.class);
 
     private final GameEngine gameEngine;
-    private final WebSocketService webSocketService;
 
-    public WSChoosePlaceController(GameEngine gameEngine, WebSocketService webSocketService) {
+    public WSChoosePlaceController(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
-        this.webSocketService = webSocketService;
     }
 
     @MessageMapping("/game/{gameId}/choose-color")

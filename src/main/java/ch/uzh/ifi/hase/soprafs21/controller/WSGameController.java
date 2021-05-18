@@ -59,7 +59,7 @@ public class WSGameController {
         currentGame.executeMove(executePlayCardDTO);
     }
 
-   @EventListener
+    @EventListener
     public synchronized void handleSessionDisconnect(SessionDisconnectEvent event) {
         String p = Objects.requireNonNull(event.getUser()).getName();
         if (p != null) {
@@ -87,7 +87,7 @@ public class WSGameController {
                 log.info("Player" + p + ":Has disconnected from game");
                 GameEndDTO dto = new GameEndDTO();
                 dto.setAborted(username);
-                webSocketService.sentGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);
+                webSocketService.broadcastGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);
                 gameEngine.deleteGameByGameID(gameEngine.findGameIdByPlayerName(username));
             }
             DogUtils.resetStatusAndSessionIdentity(gameEngine.getUserService(), username);

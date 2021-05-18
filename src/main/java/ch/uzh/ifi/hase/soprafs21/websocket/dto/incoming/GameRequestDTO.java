@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming;
 
-import java.util.UUID;
-
 public class GameRequestDTO {
     private String token;
     private String username;

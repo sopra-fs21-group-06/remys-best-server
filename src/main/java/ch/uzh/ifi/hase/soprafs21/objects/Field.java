@@ -8,8 +8,6 @@ public class Field {
     private Marble marble;
     private int fieldValue;
     private Boolean isHome;
-    private Boolean isFinish;
-    private Boolean isStart;
     private Color color;
     private String fieldKey;
 
@@ -19,20 +17,12 @@ public class Field {
         this.fieldKey = String.valueOf(fieldValue).concat(color.getId());
     }
 
-    public Boolean getFinish() {
-        return isFinish;
-    }
-
     public String getFieldKey() {
         return fieldKey;
     }
 
     public Boolean getHome() {
         return isHome;
-    }
-
-    public Boolean getStart() {
-        return isStart;
     }
 
     public FieldStatus getFieldStatus() {
@@ -51,14 +41,6 @@ public class Field {
         this.fieldStatus = fieldStatus;
     }
 
-    public void setFieldValue(int fieldValue) {
-        this.fieldValue = fieldValue;
-    }
-
-    public void setFinish(Boolean finish) {
-        isFinish = finish;
-    }
-
     public void setHome(Boolean home) {
         isHome = home;
     }
@@ -66,7 +48,6 @@ public class Field {
     public void setMarble(Marble marble) {
         this.marble = marble;
     }
-
 
     public void setColor(Color color) {
         this.color = color;
@@ -76,8 +57,5 @@ public class Field {
         return color;
     }
 
-    public void setStart(Boolean start) {
-        isStart = start;
-    }
 }
 

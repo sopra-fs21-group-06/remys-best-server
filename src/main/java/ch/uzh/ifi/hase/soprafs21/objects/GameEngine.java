@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.*;
 
-
 @Service
 @Scope("singleton")
 @Transactional
@@ -26,7 +25,6 @@ public class GameEngine {
     private static GameEngine gameEngine;
     private List<GameSession> gameSessionList = new ArrayList<>();
     private List<Game> runningGamesList = new ArrayList<>();
-    private GameSessionRequestList gameSessionRequestList = new GameSessionRequestList();
     private final WaitingRoom waitingRoom;
     private final UserService userService;
     private final WebSocketService webSocketService;
@@ -48,9 +46,6 @@ public class GameEngine {
     }
 
     public static synchronized GameEngine instance() {
-        /*if (gameEngine==null)
-            //gameEngine = new GameEngine();*/
-        //according to what I read online @Scope ("singleton") is the way to implement singleton in spring
         return gameEngine;
     }
 
@@ -61,23 +56,13 @@ public class GameEngine {
     public List<Game> getRunningGamesList() {
         return runningGamesList;
     }
+
     public List<GameSession> getGameSessionList() {
         return gameSessionList;
     }
-    public GameSessionRequestList getGameSessionRequestList() {
-        return gameSessionRequestList;
-    }
+
     public WaitingRoom getWaitingRoom() {
         return waitingRoom;
-    }
-    public void setGameSessionList(List<GameSession> gameSessionList) {
-        this.gameSessionList = gameSessionList;
-    }
-    public void setGameSessionRequestList(GameSessionRequestList gameSessionRequestList) {
-        this.gameSessionRequestList = gameSessionRequestList;
-    }
-    public void setRunningGamesList(List<Game> runningGamesList) {
-        this.runningGamesList = runningGamesList;
     }
 
     public void addUserToWaitingRoom(User user){
@@ -96,7 +81,7 @@ public class GameEngine {
         }
     }
 
-    public void addinvitedUserToGameSession(User user, UUID gameSessionId){
+    public void addInvitedUserToGameSession(User user, UUID gameSessionId){
         GameSession gameSession = findGameSessionByID(gameSessionId);
         assert gameSession != null;
         gameSession.addInvitedUser(user);
@@ -177,20 +162,6 @@ public class GameEngine {
         }
     }
 
-    public void userDisconnected(User user){
-        if(inWaitingRoom(user)){
-            waitingRoom.removeUser(user);
-        }else if(inGameSession(user)!=null){
-            try {
-                Objects.requireNonNull(findGameSessionByID(inGameSession(user))).deleteUser(user);
-            }catch(NullPointerException e){
-                System.out.println("Something went wrong in userDisconnected()");
-            }
-        }
-    }
-
-    private boolean inWaitingRoom(User user) {return waitingRoom.userInHere(user);};
-
     public Game getRunningGameByID(UUID id){
         try {
             for (Game game : runningGamesList) {
@@ -204,28 +175,6 @@ public class GameEngine {
             return null;
         }
     }
-
-    private UUID inGameSession(User user){
-        try {
-            for(GameSession gameSession:gameSessionList){
-                if (gameSession.userInHere(user)) {
-                    return gameSession.getID();
-                }
-            }
-            return null;
-        }catch(NullPointerException e) {
-            System.out.println("Something went wrong in runningGameByID");
-            return null;
-        }
-    }
-
-
-    public void clearRequestsByHost(Long hostID){gameSessionRequestList.clearByHostID(hostID);}
-
-    public void clearRequestByUser(Long userID, UUID gameSessionID){gameSessionRequestList.clearByUserAndGameSessionID(gameSessionID, userID);}
-
-
-    public void addRequest(GameSessionRequest gameSessionRequest){gameSessionRequestList.addRequest(gameSessionRequest);}
 
     public void addUserToSession(User user,UUID gameSessionID){
         try {
@@ -247,9 +196,6 @@ public class GameEngine {
             System.out.println("Something went wrong in addUserToSession()");
         }
     }
-
-
-    public List<GameSessionRequest> getRequestByUserID(Long userID){return gameSessionRequestList.getRequestsByUserID(userID);}
 
     public void deleteUserFromSession(User user, UUID gameSessionID){
         try {
