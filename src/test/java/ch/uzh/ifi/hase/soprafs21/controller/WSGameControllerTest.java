@@ -95,6 +95,13 @@ public class WSGameControllerTest {
         return gameReadyDTO;
     }
 
+    private GameCardExchange genearateGameCardExchangeDTO(String token, String code) {
+        GameCardExchange gameCardExchange = new GameCardExchange();
+        gameCardExchange.setCode(code);
+        gameCardExchange.setToken(token);
+        return gameCardExchange;
+    }
+
     @Test
     void gameReadyTest() throws Exception {
         //given
@@ -140,6 +147,64 @@ public class WSGameControllerTest {
 
         //System.out.println("waitingRoomSample");
         session.send("/app/game/" + currentRunningGame.getGameId().toString() + "/ready", gameReadyDTO);
+
+        //verify(currentRunningGame, times(1)).setPlayerToReady(user.getUsername());
+        //verify(gameEngine, times(1)).getRunningGameByID(currentRunningGame.getGameId());
+
+        //WaitingRoomSendOutCurrentUsersDTO response = bq.poll(2, TimeUnit.SECONDS);
+        //assertion
+        //System.out.println(response);
+        //Assertions.assertNotNull(response);
+        //Assertions.assertEquals(testUser.getUsername(), response.getCurrentUsers().get(0).getUsername());
+        //Assertions.assertFalse(response.getCurrentUsers().isEmpty());
+        //session.send("/app/waiting-room/unregister", waitingRoomSample);
+    }
+
+    @Test
+    void cardExchangeTest() throws Exception {
+        //given
+        //BlockingQueue<WaitingRoomSendOutCurrentUsersDTO> bq = new LinkedBlockingDeque<>();
+        //User user = createTestUser("user1", "user1@siddhantsahu.com");
+        User user = new User();
+        user.setUsername("Siddhant2");
+        user.setToken("1234");
+        ArrayList<User> users = new ArrayList<>();
+        users.add(user);
+
+        Game currentRunningGame = new Game(users, websocketService, cardAPIService);
+        //String gameID = currentRunningGame.getGameId();
+
+        given(gameEngine.getRunningGameByID(currentRunningGame.getGameId())).willReturn(currentRunningGame);
+        given(userService.convertTokenToUsername(Mockito.any())).willReturn(user.getUsername());
+        //doNothing().when(Game).setPlayerToReady(user.getUsername());
+        //verify(Game, times(1)).setPlayerToReady(user.getUsername());
+
+        //given(gameEngine.getUserService().updateUserIdentity(Mockito.any(), Mockito.any()));
+        //gameEngine = GameEngine.instance();
+        //gameEngine.getUserService().createUser(user);
+        //User testUser = gameEngine.getUserService().findByUsername(user.getUsername());
+        //WaitingRoomEnterDTO waitingRoomSample = generateWaitingRoomEnterDTO(testUser);
+        //WaitingRoomSendOutCurrentUsersDTO waitingRoomSendOutCurrentUsersDTO = generateWaitingRoomSendOutCurrentUsersDTO();
+
+        GameCardExchange gameCardExchange = genearateGameCardExchangeDTO(user.getToken(), "2D");
+
+        StompSession session = stompClient.connect("ws://localhost:" + port + "/ws", new StompSessionHandlerAdapter() {
+        }).get(1, TimeUnit.SECONDS);
+
+        /*session.subscribe("/topic/waiting-room", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return WaitingRoomSendOutCurrentUsersDTO.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                bq.offer((WaitingRoomSendOutCurrentUsersDTO) payload);
+            }
+        });*/
+
+        //System.out.println("waitingRoomSample");
+        session.send("/app/game/" + currentRunningGame.getGameId().toString() + "/card-exchange", gameCardExchange);
 
         //verify(currentRunningGame, times(1)).setPlayerToReady(user.getUsername());
         //verify(gameEngine, times(1)).getRunningGameByID(currentRunningGame.getGameId());
