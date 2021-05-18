@@ -172,6 +172,24 @@ public class RESTFriendRequestTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void acceptFriendRequest() throws Exception {
+
+        FriendRequestResponsePostDTO friendRequestResponsePostDTO = new FriendRequestResponsePostDTO();
+        friendRequestResponsePostDTO.setSenderName("Siddhant");
+
+        //given(friendRequestService.createFriendRequest(Mockito.any()))
+        doNothing().when(friendRequestService).processResponseFriendRequest(friendRequestResponsePostDTO, RequestStatus.ACCEPTED , "abcdef");
+
+        MockHttpServletRequestBuilder postRequest = post("/friendrequests/accept")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "abcdef")
+                .content(asJsonString(friendRequestResponsePostDTO));
+
+        mockMvc.perform(postRequest)
+                .andExpect(status().isOk());
+    }
+
     /**
      * Helper Method to convert userPostDTO into a JSON string such that the input can be processed
      * Input will look like this: {"name": "Test User", "username": "testUsername"}
