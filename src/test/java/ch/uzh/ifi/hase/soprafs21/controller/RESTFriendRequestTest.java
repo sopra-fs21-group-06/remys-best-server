@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -59,6 +60,30 @@ public class RESTFriendRequestTest {
                 .andExpect(jsonPath("$", hasSize(1)));
 
     }
+
+    @Test
+    public void getAllSentFriendRequestsTests() throws Exception {
+
+        FriendRequest friendRequest = new FriendRequest();
+        friendRequest.setSenderName("Pascal");
+        friendRequest.setReceiverName("Siddhant");
+        friendRequest.setCreationDate("7 Janurary, 2021");
+        friendRequest.setRequestStatus(RequestStatus.PENDING);
+
+        List<FriendRequest> allFriendRequests = Collections.singletonList(friendRequest);
+
+        given(userService.convertTokenToUsername(Mockito.any())).willReturn(friendRequest.getReceiverName());
+        given(friendRequestService.getFriendRequestsBySenderName(Mockito.any())).willReturn(allFriendRequests);
+
+        MockHttpServletRequestBuilder getRequest = get("/friendrequests/sent")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "abcdef");
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isOk());
+
+    }
+
 
     /**
      * Helper Method to convert userPostDTO into a JSON string such that the input can be processed
