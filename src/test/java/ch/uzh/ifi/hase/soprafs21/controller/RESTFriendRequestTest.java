@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs21.constant.RequestStatus;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.FriendRequest;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.FriendDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.outgoing.FriendRequestCreatePostDTO;
 import ch.uzh.ifi.hase.soprafs21.service.FriendRequestService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,7 +25,9 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -132,6 +135,23 @@ public class RESTFriendRequestTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void createFriendRequestTest() throws Exception {
+
+        FriendRequestCreatePostDTO friendRequestCreatePostDTO = new FriendRequestCreatePostDTO();
+        friendRequestCreatePostDTO.setReceiverName("Siddhant");
+
+        //given(friendRequestService.createFriendRequest(Mockito.any()))
+        doNothing().when(friendRequestService).createFriendRequest(friendRequestCreatePostDTO, "abcdef");
+
+        MockHttpServletRequestBuilder postRequest = post("/friendrequests")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "abcdef")
+                .content(asJsonString(friendRequestCreatePostDTO));
+
+        mockMvc.perform(postRequest)
+                .andExpect(status().isCreated());
+    }
 
     /**
      * Helper Method to convert userPostDTO into a JSON string such that the input can be processed
