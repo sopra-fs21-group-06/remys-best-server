@@ -84,6 +84,32 @@ public class RESTFriendRequestTest {
 
     }
 
+    @Test
+    public void getAllReceivedFriendRequestsTests() throws Exception {
+
+        //User user = new User();
+        //user.setUsername("Siddhant");
+        //user.setToken("abcdefg");
+
+        FriendRequest friendRequest = new FriendRequest();
+        friendRequest.setSenderName("Pascal");
+        friendRequest.setReceiverName("Siddhant");
+        friendRequest.setCreationDate("7 Janurary, 2021");
+        friendRequest.setRequestStatus(RequestStatus.PENDING);
+
+        List<FriendRequest> allFriendRequests = Collections.singletonList(friendRequest);
+
+        given(userService.convertTokenToUsername(Mockito.any())).willReturn(friendRequest.getReceiverName());
+        given(friendRequestService.getFriendRequestsBySenderName(Mockito.any())).willReturn(allFriendRequests);
+
+        MockHttpServletRequestBuilder getRequest = get("/friendrequests/received")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "abecef");
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isOk());
+    }
+
 
     /**
      * Helper Method to convert userPostDTO into a JSON string such that the input can be processed
