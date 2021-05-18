@@ -1,7 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.constant.RequestStatus;
+import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.FriendRequest;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.FriendDTO;
 import ch.uzh.ifi.hase.soprafs21.service.FriendRequestService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -105,6 +107,26 @@ public class RESTFriendRequestTest {
         MockHttpServletRequestBuilder getRequest = get("/friendrequests/received")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "abecef");
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getFriendsOfUser() throws Exception {
+
+        FriendDTO friendDTO = new FriendDTO();
+        friendDTO.setUsername("Siddhant");
+        friendDTO.setStatus(UserStatus.Free);
+
+        List<FriendDTO> allFriends = Collections.singletonList(friendDTO);
+
+        given(userService.convertTokenToUsername(Mockito.any())).willReturn("abcd");
+        given(friendRequestService.getFriendsOfUser(Mockito.any())).willReturn(allFriends);
+
+        MockHttpServletRequestBuilder getRequest = get("/myfriends")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "abcd");
 
         mockMvc.perform(getRequest)
                 .andExpect(status().isOk());
