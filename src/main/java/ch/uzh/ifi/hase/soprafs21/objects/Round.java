@@ -38,23 +38,12 @@ public class Round {
     }
 
     public void changeCurrentPlayer() {
-
-        // TODO remove if 4 players
-       if(players.size() == 2){
-            for(Player p: players){
-                if(!currentPlayer.equals(p)){
-                    currentPlayer = p;
-                    break;
-                }
-            }
-        }
         for (Player p: players){
             if(p.getPlayerName().equals(getNextPlayerName())){
                 currentPlayer = p;
                 break;
             }
         }
-
         game.broadcastCurrentTurnAndUpdatedFacts();
     }
 

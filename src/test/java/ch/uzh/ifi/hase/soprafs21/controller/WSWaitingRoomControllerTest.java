@@ -11,18 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.messaging.simp.stomp.StompFrameHandler;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 //@Disabled("Disabled, needs additional work")
@@ -34,7 +28,7 @@ public class WSWaitingRoomControllerTest extends AbstractWSControllerTest {
     private GameEngine gameEngine;
 
     @BeforeEach
-    void resetUserRepository() {
+    void resetUserRepository() throws Exception {
         List<User> usersInWaitingRoom = gameEngine.getWaitingRoom().getUserQueue();
         Iterator<User> iterator = usersInWaitingRoom.iterator();
         while (iterator.hasNext()) {
@@ -63,70 +57,29 @@ public class WSWaitingRoomControllerTest extends AbstractWSControllerTest {
     @Test
     void waitingRoomRegister() throws Exception {
         //given
-        BlockingQueue<WaitingRoomSendOutCurrentUsersDTO> bq = new LinkedBlockingDeque<>();
         User user = createTestUser("user1", "user1@siddhantsahu.com");
-
         gameEngine = GameEngine.instance();
         WaitingRoomEnterDTO waitingRoomSample = generateWaitingRoomEnterDTO(user);
 
-        StompSession session = stompClient.connect("ws://localhost:" + port + "/ws", new StompSessionHandlerAdapter() {
-        }).get(1, TimeUnit.SECONDS);
-
-        session.subscribe("/topic/waiting-room", new StompFrameHandler() {
-            @Override
-            public Type getPayloadType(StompHeaders headers) {
-                return WaitingRoomSendOutCurrentUsersDTO.class;
-            }
-
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                bq.offer((WaitingRoomSendOutCurrentUsersDTO) payload);
-            }
-        });
-
-        //System.out.println("waitingRoomSample");
-        session.send("/app/waiting-room/register", waitingRoomSample);
-
+        BlockingQueue<WaitingRoomSendOutCurrentUsersDTO> bq = setupBlockingQueue(WaitingRoomSendOutCurrentUsersDTO.class, "/topic/waiting-room");
+        stompSession.send("/app/waiting-room/register", waitingRoomSample);
         WaitingRoomSendOutCurrentUsersDTO response = bq.poll(2, TimeUnit.SECONDS);
-        //assertion
-        //System.out.println(response);
+
         Assertions.assertNotNull(response);
         Assertions.assertEquals(user.getUsername(), response.getCurrentUsers().get(0).getUsername());
         Assertions.assertFalse(response.getCurrentUsers().isEmpty());
-        //session.send("/app/waiting-room/unregister", waitingRoomSample);
     }
 
     @Test
     void waitingRoomUnRegister() throws Exception {
-
-        //given
-        BlockingQueue<WaitingRoomSendOutCurrentUsersDTO> bq = new LinkedBlockingDeque<>();
         User user = createTestUser("hahahaha", "hahahah@siddhantsahu.com");
-
         gameEngine = GameEngine.instance();
         WaitingRoomEnterDTO waitingRoomSample = generateWaitingRoomEnterDTO(user);
 
-        StompSession session = stompClient.connect("ws://localhost:" + port + "/ws", new StompSessionHandlerAdapter() {
-        }).get(1, TimeUnit.SECONDS);
-
-        session.subscribe("/topic/waiting-room", new StompFrameHandler() {
-            @Override
-            public Type getPayloadType(StompHeaders headers) {
-                return WaitingRoomSendOutCurrentUsersDTO.class;
-            }
-
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                bq.offer((WaitingRoomSendOutCurrentUsersDTO) payload);
-            }
-        });
-
-        //System.out.println("waitingRoomSample");
-        session.send("/app/waiting-room/unregister", waitingRoomSample);
-
+        BlockingQueue<WaitingRoomSendOutCurrentUsersDTO> bq = setupBlockingQueue(WaitingRoomSendOutCurrentUsersDTO.class, "/topic/waiting-room");
+        stompSession.send("/app/waiting-room/unregister", waitingRoomSample);
         WaitingRoomSendOutCurrentUsersDTO response = bq.poll(2, TimeUnit.SECONDS);
-        //assertion
-        System.out.println(response);
+
         Assertions.assertNotNull(response);
         Assertions.assertTrue(response.getCurrentUsers().isEmpty());
     }
