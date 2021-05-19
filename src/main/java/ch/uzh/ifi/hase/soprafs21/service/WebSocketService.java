@@ -177,8 +177,8 @@ public class WebSocketService {
                 RequestCountDownDTO requestCountDownDTO = DogUtils.generateRequestCountDownDTO(counter[0], invitedUser.getUsername());
                 --counter[0];
 
-                if(counter[0] < 0 || !gameSession.userInInvitedUsers(invitedUser.getUsername())){
-                    if(gameSession.userInInvitedUsers(invitedUser.getUsername())){
+                if(counter[0] < 0 || !gameSession.isInvitedUserInHere(invitedUser.getUsername())){
+                    if(gameSession.isInvitedUserInHere(invitedUser.getUsername())){
                         gameSession.deleteInvitedUser(invitedUser);
                     }
                     broadcastGameSessionInvitedUserList(gameSession.getID(), gameSession.getInvitedUsers());
