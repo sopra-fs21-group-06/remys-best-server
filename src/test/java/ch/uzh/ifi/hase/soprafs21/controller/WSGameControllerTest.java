@@ -4,55 +4,30 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
-import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.ExecutePlayCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameCardExchange;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameReadyDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.WaitingRoomEnterDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomSendOutCurrentUsersDTO;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.simp.stomp.StompFrameHandler;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
-import org.springframework.web.socket.sockjs.client.SockJsClient;
-import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class WSGameControllerTest {
+public class WSGameControllerTest extends AbstractWSControllerTest {
 
     @Value("${local.server.port}")
     public int port;
-
-    public WebSocketStompClient stompClient;
 
     @Autowired
     @MockBean
@@ -66,28 +41,6 @@ public class WSGameControllerTest {
 
     @MockBean
     Game game;
-
-    @MockBean
-    UserService userService;
-
-    @BeforeEach
-    void setup() {
-        stompClient = new WebSocketStompClient(new SockJsClient(
-                Collections.singletonList(new WebSocketTransport(new StandardWebSocketClient()))));
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-    }
-
-/*    @AfterEach
-    void resetUserRepository() {
-        gameEngine.getUserService().getUserRepository().deleteAll();
-
-        List<User> usersInWaitingRoom = gameEngine.getWaitingRoom().getUserQueue();
-        Iterator<User> iterator = usersInWaitingRoom.iterator();
-        while (iterator.hasNext()) {
-            iterator.next();
-            iterator.remove();
-        }
-    }*/
 
     private GameReadyDTO generateGameReadyDTO(String token) {
         GameReadyDTO gameReadyDTO = new GameReadyDTO();
@@ -131,7 +84,7 @@ public class WSGameControllerTest {
         //String gameID = currentRunningGame.getGameId();
 
         given(gameEngine.getRunningGameByID(currentRunningGame.getGameId())).willReturn(currentRunningGame);
-        given(userService.convertTokenToUsername(Mockito.any())).willReturn(user.getUsername());
+        //given(userService.convertTokenToUsername(Mockito.any())).willReturn(user.getUsername());
         //doNothing().when(Game).setPlayerToReady(user.getUsername());
         //verify(Game, times(1)).setPlayerToReady(user.getUsername());
 
@@ -144,8 +97,9 @@ public class WSGameControllerTest {
 
         GameReadyDTO gameReadyDTO = generateGameReadyDTO(user.getToken());
 
+        /* TODO compare setup with registerPlayerSuccess in WS WSChoosePlaceControllerTest
         StompSession session = stompClient.connect("ws://localhost:" + port + "/ws", new StompSessionHandlerAdapter() {
-        }).get(1, TimeUnit.SECONDS);
+        }).get(1, TimeUnit.SECONDS);*/
 
         /*session.subscribe("/topic/waiting-room", new StompFrameHandler() {
             @Override
@@ -160,7 +114,8 @@ public class WSGameControllerTest {
         });*/
 
         //System.out.println("waitingRoomSample");
-        session.send("/app/game/" + currentRunningGame.getGameId().toString() + "/ready", gameReadyDTO);
+
+        //session.send("/app/game/" + currentRunningGame.getGameId().toString() + "/ready", gameReadyDTO);
 
         //verify(currentRunningGame, times(1)).setPlayerToReady(user.getUsername());
         //verify(gameEngine, times(1)).getRunningGameByID(currentRunningGame.getGameId());
@@ -189,7 +144,7 @@ public class WSGameControllerTest {
         //String gameID = currentRunningGame.getGameId();
 
         given(gameEngine.getRunningGameByID(currentRunningGame.getGameId())).willReturn(currentRunningGame);
-        given(userService.convertTokenToUsername(Mockito.any())).willReturn(user.getUsername());
+        //given(userService.convertTokenToUsername(Mockito.any())).willReturn(user.getUsername());
         //doNothing().when(Game).setPlayerToReady(user.getUsername());
         //verify(Game, times(1)).setPlayerToReady(user.getUsername());
 
@@ -202,8 +157,9 @@ public class WSGameControllerTest {
 
         GameCardExchange gameCardExchange = genearateGameCardExchangeDTO(user.getToken(), "2D");
 
+        /* TODO compare setup with registerPlayerSuccess in WS WSChoosePlaceControllerTest
         StompSession session = stompClient.connect("ws://localhost:" + port + "/ws", new StompSessionHandlerAdapter() {
-        }).get(1, TimeUnit.SECONDS);
+        }).get(1, TimeUnit.SECONDS);*/
 
         /*session.subscribe("/topic/waiting-room", new StompFrameHandler() {
             @Override
@@ -218,7 +174,7 @@ public class WSGameControllerTest {
         });*/
 
         //System.out.println("waitingRoomSample");
-        session.send("/app/game/" + currentRunningGame.getGameId().toString() + "/card-exchange", gameCardExchange);
+        //session.send("/app/game/" + currentRunningGame.getGameId().toString() + "/card-exchange", gameCardExchange);
 
         //verify(currentRunningGame, times(1)).setPlayerToReady(user.getUsername());
         //verify(gameEngine, times(1)).getRunningGameByID(currentRunningGame.getGameId());
@@ -260,8 +216,9 @@ public class WSGameControllerTest {
 
         ExecutePlayCardDTO executePlayCardDTO = generateExecutePlayCardDTO();
 
+        /* /* TODO compare setup with registerPlayerSuccess in WS WSChoosePlaceControllerTest
         StompSession session = stompClient.connect("ws://localhost:" + port + "/ws", new StompSessionHandlerAdapter() {
-        }).get(1, TimeUnit.SECONDS);
+        }).get(1, TimeUnit.SECONDS); */
 
         /*session.subscribe("/topic/waiting-room", new StompFrameHandler() {
             @Override
@@ -276,7 +233,7 @@ public class WSGameControllerTest {
         });*/
 
         //System.out.println("waitingRoomSample");
-        session.send("/app/game/" + currentRunningGame.getGameId().toString() + "/play", executePlayCardDTO);
+        //session.send("/app/game/" + currentRunningGame.getGameId().toString() + "/play", executePlayCardDTO);
 
         //verify(currentRunningGame, times(1)).setPlayerToReady(user.getUsername());
         //verify(gameEngine, times(1)).getRunningGameByID(currentRunningGame.getGameId());
