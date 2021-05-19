@@ -19,55 +19,49 @@ public class Card {
 
     private void initMoves(String code) throws Exception {
         String value = code.substring(0, 1);
-        if ("2".equals(value)) {
-            moves.add(new TwoForwards());
-        } else if ("3".equals(value)){
-            moves.add(new ThreeForwards());
-        } else if ("4".equals(value)){
-            moves.add(new FourForwards());
-            moves.add(new FourBackwards());
-        } else if ("5".equals(value)){
-            moves.add(new FiveForwards());
-        } else if ("6".equals(value)) {
-            moves.add(new SixForwards());
-        } else if ("7".equals(value)){
-            moves.add(new SplitSeven());
-        } else if ("8".equals(value)){
-            moves.add(new EightForwards());
-        } else if ("9".equals(value)){
-            moves.add(new NineForwards());
-        } else if ("0".equals(value)){
-            moves.add(new TenForwards());
-        } else if ("J".equals(value)){
-            moves.add(new Exchange());
-        } else if ("Q".equals(value)){
-            moves.add(new TwelveForwards());
-        } else if ("K".equals(value)){
-            moves.add(new ThirteenForwards());
-            moves.add(new GoToStart());
-        } else if ("A".equals(value)){
-            moves.add(new OneForwards());
-            moves.add(new ElevenForwards());
-            moves.add(new GoToStart());
-        } else if ("X".equals(value)){
-            moves.add(new OneForwards());
-            moves.add(new TwoForwards());
-            moves.add(new ThreeForwards());
-            moves.add(new FourForwards());
-            moves.add(new FourBackwards());
-            moves.add(new FiveForwards());
-            moves.add(new SixForwards());
-            moves.add(new SplitSeven());
-            moves.add(new EightForwards());
-            moves.add(new NineForwards());
-            moves.add(new TenForwards());
-            moves.add(new ElevenForwards());
-            moves.add(new TwelveForwards());
-            moves.add(new ThirteenForwards());
-            moves.add(new Exchange());
-            moves.add(new GoToStart());
-        } else {
-            throw new Exception(String.format("Could not init moves for card value %s", value));
+        switch (value) {
+            case "2" -> moves.add(new TwoForwards());
+            case "3" -> moves.add(new ThreeForwards());
+            case "4" -> {
+                moves.add(new FourForwards());
+                moves.add(new FourBackwards());
+            }
+            case "5" -> moves.add(new FiveForwards());
+            case "6" -> moves.add(new SixForwards());
+            case "7" -> moves.add(new SplitSeven());
+            case "8" -> moves.add(new EightForwards());
+            case "9" -> moves.add(new NineForwards());
+            case "0" -> moves.add(new TenForwards());
+            case "J" -> moves.add(new Exchange());
+            case "Q" -> moves.add(new TwelveForwards());
+            case "K" -> {
+                moves.add(new ThirteenForwards());
+                moves.add(new GoToStart());
+            }
+            case "A" -> {
+                moves.add(new OneForwards());
+                moves.add(new ElevenForwards());
+                moves.add(new GoToStart());
+            }
+            case "X" -> {
+                moves.add(new OneForwards());
+                moves.add(new TwoForwards());
+                moves.add(new ThreeForwards());
+                moves.add(new FourForwards());
+                moves.add(new FourBackwards());
+                moves.add(new FiveForwards());
+                moves.add(new SixForwards());
+                moves.add(new SplitSeven());
+                moves.add(new EightForwards());
+                moves.add(new NineForwards());
+                moves.add(new TenForwards());
+                moves.add(new ElevenForwards());
+                moves.add(new TwelveForwards());
+                moves.add(new ThirteenForwards());
+                moves.add(new Exchange());
+                moves.add(new GoToStart());
+            }
+            default -> throw new Exception(String.format("Could not init moves for card value %s", value));
         }
     }
 
@@ -88,45 +82,29 @@ public class Card {
 
         String suit = cardCode.substring(1, 2);
         String suitName = "";
-        if ("H".equals(suit)) {
-            suitName += "Hearts";
-        } else if ("D".equals(suit)){
-            suitName += "Diamonds";
-        } else if ("C".equals(suit)){
-            suitName += "Clubs";
-        } else {
-            suitName += "Spades";
+        switch (suit) {
+            case "H" -> suitName += "Hearts";
+            case "D" -> suitName += "Diamonds";
+            case "C" -> suitName += "Clubs";
+            default -> suitName += "Spades";
         }
 
         String cardName = "";
-        if ("2".equals(value)) {
-            cardName += "Two";
-        } else if ("3".equals(value)){
-            cardName += "Three";
-        } else if ("4".equals(value)){
-            cardName += "Four";
-        } else if ("5".equals(value)){
-            cardName += "Five";
-        } else if ("6".equals(value)) {
-            cardName += "Six";
-        } else if ("7".equals(value)){
-            cardName += "Seven";
-        } else if ("8".equals(value)){
-            cardName += "Eight";
-        } else if ("9".equals(value)){
-            cardName += "Nine";
-        } else if ("0".equals(value)){
-            cardName += "Ten";
-        } else if ("J".equals(value)){
-            cardName += "Jack";
-        } else if ("Q".equals(value)){
-            cardName += "Queen";
-        } else if ("K".equals(value)){
-            cardName += "King";
-        } else if ("A".equals(value)){
-            cardName += "Ace";
-        } else {
-            cardName += "Card";
+        switch (value) {
+            case "2" -> cardName += "Two";
+            case "3" -> cardName += "Three";
+            case "4" -> cardName += "Four";
+            case "5" -> cardName += "Five";
+            case "6" -> cardName += "Six";
+            case "7" -> cardName += "Seven";
+            case "8" -> cardName += "Eight";
+            case "9" -> cardName += "Nine";
+            case "0" -> cardName += "Ten";
+            case "J" -> cardName += "Jack";
+            case "Q" -> cardName += "Queen";
+            case "K" -> cardName += "King";
+            case "A" -> cardName += "Ace";
+            default -> cardName += "Card";
         }
 
         return suitName + " " + cardName;
