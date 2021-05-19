@@ -67,7 +67,7 @@ public class WSGameSessionController {
         User userLeaver = userService.getUserRepository().findByToken(gameSessionLeaveDTO.getToken());
         if(gameEngine.userIsHost(userLeaver.getUsername())){
             webSocketService.broadcastGameSessionEndMessage(gamesessionId.toString(), userLeaver.getUsername());
-            for(User u: currentGameSession.getUserList()){
+            for(User u: currentGameSession.getAcceptedUsers()){
                 userService.updateStatus(u.getToken(), UserStatus.Free);
             }
             gameEngine.deleteGameSession(gamesessionId);
@@ -75,7 +75,7 @@ public class WSGameSessionController {
         else{
             userService.updateStatus(userLeaver.getToken(), UserStatus.Free);
             if (currentGameSession != null) {
-                currentGameSession.deleteUser(userLeaver);
+                currentGameSession.deleteAcceptedUser(userLeaver);
             }
             webSocketService.broadcastUsersInGameSession(gamesessionId);
         }

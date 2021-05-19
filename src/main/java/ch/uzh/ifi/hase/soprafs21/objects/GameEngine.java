@@ -112,11 +112,11 @@ public class GameEngine {
     public Game createGameFromGameSession(GameSession gameSession){
         try {
             if (gameSessionList.contains(gameSession)) {
-                if (gameSession.getUserList().size() == 4) {
+                if (gameSession.getAcceptedUsers().size() == 4) {
                     gameSessionList.remove(gameSession);
-                    Game game = new Game(gameSession.getUserList(), webSocketService, new CardAPIService());
+                    Game game = new Game(gameSession.getAcceptedUsers(), webSocketService, new CardAPIService());
 
-                    for(User user:gameSession.getUserList()) {
+                    for(User user:gameSession.getAcceptedUsers()) {
                         webSocketService.sendGameAssignmentMessageToGameSession(user.getSessionIdentity(),game.getPlayers(),game.getGameId(),gameSession.getID());
                     }
                     gameSessionList.remove(gameSession);
@@ -131,7 +131,7 @@ public class GameEngine {
         }
     };
     public boolean userInGameSession(User user, UUID gameSessionId){
-        return Objects.requireNonNull(findGameSessionByID(gameSessionId)).userInHere(user);
+        return Objects.requireNonNull(findGameSessionByID(gameSessionId)).isAcceptedUserInHere(user);
     }
 
     private boolean gameSessionExists(GameSession gameSession){
@@ -179,16 +179,16 @@ public class GameEngine {
     public void addUserToSession(User user,UUID gameSessionID){
         try {
             gameEngine.findGameSessionByID(gameSessionID).deleteInvitedUser(user);
-            if(gameEngine.findGameSessionByID(gameSessionID).getUserList().size()==PLAYER_AMOUNT){
+            if(gameEngine.findGameSessionByID(gameSessionID).getAcceptedUsers().size()==PLAYER_AMOUNT){
                 gameEngine.createGameFromGameSession(findGameSessionByID(gameSessionID));
 
             }else {
                 for (GameSession gameSession : gameSessionList) {
                     if (gameSession.getID().equals(gameSessionID)) {
-                        gameSession.addUser(user);
+                        gameSession.addAcceptedUser(user);
                     }
                 }
-                if(gameEngine.findGameSessionByID(gameSessionID).getUserList().size()== PLAYER_AMOUNT) {
+                if(gameEngine.findGameSessionByID(gameSessionID).getAcceptedUsers().size()== PLAYER_AMOUNT) {
                     gameEngine.createGameFromGameSession(findGameSessionByID(gameSessionID));
                 }
             }
@@ -199,7 +199,7 @@ public class GameEngine {
 
     public void deleteUserFromSession(User user, UUID gameSessionID){
         try {
-            Objects.requireNonNull(findGameSessionByID(gameSessionID)).deleteUser(user);
+            Objects.requireNonNull(findGameSessionByID(gameSessionID)).deleteAcceptedUser(user);
         }catch(NullPointerException e){
             System.out.println("Something went wrong in deleteUserFromSession()");
         }
@@ -231,7 +231,7 @@ public class GameEngine {
     /** check needs to happen if user available before calling method **/
     public void newGameSession(User host) {
         if(host.getStatus().equals(UserStatus.Free)){
-            GameSession gameSession = new GameSession(host);
+            GameSession gameSession = new GameSession(host, userService);
             try {
                 gameSessionList.add(gameSession);
             }catch(NullPointerException e){
@@ -295,7 +295,7 @@ public class GameEngine {
 
     public void createGameFromGameSessionAndFillUp(GameSession gameSession){
 
-        int numberOfUsersToInvite = PLAYER_AMOUNT - gameSession.getUserList().size();
+        int numberOfUsersToInvite = PLAYER_AMOUNT - gameSession.getAcceptedUsers().size();
 
         if(!gameSession.getInvitedUsers().isEmpty()){
             String msg =  "Cant use FillUp while there are still pending gameRequests";
@@ -305,9 +305,9 @@ public class GameEngine {
 
             try {
                 List<User> usersFromWaitingRoomToFillup = waitingRoom.getXNumberOfUsers(numberOfUsersToInvite);
-                List<User> usersInGameSession = gameSession.getUserList();
+                List<User> usersInGameSession = gameSession.getAcceptedUsers();
 
-                gameSession.getUserList().addAll(usersFromWaitingRoomToFillup);
+                gameSession.getAcceptedUsers().addAll(usersFromWaitingRoomToFillup);
                 Game createdGame = createGameFromGameSession(gameSession);
 
                 for (User userForFillup : usersFromWaitingRoomToFillup) {
@@ -336,7 +336,7 @@ public class GameEngine {
 
     public UUID findGameSessionIdByUsername(String username) {
         for(GameSession gameSession: gameSessionList) {
-            for (User user : gameSession.getUserList()) {
+            for (User user : gameSession.getAcceptedUsers()) {
                 if (user.getUsername().equals(username)) {
                     return gameSession.getID();
                 }
@@ -347,7 +347,7 @@ public class GameEngine {
 
     public List<User> getUsersByGameSessionId(UUID gameSessionId){
         try {
-            return Objects.requireNonNull(findGameSessionByID(gameSessionId)).getUserList();
+            return Objects.requireNonNull(findGameSessionByID(gameSessionId)).getAcceptedUsers();
         }catch(NullPointerException e){
             return null;
         }
