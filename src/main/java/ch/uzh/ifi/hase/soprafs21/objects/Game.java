@@ -174,7 +174,7 @@ public class Game {
         if(areAllPlayersReady) {
             computeAndSetTeamMates();
             gameService.initiateRound(this);
-            webSocketService.sendExchangeFactsMessage(getCurrentRound().getCurrentPlayer().getPlayerName(), gameId);
+            webSocketService.broadcastExchangeFactsMessage(getCurrentRound().getCurrentPlayer().getPlayerName(), gameId);
         }
     }
 
