@@ -119,4 +119,14 @@ public class Player {
         }
         return marblesOnFieldAndFinished;
     }
+    public int getNrMarbleAtHome(){
+        List<Marble> marblesOnFieldAndFinished = new ArrayList<>();
+        for(Marble m: this.getMarbleList()){
+            if(m.getHome()){
+                marblesOnFieldAndFinished.add(m);
+            }
+        }
+        return marblesOnFieldAndFinished.size();
+    }
+
 }

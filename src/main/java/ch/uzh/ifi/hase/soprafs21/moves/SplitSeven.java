@@ -69,7 +69,7 @@ public class SplitSeven implements ISplitMove {
                 if(f.getFieldStatus().equals(FieldStatus.BLOCKED)){
                     condition = FALSE;
                 }
-                if (condition && countSteps < countToRemainSeven){
+                if (condition && countSteps < countToRemainSeven && marbleCurrentField.getFieldValue() < f.getFieldValue()){
                     possibleTargetFieldKeys.add(f.getFieldKey());
                     countSteps++;
                 } else {
@@ -86,8 +86,17 @@ public class SplitSeven implements ISplitMove {
         int countToRemainSeven = game.getGameService().getRemainingSevenMoves(game, sevenMoves);
         List<Marble> possibleMarbles = new ArrayList<>();
         Player p = game.getCurrentRound().getCurrentPlayer();
+        Marble marbleToDelete = null;
         int countPossibleStepsAllMarbles = 0;
         for (Marble m : p.getMarblesOnFieldAndNotFinished()) {
+            for (MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey : sevenMoves) {
+                if(marbleIdAndTargetFieldKey.getMarbleId() == m.getMarbleId()){
+                    Field marbleCurrentField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
+                    if(game.getPlayingBoard().finishFieldIsFinishMoveField(marbleCurrentField) && game.getPlayingBoard().nrStepsToNextFreeFinishSpot(marbleCurrentField) == 0){
+                        marbleToDelete = m;
+                    }
+                }
+            }
             if (m.getCurrentField() instanceof FinishField) {
                 countPossibleStepsAllMarbles += game.getPlayingBoard().nrStepsToNextFreeFinishSpot(m.getCurrentField());
             }
@@ -98,6 +107,10 @@ public class SplitSeven implements ISplitMove {
         if (countPossibleStepsAllMarbles >= countToRemainSeven) {
             possibleMarbles = p.getMarblesOnFieldAndNotFinished();
         }
+        if(possibleMarbles.contains(marbleToDelete) && countToRemainSeven != 7 && countToRemainSeven != 0){
+            possibleMarbles.remove(marbleToDelete);
+        }
+
         return possibleMarbles;
     }
 

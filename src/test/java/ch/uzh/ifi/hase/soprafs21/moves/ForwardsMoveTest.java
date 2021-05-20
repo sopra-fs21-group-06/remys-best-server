@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
+import ch.uzh.ifi.hase.soprafs21.objects.Field;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.Marble;
 import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
@@ -59,4 +60,6 @@ public class ForwardsMoveTest extends AbstractMoveTest {
         assertEquals(executedMoves.get(0).getMarbleId(), marble.getMarbleId());
         assertEquals(executedMoves.get(0).getFieldKey(), targetFieldKey);
     }
+
+
 }

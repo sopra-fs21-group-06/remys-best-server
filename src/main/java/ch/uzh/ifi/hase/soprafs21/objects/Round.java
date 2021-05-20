@@ -1,12 +1,17 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
+import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Boolean.TRUE;
 
 public class Round {
     private final CardAPIService cardAPIService;
@@ -18,6 +23,8 @@ public class Round {
     private final WebSocketService webSocketService;
     private final UserService userService;
 
+
+    Logger log = LoggerFactory.getLogger(Round.class);
     public Round(Game game, WebSocketService webSocketService, UserService userService, CardAPIService cardAPIService){
         this.game = game;
         this.players = game.getPlayers();
@@ -38,24 +45,16 @@ public class Round {
     }
 
     public void changeCurrentPlayer() {
-
-        // TODO remove if 4 players
-       if(players.size() == 2){
-            for(Player p: players){
-                if(!currentPlayer.equals(p)){
-                    currentPlayer = p;
+        for (Player p: players){
+            if(p.getColor().equals(DogUtils.getNextColor(this.currentPlayer.getColor()))) {
+                currentPlayer = p;
+                if (!p.getHand().getHandDeck().isEmpty()) {
                     break;
                 }
             }
         }
-        for (Player p: players){
-            if(p.getPlayerName().equals(getNextPlayerName())){
-                currentPlayer = p;
-                break;
-            }
-        }
-
         game.broadcastCurrentTurnAndUpdatedFacts();
+
     }
 
     public String getNextPlayerName() {

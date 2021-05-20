@@ -123,17 +123,7 @@ public class PlayingBoard {
             return (!(yellowHome.isEmpty()));
         }
     }
-    public int getNumberMarblesAtHome(Color color){
-        if(color == Color.GREEN){
-            return greenHome.size();
-        } else if (color == Color.RED){
-            return redHome.size();
-        } else if (color == Color.BLUE){
-            return blueHome.size();
-        } else {
-            return yellowHome.size();
-        }
-    }
+
 
     public Marble getFirstHomeMarble(Color color, boolean removeFromStack){
         Marble m = null;
@@ -354,7 +344,7 @@ public class PlayingBoard {
         if(marble.getColor().equals(field.getColor()) && !field.getFieldStatus().equals(FieldStatus.BLOCKED) && !getNextStartFieldIsBlocked(field.getColor())){
             if(distanceToStart + distanceFreeFinish >= valueCard && distanceToStart < valueCard){
                 String s = String.valueOf(marble.getMarbleId());
-                log.info("Marlbe " + s +" can finish");
+                log.info("Marlbe " + s +" can move intofinish");
                 marbleCanFinish = TRUE;
             }
         }
