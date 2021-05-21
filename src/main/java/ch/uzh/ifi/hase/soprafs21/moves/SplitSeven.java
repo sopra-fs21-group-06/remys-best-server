@@ -31,8 +31,8 @@ public class SplitSeven implements ISplitMove {
         List<String> possibleTargetFieldKeys = new ArrayList<>();
         Field marbleCurrentField = marbleToMove.getCurrentField();
         for (MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey : sevenMoves) {
-            Marble marble = game.getGameService().getMarbleByMarbleId(game, marbleIdAndTargetFieldKey.getMarbleId());
-            if (marbleIdAndTargetFieldKey.getMarbleId() == marbleToMove.getMarbleId() && countToRemainSeven!= 7){
+            Marble marble = game.getGameService().getMarbleByMarbleIdForSeven(game, marbleIdAndTargetFieldKey.getMarbleId());
+            if (marbleIdAndTargetFieldKey.getMarbleId() == marbleToMove.getMarbleId()){
                 marbleCurrentField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
             }
             if (marble.getCurrentField().getFieldStatus().equals(FieldStatus.BLOCKED)){
@@ -58,7 +58,7 @@ public class SplitSeven implements ISplitMove {
                 }
             }
         }
-        if(marbleCurrentField instanceof FinishField || game.getPlayingBoard().marbleCanGetToFinishSpot(marbleToMove, marbleCurrentField, countToRemainSeven)){
+        if(marbleCurrentField instanceof FinishField || game.getPlayingBoard().marbleCanGetToFinishSpot(marbleToMove, marbleCurrentField, countToRemainSeven) ||(marbleCurrentField instanceof StartField && !(marbleCurrentField.getFieldStatus().equals(FieldStatus.BLOCKED)))){
             List<Field> finishFields= game.getPlayingBoard().getFinishFields(marbleToMove.getColor());
             boolean condition = TRUE;
             int countSteps = 1;
@@ -66,10 +66,10 @@ public class SplitSeven implements ISplitMove {
                 countSteps = 16 - marbleCurrentField.getFieldValue();
             }
             for (Field f: finishFields){
-                if(f.getFieldStatus().equals(FieldStatus.BLOCKED)){
+                if(f.getFieldStatus().equals(FieldStatus.OCCUPIED)){
                     condition = FALSE;
                 }
-                if (condition && countSteps < countToRemainSeven){
+                if (condition && countSteps < countToRemainSeven && marbleCurrentField.getFieldValue() < f.getFieldValue()){
                     possibleTargetFieldKeys.add(f.getFieldKey());
                     countSteps++;
                 } else {
@@ -80,14 +80,100 @@ public class SplitSeven implements ISplitMove {
         game.getPlayingBoard().getRightColorStartField(marbleToMove.getColor()).setFieldStatus(FieldStatus.BLOCKED);
         return possibleTargetFieldKeys;
     }
+    public List<Marble> getPlayableMarbles(Game game, GameService gameService, ArrayList<MarbleIdAndTargetFieldKey> sevenMoves){
+        List<Marble> possibleMarbles = new ArrayList<>();
+        //Case Player can make the Move by Himself
+        if(!getMarblesWhoCanMakeSevenStepsInTotal(game, gameService, sevenMoves, game.getCurrentRound().getCurrentPlayer()).isEmpty()){
+            return getMarblesWhoCanMakeSevenStepsInTotal(game, gameService, sevenMoves, game.getCurrentRound().getCurrentPlayer());
+        } else if (game.getCurrentRound().getCurrentPlayer().canFinishWithSeven(game)){
+            List<Marble> possibleMarbleTeamMate = getMarblesWhoCanMakeSevenStepsInTotal(game,gameService,sevenMoves,game.getCurrentRound().getCurrentPlayer().getTeamMate());
+            if (possibleMarbleTeamMate.isEmpty()) {
+                log.info("No playerMarbles");
+                return possibleMarbles;
+            } else {
+                List<Marble> marbleAreFinished = getMarblesWhoAreFinishedInSevenMoves(sevenMoves, game.getCurrentRound().getCurrentPlayer(), game);
+                if(nrOfMarblesFinishedWithInbetweenSteps(game.getCurrentRound().getCurrentPlayer(), marbleAreFinished) == 4){
+                    return possibleMarbleTeamMate;
+                } else {
+                    List<Marble> marbleToDelete = getMarblesToDelete(sevenMoves, game.getCurrentRound().getCurrentPlayer(), game);
+                    possibleMarbles = game.getCurrentRound().getCurrentPlayer().getMarblesOnFieldAndNotFinished();
+                    int countToRemainSeven = game.getGameService().getRemainingSevenMoves(game, sevenMoves);
+                    for (Marble marbleTodel : marbleToDelete) {
+                        if (possibleMarbles.contains(marbleTodel) && (countToRemainSeven != 7 || countToRemainSeven != 0)) {
+                            possibleMarbles.remove(marbleTodel);
+                        }
+                    }
+                    return possibleMarbles;
+                }
+            }
+        }
+        return possibleMarbles;
+    }
+    private List<Marble> getMarblesToDelete(ArrayList<MarbleIdAndTargetFieldKey> sevenMoves,Player p, Game game) {
+        List<Marble> marbleToDelete = new ArrayList<>();
+        for (Marble m : p.getMarblesOnFieldAndNotFinished()) {
+            for (MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey : sevenMoves) {
+                if (marbleIdAndTargetFieldKey.getMarbleId() == m.getMarbleId()) {
+                    Field marbleCurrentField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
+                    if (game.getPlayingBoard().finishFieldIsFinishMoveField(marbleCurrentField) && game.getPlayingBoard().nrStepsToNextFreeFinishSpot(marbleCurrentField) == 0) {
+                        marbleToDelete.add(m);
+                    }
+                    if (game.getPlayingBoard().nrStepsToNextStartFieldBlock(marbleCurrentField) == 0) {
+                        marbleToDelete.add(m);
+                    }
+                }
+            }
+        }
+        return marbleToDelete;
+    }
+    private List<Marble> getMarblesWhoAreFinishedInSevenMoves(ArrayList<MarbleIdAndTargetFieldKey> sevenMoves,Player p, Game game){
+        ArrayList<Marble> marbleAreFinished = new ArrayList<>();
+        for (Marble m : p.getMarblesOnFieldAndNotFinished()) {
+            for (MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey : sevenMoves) {
+                if(marbleIdAndTargetFieldKey.getMarbleId() == m.getMarbleId()){
+                    Field marbleCurrentField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
+                    if(game.getPlayingBoard().finishFieldIsFinishMoveField(marbleCurrentField) && game.getPlayingBoard().nrStepsToNextFreeFinishSpot(marbleCurrentField) == 0) {
+                        marbleAreFinished.add(m);
+                    }
+                }
+            }
+        }
+        return marbleAreFinished;
+    }
+     private int nrOfMarblesFinishedWithInbetweenSteps(Player p, List<Marble> marbleAreFinished){
+        int countMarbleFinished = 0;
+        for(Marble m: p.getMarbleList()) {
+            if(m.getFinish() || marbleAreFinished.contains(m)){
+                countMarbleFinished++;
+            }
+        }
+        log.info("nrOfMarblesFinishedWithInbetweenSteps " + String.valueOf(countMarbleFinished));
+        return countMarbleFinished;
+    }
 
-    @Override
-    public List<Marble> getPlayableMarbles(Game game, GameService gameService, ArrayList<MarbleIdAndTargetFieldKey> sevenMoves) {
+
+
+    private List<Marble> getMarblesWhoCanMakeSevenStepsInTotal(Game game, GameService gameService, ArrayList<MarbleIdAndTargetFieldKey> sevenMoves, Player player) {
         int countToRemainSeven = game.getGameService().getRemainingSevenMoves(game, sevenMoves);
         List<Marble> possibleMarbles = new ArrayList<>();
-        Player p = game.getCurrentRound().getCurrentPlayer();
+        Player p = player;
+        List<Marble> marbleToDelete = new ArrayList<>();
+        List<Marble> marbleAreFinished = new ArrayList<>();
         int countPossibleStepsAllMarbles = 0;
         for (Marble m : p.getMarblesOnFieldAndNotFinished()) {
+            for (MarbleIdAndTargetFieldKey marbleIdAndTargetFieldKey : sevenMoves) {
+                if (marbleIdAndTargetFieldKey.getMarbleId() == m.getMarbleId()) {
+                    Field marbleCurrentField = game.getPlayingBoard().getFieldByFieldKey(marbleIdAndTargetFieldKey.getFieldKey());
+                    if (game.getPlayingBoard().finishFieldIsFinishMoveField(marbleCurrentField) && game.getPlayingBoard().nrStepsToNextFreeFinishSpot(marbleCurrentField) == 0) {
+                        marbleToDelete.add(m);
+                        marbleAreFinished.add(m);
+
+                    }
+                    if (game.getPlayingBoard().nrStepsToNextStartFieldBlock(marbleCurrentField) == 0) {
+                        marbleToDelete.add(m);
+                    }
+                }
+            }
             if (m.getCurrentField() instanceof FinishField) {
                 countPossibleStepsAllMarbles += game.getPlayingBoard().nrStepsToNextFreeFinishSpot(m.getCurrentField());
             }
@@ -95,12 +181,17 @@ public class SplitSeven implements ISplitMove {
                 countPossibleStepsAllMarbles += game.getPlayingBoard().nrStepsToNextStartFieldBlock(m.getCurrentField());
             }
         }
+        //Case player can make move only with his marbles
         if (countPossibleStepsAllMarbles >= countToRemainSeven) {
             possibleMarbles = p.getMarblesOnFieldAndNotFinished();
+            for (Marble marbleTodel : marbleToDelete) {
+                if (possibleMarbles.contains(marbleTodel) && (countToRemainSeven != 7 || countToRemainSeven != 0)) {
+                    possibleMarbles.remove(marbleTodel);
+                }
+            }
         }
         return possibleMarbles;
     }
-
     @Override
     public ArrayList<MarbleIdAndTargetFieldKey> executeMove(Game game, ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKey) {
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
@@ -110,7 +201,7 @@ public class SplitSeven implements ISplitMove {
             return marbleIdAndTargetFieldKeys;
         }
         for(MarbleIdAndTargetFieldKey marbleIdandTargetKey : marbleIdAndTargetFieldKey) {
-            Marble marble = game.getGameService().getMarbleByMarbleId(game, marbleIdandTargetKey.getMarbleId());
+            Marble marble = game.getGameService().getMarbleByMarbleIdForSeven(game, marbleIdandTargetKey.getMarbleId());
             Field targetField = game.getPlayingBoard().getFieldByFieldKey(marbleIdandTargetKey.getFieldKey());
             Field startField = marble.getCurrentField();
             marbleIdAndTargetFieldKeysEating.addAll(eatSeven(targetField, startField, game));
