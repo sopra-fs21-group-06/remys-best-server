@@ -16,14 +16,15 @@ public class GameSession {
     Logger log = LoggerFactory.getLogger(WSGameController.class);
 
     private final UUID gameSessionId = UUID.randomUUID();
-    private final UserService userService = GameEngine.instance().getUserService();
+    private final UserService userService;
     private final String hostName;
-    private List<User> userList= new ArrayList<>();
+    private final List<User> acceptedUsers = new ArrayList<>();
     private final List<User> invitedUsers = new ArrayList<>();
 
-    public GameSession(User host){
+    public GameSession(User host, UserService userService){
         this.hostName = host.getUsername();
-        userList.add(host);
+        acceptedUsers.add(host);
+        this.userService = userService;
     }
 
     public String getHostName() {
@@ -32,13 +33,13 @@ public class GameSession {
 
     public UUID getID(){return gameSessionId;}
 
-    public List<User> getUserList(){return userList;}
+    public List<User> getAcceptedUsers(){return acceptedUsers;}
 
     public List<User> getInvitedUsers() {
         return invitedUsers;
     }
 
-    public boolean userInInvitedUsers(String userName){
+    public boolean isInvitedUserInHere(String userName){
         for(User u: invitedUsers){
             if(u.getUsername().equals(userName)){
                 return true;
@@ -50,6 +51,7 @@ public class GameSession {
     public void addInvitedUser(User user){
         if(user != null){
             invitedUsers.add(user);
+            userService.updateStatus(user.getToken(), UserStatus.Busy);
         }
     }
 
@@ -63,15 +65,16 @@ public class GameSession {
         }
     }
 
-    public void addUser(User user) {
+    public void addAcceptedUser(User user) {
         if(user!=null){
-            userList.add(user);
+            acceptedUsers.add(user);
+            userService.updateStatus(user.getToken(), UserStatus.Busy);
         }
     }
 
-    public boolean userInHere(User user){
+    public boolean isAcceptedUserInHere(User user){
         if(user!=null) {
-            for (User iterator : getUserList()) {
+            for (User iterator : getAcceptedUsers()) {
                 if(iterator.getUsername().equals(user.getUsername())){
                     return true;
                 }
@@ -80,11 +83,12 @@ public class GameSession {
         return false;
     }
 
-    public void deleteUser(User user) {
+    public void deleteAcceptedUser(User user) {
         if(user!=null){
-            if(userInHere(user)&& !user.getUsername().equals(hostName)){
-                userList.removeIf(iterator -> iterator.getUsername().equals(user.getUsername()));
+            if(isAcceptedUserInHere(user)&& !user.getUsername().equals(hostName)){
+                acceptedUsers.removeIf(iterator -> iterator.getUsername().equals(user.getUsername()));
                 log.info("user was removed");
+                userService.updateStatus(user.getToken(), UserStatus.Free);
             }
         }
     }

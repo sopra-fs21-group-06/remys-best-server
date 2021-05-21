@@ -11,15 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.messaging.simp.stomp.StompFrameHandler;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.lang.reflect.Type;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 @ExtendWith(SpringExtension.class)
@@ -35,7 +29,7 @@ public class WSChoosePlaceControllerTest extends AbstractWSControllerTest {
     private User user4;
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws Exception {
         super.setup();
         user1 = createTestUser("User 1", "user1@gmail.com");
         user2 = createTestUser("User 2", "user2@gmail.com");
@@ -52,9 +46,6 @@ public class WSChoosePlaceControllerTest extends AbstractWSControllerTest {
 
     @Test
     void registerPlayerSuccess() throws Exception {
-        //given
-        BlockingQueue<WaitingRoomChooseColorDTO> bq = new LinkedBlockingDeque<>();
-
         gameEngine = GameEngine.instance();
         gameEngine.addUserToWaitingRoom(user1);
         gameEngine.addUserToWaitingRoom(user2);
@@ -64,23 +55,8 @@ public class WSChoosePlaceControllerTest extends AbstractWSControllerTest {
 
         GameChooseColorDTO gameChooseColorDTO = generateGameChooseColorDTO(user1);
 
-        StompSession session = stompClient.connect("ws://localhost:" + port + "/ws", new StompSessionHandlerAdapter() {
-        }).get(1, TimeUnit.SECONDS);
-
-        session.subscribe("/topic/game/"+game.getGameId()+"/colors", new StompFrameHandler() {
-            @Override
-            public Type getPayloadType(StompHeaders headers) {
-                return WaitingRoomChooseColorDTO.class;
-            }
-
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                bq.offer((WaitingRoomChooseColorDTO) payload);
-            }
-        });
-
-        session.send("/app/game/"+game.getGameId()+"/choose-color", gameChooseColorDTO);
-
+        BlockingQueue<WaitingRoomChooseColorDTO> bq = setupBlockingQueue(WaitingRoomChooseColorDTO.class, "/topic/game/"+game.getGameId()+"/colors");
+        stompSession.send("/app/game/"+game.getGameId()+"/choose-color", gameChooseColorDTO);
         WaitingRoomChooseColorDTO response = bq.poll(2, TimeUnit.SECONDS);
 
         Assertions.assertNotNull(response);

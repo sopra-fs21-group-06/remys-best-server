@@ -12,7 +12,6 @@ import java.util.Stack;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static java.util.Objects.isNull;
 
 
 public class PlayingBoard {
@@ -183,12 +182,9 @@ public class PlayingBoard {
                 fieldToSend = f;
             }
         }
-        if (isNull(fieldToSend)) {
-            System.out.println("Something went wrong in getField()");
-        }
         return fieldToSend;
-
     }
+
     public Field getFieldByFieldKey(String key) {
         Field fieldToSend = null;
         for (Field f : listPlayingFields) {
