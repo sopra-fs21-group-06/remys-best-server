@@ -46,7 +46,6 @@ public class WaitingRoom {
                 return userQueue.size();
             }
         }
-
         userQueue.add(userToAdd);
         userCount++;
         return userQueue.size();
@@ -63,5 +62,10 @@ public class WaitingRoom {
 
         }
         return usersToAddToGameSession;
+    }
+
+    public void resetUsers() {
+        this.getUserQueue().clear();
+        this.userCount=0;
     }
 }
