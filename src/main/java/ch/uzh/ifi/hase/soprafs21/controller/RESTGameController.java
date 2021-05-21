@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static java.lang.Boolean.FALSE;
+
 @RestController
 public class RESTGameController {
     Logger log = LoggerFactory.getLogger(WSGameController.class);

@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.AbstractTest;
+import ch.uzh.ifi.hase.soprafs21.moves.INormalMove;
+import ch.uzh.ifi.hase.soprafs21.moves.TwoForwards;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -57,6 +59,7 @@ public class GameServiceTest extends AbstractTest {
         List<String> playableCardCodes = game.getGameService().canPlay(currentPlayer, game);
         assertEquals(0, playableCardCodes.size());
     }
+    // Player throws cards away and sits round out #77
     @Test
     public void testChangePlayer_skipPlayer() {
         Game game = setupGame();
@@ -70,10 +73,32 @@ public class GameServiceTest extends AbstractTest {
         Player playerNextNext = game.getPlayers().get(2);
         List<String> cardCodesPlayer3 = List.of("2D", "0H", "4H", "7C", "9S", "JH");
         addCardsToHand(playerNextNext, cardCodesPlayer3);
+        Player playerNextNextNExt = game.getPlayers().get(3);
+        List<String> cardCodesPlayer4 = List.of("2D", "0H", "4H", "7C", "9S", "JH");
+        addCardsToHand(playerNextNextNExt, cardCodesPlayer4);
+        playerNextNextNExt.getHand().throwAwayHand();
         game.getCurrentRound().changeCurrentPlayer();
         log.info(String.valueOf(game.getCurrentRound().getCurrentPlayer().getColor()));
         assertEquals(game.getCurrentRound().getCurrentPlayer(), playerNextNext);
+
+        game.getCurrentRound().changeCurrentPlayer();
+        log.info(String.valueOf(game.getCurrentRound().getCurrentPlayer().getColor()));
+        assertEquals(game.getCurrentRound().getCurrentPlayer(), currentPlayer);
     }
+    //Rotate Start Player Clockwise #59
+    @Test
+    public void testChangePlayer() {
+        Game game = setupGame();
+        Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
+        List<String> cardCodesPlayer1 = List.of("AD", "0H", "4H", "7C", "9S", "JH");
+        addCardsToHand(currentPlayer, cardCodesPlayer1);
+        Player playerNext = game.getPlayers().get(1);
+        List<String> cardCodesPlayer2 = List.of("AD", "2H", "3H", "4C", "5S", "6H");
+        addCardsToHand(playerNext, cardCodesPlayer2);
+        game.getCurrentRound().changeCurrentPlayer();
+        assertEquals(game.getCurrentRound().getCurrentPlayer(), playerNext);
+    }
+
     @Test
     public void testThrowAwayHand() {
         Game game = setupGame();
@@ -83,6 +108,7 @@ public class GameServiceTest extends AbstractTest {
         currentPlayer.getHand().throwAwayHand();
         assertTrue(currentPlayer.getHand().getHandDeck().isEmpty());
     }
+
     @Test
     public void testLayDownCard() {
         Game game = setupGame();
@@ -95,17 +121,7 @@ public class GameServiceTest extends AbstractTest {
     }
 
 
-    @Test
-    public void testEat_sameTargetField_marbleEaten() {
-        // TODO Andrina
 
-
-    }
-
-    @Test
-    public void testEat_jumpedOverAnotherMarble_marbleNotEaten() {
-        // TODO Andrina
-    }
     @Test
     public void test_updateRoundStats() {
         Game game = setupGame();

@@ -259,7 +259,7 @@ public class PlayingBoard {
         int countMarble = 0;
         for(Field f: finishFields) {
             if (f.getFieldValue() > finishField.getFieldValue()) {
-                if (f.getFieldStatus().equals(FieldStatus.BLOCKED)) {
+                if (f.getFieldStatus().equals(FieldStatus.OCCUPIED)) {
                     countMarble++;
                 }
             }

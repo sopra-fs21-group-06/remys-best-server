@@ -3,11 +3,15 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.controller.WSGameController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 public class Player {
 
@@ -20,7 +24,7 @@ public class Player {
     private boolean isReady;
     private String cardCodeToExchange = null;
     private boolean isFinished;
-
+    Logger log = LoggerFactory.getLogger(Player.class);
     public Player(String playerName) {
         this.playerName = playerName;
         this.setFinished(FALSE);
@@ -128,5 +132,39 @@ public class Player {
         }
         return marblesOnFieldAndFinished.size();
     }
+    public int getNrMarblesFinished(){
+        List<Marble> marblesOnFieldAndFinished = new ArrayList<>();
+        for(Marble m: this.getMarbleList()){
+            if(m.getFinish()){
+                marblesOnFieldAndFinished.add(m);
+            }
+        }
+        return marblesOnFieldAndFinished.size();
+    }
+    public boolean canFinishWithSeven(Game game){
+        if(getNrMarbleAtHome() != 0){
+            return FALSE;
+        }
+        int distance = 0;
+        for(Marble m: this.getMarblesOnFieldAndNotFinished()){
+            if(!(m.getCurrentField().getColor().equals(m.getColor()))) {
+                return FALSE;
+            } else {
+                if (!(m.getCurrentField() instanceof FinishField)) {
+                    distance += 16 - m.getCurrentField().getFieldValue();
+                }
+                distance += game.getPlayingBoard().nrStepsToNextFreeFinishSpot(m.getCurrentField());
+
+                distance = distance - getMarblesOnFieldAndNotFinished().indexOf(m);
+                log.info("canFInishiwithsven marbleNr: " + String.valueOf(m.getMarbleId()) + "distanceAll :" + String.valueOf(distance));
+            }
+        }
+        if(distance <= 7){
+            log.info("canFInishiwithsven TRUE ");
+            return TRUE;
+        }
+        return FALSE;
+    }
+
 
 }

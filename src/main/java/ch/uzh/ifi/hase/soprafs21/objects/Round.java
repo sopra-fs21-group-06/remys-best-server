@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
+import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
@@ -50,6 +51,16 @@ public class Round {
                 currentPlayer = p;
                 if (!p.getHand().getHandDeck().isEmpty()) {
                     break;
+                }
+            }
+        }
+        if(currentPlayer.getColor().equals(Color.YELLOW) && currentPlayer.getHand().getHandDeck().isEmpty()) {
+            for (Player p: players){
+                if(p.getColor().equals(DogUtils.getNextColor(this.currentPlayer.getColor()))) {
+                    currentPlayer = p;
+                    if (!p.getHand().getHandDeck().isEmpty()) {
+                        break;
+                    }
                 }
             }
         }
