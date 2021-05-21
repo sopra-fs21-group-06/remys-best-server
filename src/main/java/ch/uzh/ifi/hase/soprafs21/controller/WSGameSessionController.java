@@ -10,6 +10,7 @@ import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameRequestDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameSessionLeaveDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
@@ -17,7 +18,10 @@ import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameRequestAcceptDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameRequestDeniedDTO;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
+import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.getIdentity;
@@ -116,5 +120,16 @@ public class WSGameSessionController {
             GameEngine.instance().getUserService().findByUsername(username).setStatus(UserStatus.Free);
         }
 
+    }
+
+    @EventListener
+    public void hostSubscribed(SessionSubscribeEvent event){
+        String p = Objects.requireNonNull(event.getUser()).getName();
+        if (p != null) {
+            if (gameEngine.userIsHost(DogUtils.convertSessionIdentityToUserName(p,gameEngine.getUserService()))) {
+                UUID gameSessionID = gameEngine.findGameSessionByHostName(DogUtils.convertSessionIdentityToUserName(p,gameEngine.getUserService())).getID();
+                webSocketService.broadcastUsersInGameSession(gameSessionID);
+            }
+        }
     }
 }
