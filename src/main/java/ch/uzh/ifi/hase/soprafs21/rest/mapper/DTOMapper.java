@@ -83,6 +83,5 @@ public interface DTOMapper {
 
     @Mapping(source="email", target="email")
     @Mapping(source="password", target="password")
-    @Mapping(source= "token",target="token")
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 }

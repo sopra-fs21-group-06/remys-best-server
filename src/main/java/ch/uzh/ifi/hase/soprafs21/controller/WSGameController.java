@@ -1,14 +1,15 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 
+import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
+import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.ExecutePlayCardDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameCardExchange;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameReadyDTO;
-import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.GameEndDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomSendOutCurrentUsersDTO;
 import org.slf4j.Logger;
@@ -43,6 +44,14 @@ public class WSGameController {
         log.info("Player " + getIdentity(sha) + ": Ready for game received");
         Game currentGame = gameEngine.getRunningGameByID(gameId);
         currentGame.setPlayerToReady(userService.convertTokenToUsername(gameReadyDTO.getToken()));
+    }
+
+    @MessageMapping("/game/{gameId}/leave")
+    public synchronized void leaveGame(@DestinationVariable UUID gameId, SimpMessageHeaderAccessor sha){
+        User userLeaver = userService.getUserRepository().findBySessionIdentity(getIdentity(sha));
+        GameEndDTO gameEndDTO = new GameEndDTO();
+        gameEndDTO.setAborted(userLeaver.getUsername());
+        webSocketService.broadcastGameEndMessage(gameId.toString(), gameEndDTO);
     }
 
     @MessageMapping("/game/{gameId}/card-exchange")

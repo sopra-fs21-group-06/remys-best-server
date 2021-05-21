@@ -49,8 +49,10 @@ public class RESTUserController {
     @PutMapping("/users")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public void modifyUser(@RequestBody UserPutDTO userPutDTO){
+    public void modifyUser(HttpServletRequest request, @RequestBody UserPutDTO userPutDTO){
+        String token = request.getHeader("Authorization");
         User user = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+        user.setToken(token);
         userService.updateUser(user);
     }
 
