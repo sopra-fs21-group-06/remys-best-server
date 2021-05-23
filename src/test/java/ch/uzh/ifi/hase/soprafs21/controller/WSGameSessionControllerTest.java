@@ -66,6 +66,13 @@ public class WSGameSessionControllerTest extends AbstractWSControllerTest {
         return gameRequestAcceptDTO;
     }
 
+    private GameRequestDeniedDTO generateGameRequestDeniedDTO(UUID gameSessionId, String token) {
+        GameRequestDeniedDTO gameRequestDeniedDTO = new GameRequestDeniedDTO();
+        gameRequestDeniedDTO.setGameSessionId(gameSessionId);
+        gameRequestDeniedDTO.setToken(token);
+        return gameRequestDeniedDTO;
+    }
+
     @Test
     void inviteUserTest() {
 
