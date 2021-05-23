@@ -5,29 +5,17 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
-import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameRequestAcceptDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameRequestDTO;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameRequestDeniedDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameSessionLeaveDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -57,20 +45,6 @@ public class WSGameSessionControllerTest extends AbstractWSControllerTest {
         GameSessionLeaveDTO gameSessionLeaveDTO = new GameSessionLeaveDTO();
         gameSessionLeaveDTO.setToken(token);
         return gameSessionLeaveDTO;
-    }
-
-    private GameRequestAcceptDTO generateGameRequestAcceptDTO(UUID gameSessionId, String token) {
-        GameRequestAcceptDTO gameRequestAcceptDTO = new GameRequestAcceptDTO();
-        gameRequestAcceptDTO.setGameSessionId(gameSessionId);
-        gameRequestAcceptDTO.setToken(token);
-        return gameRequestAcceptDTO;
-    }
-
-    private GameRequestDeniedDTO generateGameRequestDeniedDTO(UUID gameSessionId, String token) {
-        GameRequestDeniedDTO gameRequestDeniedDTO = new GameRequestDeniedDTO();
-        gameRequestDeniedDTO.setGameSessionId(gameSessionId);
-        gameRequestDeniedDTO.setToken(token);
-        return gameRequestDeniedDTO;
     }
 
     @Test
@@ -247,8 +221,6 @@ public class WSGameSessionControllerTest extends AbstractWSControllerTest {
         Game game = new Game(users, websocketService, cardAPIService);
         gameEngine.newGameSession(testUser1);
 
-        GameRequestDeniedDTO gameRequestDeniedDTO = generateGameRequestDeniedDTO(UUID.randomUUID(), testUser2.getToken());
-
-        stompSession.send("/app/game-session-request/"+game.getGameId()+"/reject", gameRequestDeniedDTO);
+        stompSession.send("/app/gamesession-request/"+game.getGameId()+"/reject", null);
     }
 }

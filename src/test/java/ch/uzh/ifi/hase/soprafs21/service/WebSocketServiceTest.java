@@ -1,9 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.objects.Card;
-import ch.uzh.ifi.hase.soprafs21.objects.MarbleIdAndTargetFieldKey;
-import ch.uzh.ifi.hase.soprafs21.objects.Player;
+import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.WaitingRoomUserObjDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class WebSocketServiceTest {
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private WebSocketService webSocketService;
 
     private WebSocketService webSocketServiceSpy;
@@ -34,6 +35,7 @@ public class WebSocketServiceTest {
 
     @BeforeEach
     public void setup() {
+        userService.getUserRepository().deleteAll();
         webSocketServiceSpy = Mockito.spy(webSocketService);
 
         Mockito.doAnswer((Answer<Void>) invocation -> {
@@ -51,6 +53,16 @@ public class WebSocketServiceTest {
             this.dto = args[2];
             return null;
         }).when(webSocketServiceSpy).sendToPlayer(Mockito.any(), Mockito.any(), Mockito.any());
+    }
+
+    private User createTestUser(String username, String email) {
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword("password");
+        user.setSessionIdentity(UUID.randomUUID().toString());
+        userService.createUser(user);
+        return user;
     }
 
     @Test
@@ -171,17 +183,19 @@ public class WebSocketServiceTest {
 
     @Test
     void testBroadcastGameSessionInvitedUserList() {
-        UUID gameSessionId = UUID.randomUUID();
-        List<User> invitedUserList = new ArrayList<>();
-        User invitedUser = new User();
-        invitedUser.setUsername("Peter");
-        invitedUserList.add(invitedUser);
-        //webSocketServiceSpy.broadcastGameSessionInvitedUserList(gameSessionId, invitedUserList);
+        User host = createTestUser("Carl", "carl@carl.ch");
+        User invitedUser = createTestUser("Peter", "peter@carl.ch");
+        GameSession gameSession = GameEngine.instance().newGameSession(host);
+        GameEngine.instance().addInvitedUserToGameSession(invitedUser, gameSession.getID());
 
-        assertEquals(String.format("/gamesession/%s/invited-user", gameSessionId.toString()), path);
+        webSocketServiceSpy.broadcastInvitedUsersInGameSession(gameSession.getID());
+
+        assertEquals(String.format("/gamesession/%s/invited-user", gameSession.getID().toString()), path);
         GameSessionInvitedUsersDTO gameSessionInvitedUsersDTO = (GameSessionInvitedUsersDTO) dto;
         assertEquals(1, gameSessionInvitedUsersDTO.getInvitedUsers().size());
         assertEquals(invitedUser.getUsername(), gameSessionInvitedUsersDTO.getInvitedUsers().get(0).getUsername());
+
+        GameEngine.instance().deleteGameSessionByHostName(host.getUsername());
     }
 
     @Test
@@ -300,7 +314,7 @@ public class WebSocketServiceTest {
     }
 
     @Test
-    void testSendCountdownToHome() {
+    void testSendInvitationCountdownToHome() {
         String sessionIdentity = UUID.randomUUID().toString();
         int currentCounter = 13;
         String playerName = "Peter";
@@ -310,7 +324,7 @@ public class WebSocketServiceTest {
 
         webSocketServiceSpy.sendInvitationCountdownToHome(sessionIdentity, requestCountDownDTO);
 
-        assertEquals("/countdown", path);
+        assertEquals("/home/invitation/countdown", path);
         assertEquals(sessionIdentity, identity);
         requestCountDownDTO = (RequestCountDownDTO) dto;
         assertEquals(currentCounter, requestCountDownDTO.getCurrentCounter());
@@ -318,18 +332,20 @@ public class WebSocketServiceTest {
     }
 
     @Test
-    void testSendGameSessionInvitation() {
-        UUID gameSessionId = UUID.randomUUID();
+    void testSendInvitationToHome() {
         String sessionIdentity = UUID.randomUUID().toString();
-        String hostName = "Peter";
+        User host = createTestUser("Peter", "peter@peter.ch");
+        GameSession gameSession = GameEngine.instance().newGameSession(host);
 
-        //webSocketServiceSpy.sendInvitationToHome(gameSessionId, sessionIdentity, hostName);
+        webSocketServiceSpy.sendInvitationToHome(gameSession.getID(), sessionIdentity);
 
-        assertEquals("/invitation", path);
+        assertEquals("/home/invitation", path);
         assertEquals(sessionIdentity, identity);
         GameSessionInviteUserDTO gameSessionInviteUserDTO = (GameSessionInviteUserDTO) dto;
-        assertEquals(hostName, gameSessionInviteUserDTO.getHostName());
-        assertEquals(gameSessionId, gameSessionInviteUserDTO.getGameSessionId());
+        assertEquals(host.getUsername(), gameSessionInviteUserDTO.getHostName());
+        assertEquals(gameSession.getID(), gameSessionInviteUserDTO.getGameSessionId());
+
+        GameEngine.instance().deleteGameSessionByHostName(host.getUsername());
     }
 
     @Test
@@ -353,14 +369,5 @@ public class WebSocketServiceTest {
         assertEquals(sessionIdentity, identity);
         ErrorDTO errorDTO = (ErrorDTO) dto;
         assertEquals(msg, errorDTO.getMsg());
-    }
-
-    @Test
-    void testFoo() throws InterruptedException {
-
-        webSocketServiceSpy.sendGameSessionInvitedUserCounter(UUID.randomUUID(), null);
-
-        Thread.sleep(20000);
-
     }
 }
