@@ -3,12 +3,9 @@ package ch.uzh.ifi.hase.soprafs21.objects;
 import ch.uzh.ifi.hase.soprafs21.AbstractTest;
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.ExecutePlayCardDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,12 +32,6 @@ public class GameTest  extends AbstractTest  {
     public void updatePlayerColorTest(){
         game.updatePlayerColor(game.getPlayers().get(0).getPlayerName(), Color.RED);
         assertEquals(game.getPlayers().get(0).getColor(), Color.RED);
-        //game.updatePlayerColor(game.getPlayers().get(0).getPlayerName(),null);
-        //game.updatePlayerColor(game.getPlayers().get(1).getPlayerName(),null);
-        //game.updatePlayerColor(game.getPlayers().get(0).getPlayerName(),Color.RED);
-        //game.updatePlayerColor(game.getPlayers().get(0).getPlayerName(),Color.BLUE);
-        //assertEquals(game.getPlayers().get(0).getColor(), Color.RED);
-        //assertEquals(game.getPlayers().get(1).getColor(), Color.BLUE);
 
     }
 
@@ -49,11 +40,6 @@ public class GameTest  extends AbstractTest  {
     public void setPlayerToReadyTest(){
         game.setPlayerToReady(game.getPlayers().get(0).getPlayerName());
         assertNotEquals(game.getCurrentRound(), null);
-    }
-
-    @Test
-    public void executeMoveTest(){
-
     }
 
     @Test
