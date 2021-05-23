@@ -53,6 +53,12 @@ public class WSGameSessionControllerTest extends AbstractWSControllerTest {
         return gameRequestDTO;
     }
 
+    private GameSessionLeaveDTO generateGameSessionLeaveDTO(String token) {
+        GameSessionLeaveDTO gameSessionLeaveDTO = new GameSessionLeaveDTO();
+        gameSessionLeaveDTO.setToken(token);
+        return gameSessionLeaveDTO;
+    }
+
     @Test
     void inviteUserTest() {
 
