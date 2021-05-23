@@ -152,24 +152,16 @@ public class DogUtils {
         userService.getUserRepository().saveAndFlush(user);
     }
 
-    public static GameSessionUserListDTO convertPlayersToGameSessionUserListDTO(List<User> users) {
-        GameSessionUserListDTO dto = new GameSessionUserListDTO();
+    public static GameSessionAcceptedUserListDTO convertPlayersToGameSessionAcceptedUserListDTO(List<User> users) {
+        GameSessionAcceptedUserListDTO dto = new GameSessionAcceptedUserListDTO();
 
-
-        List<GameSessionUserDTO> gameSessionUserDTOS = new ArrayList<GameSessionUserDTO>();
-        boolean enoughUsers = false;
-        int counter=0;
+        List<GameSessionUserDTO> gameSessionUserDTOS = new ArrayList<>();
         for (User user : users) {
-            if (user.getUsername() != null) {
-                counter++;
-                if(counter==4){
-                    enoughUsers = true;
-                }
-            }
             gameSessionUserDTOS.add(DTOMapper.INSTANCE.convertUserToGameSessionUserDTO(user));
         }
-        dto.setUsers(gameSessionUserDTOS);
-        if(enoughUsers){
+
+        dto.setAcceptedUsers(gameSessionUserDTOS);
+        if(dto.getAcceptedUsers().size() == GameEngine.PLAYER_AMOUNT) {
             dto.setStartGame("true");
         }else{
             dto.setStartGame("false");
@@ -178,7 +170,7 @@ public class DogUtils {
         return dto;
     }
 
-    public static GameSessionInvitedUsersDTO generateGameSessionInvitedUsersDTO(List<User> invitedUsers){
+    public static GameSessionInvitedUsersDTO convertPlayersToGameSessionInvitedUserListDTO(List<User> invitedUsers){
         GameSessionInvitedUsersDTO gameSessionInvitedUsersDTO = new GameSessionInvitedUsersDTO();
         List<WaitingRoomUserObjDTO> invitedUsersList = new ArrayList<>();
         for(User u: invitedUsers){
@@ -197,7 +189,7 @@ public class DogUtils {
 
     public static GameSessionHostLeftDTO generateGameSessionHostLeftDTO(String hostName){
         GameSessionHostLeftDTO gameSessionHostLeftDTO = new GameSessionHostLeftDTO();
-        gameSessionHostLeftDTO.setHostName(hostName);
+        gameSessionHostLeftDTO.setUsername(hostName);
         return gameSessionHostLeftDTO;
     }
 
@@ -252,9 +244,5 @@ public class DogUtils {
         } else {
             return Color.RED;
         }
-    }
-
-    public static String convertSessionIdentityToUserName(String sessionIdentity, UserService userService){
-        return userService.getUserRepository().findBySessionIdentity(sessionIdentity).getUsername();
     }
 }

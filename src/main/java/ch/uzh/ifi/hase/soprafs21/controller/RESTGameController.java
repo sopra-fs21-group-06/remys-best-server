@@ -12,8 +12,6 @@ import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.PossibleTargetFieldKeysListDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.RoundMarbleListDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.RoundMoveListDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static java.lang.Boolean.FALSE;
-
 @RestController
 public class RESTGameController {
-    Logger log = LoggerFactory.getLogger(WSGameController.class);
     private final GameEngine gameEngine;
     private final UserService userService;
     private final  GameService gameService;
@@ -41,15 +36,12 @@ public class RESTGameController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public RoundMoveListDTO getMoves(@PathVariable UUID gameId, @RequestParam String code) {
-        //log.info("Player" + getIdentity(sha) + ": Has made a moverequest");
-
         Card card = new Card(code);
         List<CardMove> moves = new ArrayList<>();
         for(IMove move : card.getMoves()) {
             CardMove cardMove = new CardMove(move.getName());
             moves.add(cardMove);
         }
-
         return DogUtils.generateRoundMoveListDTO(moves);
     }
 

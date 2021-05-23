@@ -162,11 +162,19 @@ public class UserService {
         return userRepository.findByUsername(userName).getSessionIdentity();
     }
 
+    public User convertSessionIdentityToUser(String sessionIdentity){
+        return userRepository.findBySessionIdentity(sessionIdentity);
+    }
+
     public void updateUser(User user) {
         User existingUser = userRepository.findByToken(user.getToken());
-        if(user.getUsername()!= null){existingUser.setUsername(user.getUsername());}
-        if(user.getEmail()!= null){existingUser.setEmail(user.getEmail());}
-        if(user.getPassword()!= null){existingUser.setPassword(user.getPassword());}
+        //if(user.getUsername()!= null){existingUser.setUsername(user.getUsername());}
+        if(user.getEmail()!= null){
+            existingUser.setEmail(user.getEmail());
+        }
+        if(user.getPassword()!= null){
+            existingUser.setPassword(user.getPassword());
+        }
         userRepository.saveAndFlush(existingUser);
     }
 }

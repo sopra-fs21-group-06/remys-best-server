@@ -166,7 +166,7 @@ public class WebSocketServiceTest {
 
         assertEquals(String.format("/gamesession/%s/gamesession-end", gameId.toString()), path);
         GameSessionHostLeftDTO gameSessionHostLeftDTO = (GameSessionHostLeftDTO) dto;
-        assertEquals(hostName, gameSessionHostLeftDTO.getHostName());
+        assertEquals(hostName, gameSessionHostLeftDTO.getUsername());
     }
 
     @Test
@@ -176,7 +176,7 @@ public class WebSocketServiceTest {
         User invitedUser = new User();
         invitedUser.setUsername("Peter");
         invitedUserList.add(invitedUser);
-        webSocketServiceSpy.broadcastGameSessionInvitedUserList(gameSessionId, invitedUserList);
+        //webSocketServiceSpy.broadcastGameSessionInvitedUserList(gameSessionId, invitedUserList);
 
         assertEquals(String.format("/gamesession/%s/invited-user", gameSessionId.toString()), path);
         GameSessionInvitedUsersDTO gameSessionInvitedUsersDTO = (GameSessionInvitedUsersDTO) dto;
@@ -308,7 +308,7 @@ public class WebSocketServiceTest {
         requestCountDownDTO.setCurrentCounter(currentCounter);
         requestCountDownDTO.setUsername(playerName);
 
-        webSocketServiceSpy.sendCountdownToHome(sessionIdentity, requestCountDownDTO);
+        webSocketServiceSpy.sendInvitationCountdownToHome(sessionIdentity, requestCountDownDTO);
 
         assertEquals("/countdown", path);
         assertEquals(sessionIdentity, identity);
@@ -323,7 +323,7 @@ public class WebSocketServiceTest {
         String sessionIdentity = UUID.randomUUID().toString();
         String hostName = "Peter";
 
-        webSocketServiceSpy.sendGameSessionInvitation(gameSessionId, sessionIdentity, hostName);
+        //webSocketServiceSpy.sendInvitationToHome(gameSessionId, sessionIdentity, hostName);
 
         assertEquals("/invitation", path);
         assertEquals(sessionIdentity, identity);
@@ -353,5 +353,14 @@ public class WebSocketServiceTest {
         assertEquals(sessionIdentity, identity);
         ErrorDTO errorDTO = (ErrorDTO) dto;
         assertEquals(msg, errorDTO.getMsg());
+    }
+
+    @Test
+    void testFoo() throws InterruptedException {
+
+        webSocketServiceSpy.sendGameSessionInvitedUserCounter(UUID.randomUUID(), null);
+
+        Thread.sleep(20000);
+
     }
 }
