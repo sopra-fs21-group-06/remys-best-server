@@ -62,7 +62,7 @@ public class CardAPIService {
             } catch(Exception ex){
                 // 500 Internal Server Error of the API, try again after 100 millis
                 try {
-                    Thread.sleep(100);
+                    wait(100);
                 } catch (Exception e) {
                     // start loop immediately
                 }
