@@ -95,4 +95,47 @@ public class WSGameSessionControllerTest extends AbstractWSControllerTest {
 
 
     }
+
+    @Test
+    void inviteUserTestUserBusy() {
+
+/*        User user = new User();
+        user.setUsername("Siddhant");
+        user.setToken("abcd");
+        ArrayList<User> users = new ArrayList<>();
+        users.add(user);
+
+        Game currentRunningGame = new Game(users, websocketService, cardAPIService);*/
+
+        User testUser1 = createTestUser("abcd_sid", "hello@abcd_sid.com");
+        User testUser2 = createTestUser("efgh_sid", "hello@efgh_sid.com");
+        User testUser3 = createTestUser("ijkl_sid", "hello@ijkl_sid.com");
+        User testUser4 = createTestUser("mnop_sid", "hello@mnop_sid.com");
+        testUser1.setStatus(UserStatus.Busy);
+        testUser2.setStatus(UserStatus.Busy);
+
+        ArrayList<User> users = new ArrayList<>();
+        users.add(testUser1);
+        //users.add(testUser2);
+        //users.add(testUser3);
+        //users.add(testUser4);
+
+        gameEngine = GameEngine.instance();
+        Game game = new Game(users, websocketService, cardAPIService);
+        gameEngine.newGameSession(testUser1);
+        //Game currentRunningGame = gameEngine.getRunningGamesList().get(0);
+
+        //doNothing().when(userService).getUserRepository().findByUsername(Mockito.anyString());
+        //given(gameEngine.getRunningGameByID(game.getGameId())).willReturn(game);
+        //given(userService.getUserRepository().findByUsername(Mockito.anyString())).willReturn(testUser1);
+        //given(gameEngine.getRunningGameByID(game.getGameId())).willReturn(game);
+
+        GameRequestDTO gameRequestDTO = generateGameRequestDTO(testUser2.getToken(), testUser2.getUsername());
+
+        stompSession.send("/app/gamesession/"+game.getGameId()+"/invite", gameRequestDTO);
+
+        //verify(websocketService, times(1)).sendGameSessionInvitation();
+
+
+    }
 }
