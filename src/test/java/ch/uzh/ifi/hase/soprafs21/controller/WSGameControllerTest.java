@@ -91,4 +91,23 @@ public class WSGameControllerTest extends AbstractWSControllerTest {
         doNothing().when(game).setPlayerToReady(Mockito.anyString());
     }
 
+    @Test
+    void cardExchangeTest() throws Exception {
+
+        User user = createTestUser("iamsiddhantsahu", "hello@siddhantsahu.com");
+        ArrayList<User> users = new ArrayList<>();
+        users.add(user);
+
+        Game currentRunningGame = new Game(users, websocketService, cardAPIService);
+        //String gameID = currentRunningGame.getGameId();
+
+        given(gameEngine.getRunningGameByID(currentRunningGame.getGameId())).willReturn(currentRunningGame);
+
+        GameCardExchange gameCardExchange = genearateGameCardExchangeDTO(user.getToken(), "2D");
+
+        stompSession.send("/app/game/" + currentRunningGame.getGameId().toString() + "/card-exchange", gameCardExchange);
+
+        doNothing().when(game).setCardCodeToExchange(Mockito.anyString(), Mockito.anyString());
+    }
+
 }
