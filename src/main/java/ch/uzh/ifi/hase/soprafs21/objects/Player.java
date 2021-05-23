@@ -4,6 +4,9 @@ import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.controller.WSGameController;
+import ch.uzh.ifi.hase.soprafs21.moves.IMove;
+import ch.uzh.ifi.hase.soprafs21.moves.ISplitMove;
+import ch.uzh.ifi.hase.soprafs21.moves.SplitSeven;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,13 +144,16 @@ public class Player {
         }
         return marblesOnFieldAndFinished.size();
     }
+    //Wichtig finsihwith seven && getPossibleMarbles teammate mit array list
     public boolean canFinishWithSeven(Game game){
-        if(getNrMarbleAtHome() != 0){
+        if(this.getNrMarbleAtHome() != 0){
+            log.info("canFinishWIthSevenHere1");
             return FALSE;
         }
         int distance = 0;
         for(Marble m: this.getMarblesOnFieldAndNotFinished()){
             if(!(m.getCurrentField().getColor().equals(m.getColor()))) {
+                log.info("canFinishWIthSevenHere");
                 return FALSE;
             } else {
                 if (!(m.getCurrentField() instanceof FinishField)) {
@@ -159,6 +165,7 @@ public class Player {
                 log.info("canFInishiwithsven marbleNr: " + String.valueOf(m.getMarbleId()) + "distanceAll :" + String.valueOf(distance));
             }
         }
+        log.info("distance in canFinish" + String.valueOf(distance));
         if(distance <= 7){
             log.info("canFInishiwithsven TRUE ");
             return TRUE;

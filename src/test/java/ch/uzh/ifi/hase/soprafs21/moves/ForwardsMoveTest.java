@@ -59,11 +59,7 @@ public class ForwardsMoveTest extends AbstractMoveTest {
         //Now the yellowMarble want to move on 16BLUE Field with 4 Forwards, marbleBlocked doesnt allow any playableMarbles to be received;
         INormalMove fourForwards = new FourForwards();
         List<Marble> possibleMarble = fourForwards.getPlayableMarbles(game, game.getGameService());
-        //assertTrue(possibleMarble.isEmpty());
-        for(Marble m: possibleMarble){
-            log.info(m.getCurrentField().getFieldKey() + "STATUS" + String.valueOf(m.getCurrentField().getFieldStatus()));
-
-        }
+        assertTrue(possibleMarble.isEmpty());
     }
    // Basic moves correspond to card values #79 - moves
     @Test
