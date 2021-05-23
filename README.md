@@ -59,7 +59,7 @@ When starting the server the [Application](src/main/java/ch/uzh/ifi/hase/soprafs
 
 ## Roadmap
 
-1. Implement the game logic
+1. Implement emailverification
 2. Minor Bug fixes
 3. Mobile Version?
 
