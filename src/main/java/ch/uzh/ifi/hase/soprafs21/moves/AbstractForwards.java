@@ -83,10 +83,12 @@ public abstract class AbstractForwards implements INormalMove {
                 marbleToMove = m;
             }
         }
+        assert marbleToMove != null;
 
         MarbleIdAndTargetFieldKey resultEating = game.getGameService().eat(targetField,game);
         game.getPlayingBoard().makeMove(targetField, marbleToMove);
         log.info("marble forward successful");
+
         MarbleIdAndTargetFieldKey result = new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleId(), targetField.getFieldKey());
         marbleIdAndTargetFieldKeys.add(result);
         if(!(resultEating == null)){
