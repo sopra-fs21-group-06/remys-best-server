@@ -8,14 +8,10 @@ import java.security.Principal;
 import java.util.Map;
 import java.util.UUID;
 
-class CustomHandshakeHandler extends DefaultHandshakeHandler {
-    // Custom class for storing principal
+public class CustomHandshakeHandler extends DefaultHandshakeHandler {
+
     @Override
-    protected Principal determineUser(ServerHttpRequest request,
-                                      WebSocketHandler wsHandler,
-                                      Map<String, Object> attributes) {
-        // Generate principal with UUID as name
-        //TODO use AuthToken for Stomprincipal name
+    public Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
         return new StompPrincipal(UUID.randomUUID().toString());
     }
 }

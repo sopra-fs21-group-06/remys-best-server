@@ -342,7 +342,7 @@ public class GameService {
     public void endRound(Game game){
         updateRoundStats(game);
         initiateRound(game);
-        webSocketService.sendExchangeFactsMessage(game.getCurrentRound().getCurrentPlayer().getPlayerName(), game.getGameId());
+        webSocketService.broadcastExchangeFactsMessage(game.getCurrentRound().getCurrentPlayer().getPlayerName(), game.getGameId());
     }
 
     public MarbleIdAndTargetFieldKey eat(Field endField, Game game) {

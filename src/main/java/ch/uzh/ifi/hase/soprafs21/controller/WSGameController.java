@@ -68,7 +68,7 @@ public class WSGameController {
             if(gameEngine.isUserInGameSession(username)){
                 if(gameEngine.userIsHost(username)){
                     log.info("Player" + p + ":Has disconnected from GameSession as Host");
-                    webSocketService.sendAbruptEndOfGameSessionMessage(gameEngine.findGameSessionIdByUsername(username), username);
+                    webSocketService.broadcastAbruptEndOfGameSessionMessage(gameEngine.findGameSessionIdByUsername(username), username);
                     gameEngine.deleteGameSessionByHostName(username);
                 }else{
                     log.info("Player" + p + ":Has disconnected from GameSession as Player");
@@ -82,7 +82,7 @@ public class WSGameController {
                 log.info("Player" + p + ":Has disconnected from waitingRoom");
                 gameEngine.removeUserFromWaitingRoom(userService.findByUsername(username));
                 WaitingRoomSendOutCurrentUsersDTO dto = gameEngine.createWaitingRoomUserList();
-                webSocketService.sendPlayerDisconnectedFromWaitingRoom(dto);
+                webSocketService.broadcastPlayerDisconnectedFromWaitingRoom(dto);
             }else if(gameEngine.userInGame(username)) {
                 log.info("Player" + p + ":Has disconnected from game");
                 GameEndDTO dto = new GameEndDTO();
