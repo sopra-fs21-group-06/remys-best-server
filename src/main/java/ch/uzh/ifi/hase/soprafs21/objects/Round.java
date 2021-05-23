@@ -54,7 +54,7 @@ public class Round {
                 }
             }
         }
-        if(currentPlayer.getColor().equals(Color.YELLOW) && currentPlayer.getHand().getHandDeck().isEmpty()) {
+        if(currentPlayer.getColor().equals(DogUtils.getPreviousColor(game.getStartPlayer().getColor())) && currentPlayer.getHand().getHandDeck().isEmpty()) {
             for (Player p: players){
                 if(p.getColor().equals(DogUtils.getNextColor(this.currentPlayer.getColor()))) {
                     currentPlayer = p;

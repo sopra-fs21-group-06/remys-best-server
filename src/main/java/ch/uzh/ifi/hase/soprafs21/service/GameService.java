@@ -381,12 +381,12 @@ public class GameService {
         List<Marble> marbleListMate = game.getCurrentRound().getCurrentPlayer().getTeamMate().getMarbleList();
         for (Marble m : marbleList) {
             if (m.getMarbleId() == marbleId) {
-                return marble =m;
+                return m;
             }
         }
         for (Marble m : marbleListMate) {
             if (m.getMarbleId() == marbleId) {
-                return marble =m;
+                return m;
             }
         }
         return marble;
