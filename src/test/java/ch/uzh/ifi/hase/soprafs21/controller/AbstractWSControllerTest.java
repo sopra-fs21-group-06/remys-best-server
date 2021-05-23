@@ -34,7 +34,7 @@ public abstract class AbstractWSControllerTest {
     public int port;
 
     @Autowired
-    private UserService userService;
+    public UserService userService;
 
     public StompSession stompSession;
 
