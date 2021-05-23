@@ -82,16 +82,18 @@ public class SplitSeven implements ISplitMove {
         if(marbleCurrentField.getFieldValue() < 17){
             countSteps = 16 - marbleCurrentField.getFieldValue();
         }
-        for (Field f: finishFields){
-            if(f.getFieldStatus().equals(FieldStatus.OCCUPIED)){
+        for (Field f: finishFields) {
+            if (f.getFieldStatus().equals(FieldStatus.OCCUPIED) && !(f.getFieldValue() == marbleCurrentField.getFieldValue())) {
                 condition = FALSE;
             }
-            if (condition && countSteps < countToRemainSeven && marbleCurrentField.getFieldValue() < f.getFieldValue()){
+            if (condition && countSteps < countToRemainSeven && marbleCurrentField.getFieldValue() < f.getFieldValue()) {
                 possibleTargetFieldKeys.add(f.getFieldKey());
                 countSteps++;
-            } else {
+            }
+            else {
                 break;
             }
+
         }
         return  possibleTargetFieldKeys;
     }
