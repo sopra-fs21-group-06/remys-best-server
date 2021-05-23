@@ -27,8 +27,12 @@ public class ExchangeMoveTest extends AbstractMoveTest {
         //SetUp
         Game game = setupGame();
         Marble marble1Player1 = goToStart(game);
+        List<String> cardCodes = List.of("2D", "0H", "4H", "7C");
+        addCardsToHands(game.getPlayers(), cardCodes);
+
         Player player1 = game.getCurrentRound().getCurrentPlayer();
         game.getCurrentRound().changeCurrentPlayer();
+
         Marble marble1Player2 = goToStart(game);
         Player player2 = game.getCurrentRound().getCurrentPlayer();
 
@@ -67,9 +71,6 @@ public class ExchangeMoveTest extends AbstractMoveTest {
         assertEquals(executedMoves.get(0).getFieldKey(), targetFieldKeyPlayer1);
         assertEquals(executedMoves.get(1).getMarbleId(), marble1Player1.getMarbleId());
         assertEquals(executedMoves.get(1).getFieldKey(), targetFieldKeyPlayer2);
-
-
-
     }
 
     @Test
@@ -77,7 +78,8 @@ public class ExchangeMoveTest extends AbstractMoveTest {
         //SetUp Player 1 moves into finish and has marble on start ->no marble to exchange with for player2
         Game game = setupGame();
         Marble marble1Player1 = goToStart(game);
-        Player player1 = game.getCurrentRound().getCurrentPlayer();
+        List<String> cardCodes = List.of("2D", "0H", "4H", "7C");
+        addCardsToHands(game.getPlayers(), cardCodes);
 
         String targetFieldKeyPlayer1 = "12BLUE";
         INormalMove fourBackwards = new FourBackwards();
@@ -89,11 +91,6 @@ public class ExchangeMoveTest extends AbstractMoveTest {
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys1 = new ArrayList<>();
         marbleIdAndTargetFieldKeys1.add(new MarbleIdAndTargetFieldKey(marble1Player1.getMarbleId(), targetFieldKeyPlayer1));
         eightForward.executeMove(game, marbleIdAndTargetFieldKeys1);
-
-        Marble marble2Player1 = goToStart(game);
-
-
-
 
         game.getCurrentRound().changeCurrentPlayer();
         Marble marble1Player2 = goToStart(game);
