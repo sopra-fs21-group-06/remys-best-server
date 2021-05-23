@@ -100,7 +100,7 @@ public class FriendRequestService {
     }
 
 
-    private void checkIfSenderAndReceiverExist(String senderToken, String receiverName) {
+    public void checkIfSenderAndReceiverExist(String senderToken, String receiverName) {
         User sender = userService.getUserRepository().findByToken(senderToken);
         User receiver = userService.getUserRepository().findByUsername(receiverName);
 

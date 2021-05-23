@@ -17,12 +17,15 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FriendRequestServiceTest {
 
@@ -160,11 +163,12 @@ public class FriendRequestServiceTest {
     }
 
     @Test
-    public void checkIfSenderAndReceiverExistTest() {
+    public void checkIfSenderAndReceiverExistTest_SameSenderAndReceiver() {
 
         User user_sid_sender = new User();
         user_sid_sender.setUsername("Siddhant");
         user_sid_sender.setStatus(UserStatus.Free);
+        user_sid_sender.setToken("abcd");
 
         User user_sid_receiver = new User();
         user_sid_receiver.setUsername("Siddhant");
@@ -177,11 +181,16 @@ public class FriendRequestServiceTest {
         //Mockito.when(userService.getUserRepository().findByToken(Mockito.any()))
         //        .thenReturn(user_sid_sender);
         //Mockito.doNothing().when(userService).getUserRepository().findByToken(Mockito.any());
-        Mockito.when(userRepository.findByToken(Mockito.any()))
+        Mockito.when(userService.getUserRepository())
+                .thenReturn(userRepository);
+        Mockito.when(userRepository.findByToken(user_sid_sender.getToken()))
                 .thenReturn(user_sid_sender);
-        Mockito.when(userRepository.findByUsername(Mockito.any()))
+        Mockito.when(userRepository.findByUsername(user_sid_receiver.getUsername()))
                 .thenReturn(user_sid_receiver);
 
         //userService.getUserRepository().deleteAll();
+
+        assertThrows(ResponseStatusException.class, () -> friendRequestService.checkIfSenderAndReceiverExist(user_sid_sender.getToken(), user_sid_receiver.getUsername()));
+        //friendRequestService.checkIfSenderAndReceiverExist(user_sid_sender.getToken(), user_sid_receiver.getUsername());
     }
 }
