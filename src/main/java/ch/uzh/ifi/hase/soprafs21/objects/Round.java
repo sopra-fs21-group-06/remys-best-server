@@ -49,7 +49,7 @@ public class Round {
         for (Player p: players){
             if(p.getColor().equals(DogUtils.getNextColor(this.currentPlayer.getColor()))) {
                 currentPlayer = p;
-                if (!p.getHand().getHandDeck().isEmpty()) {
+                if (!currentPlayer.getHand().getHandDeck().isEmpty()) {
                     break;
                 }
             }

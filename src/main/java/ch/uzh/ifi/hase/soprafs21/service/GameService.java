@@ -263,8 +263,8 @@ public class GameService {
             newStartFieldVal = marble.getCurrentField().getFieldValue() + numberToGoForwards;
         }
         Field startingFieldMove = game.getPlayingBoard().getField(newStartFieldVal,c);
-        int count = game.getPlayingBoard().nrStepsToNextStartFieldBlock(startingFieldMove);
-        if (Math.abs(numberToGoForwards) <= count) {
+        int count = game.getPlayingBoard().nrStepsToNextStartFieldBlock(startingFieldMove)+1;
+        if (Math.abs(numberToGoForwards) < count) {
             log.info("CheckMOve: Marble : " + marble.getColor() + "FieldVal: " + marble.getCurrentField().getFieldValue() + "ishome: " + marble.getHome());
             return TRUE;
         }
@@ -279,9 +279,9 @@ public class GameService {
         if(marble.getCurrentField() instanceof FinishField){
             count = game.getPlayingBoard().nrStepsToNextFreeFinishSpot(startingFieldMove);
         } else {
-            count = game.getPlayingBoard().nrStepsToNextStartFieldBlock(startingFieldMove) -1;
+            count = game.getPlayingBoard().nrStepsToNextStartFieldBlock(startingFieldMove);
         }
-        if (numberToGoForwards <= count) {
+        if (numberToGoForwards < count) {
             return TRUE;
         }
         return FALSE;
@@ -378,13 +378,15 @@ public class GameService {
     public Marble getMarbleByMarbleIdForSeven(Game game, int marbleId) {
         List<Marble> marbleList = game.getCurrentRound().getCurrentPlayer().getMarbleList();
         Marble marble = null;
-        if (game.getCurrentRound().getCurrentPlayer().canFinishWithSeven(game)){
-            marbleList.addAll(game.getCurrentRound().getCurrentPlayer().getTeamMate().getMarbleList());
-        }
+        List<Marble> marbleListMate = game.getCurrentRound().getCurrentPlayer().getTeamMate().getMarbleList();
         for (Marble m : marbleList) {
             if (m.getMarbleId() == marbleId) {
-                log.info(String.valueOf(m.getMarbleId()));
-                return m;
+                return marble =m;
+            }
+        }
+        for (Marble m : marbleListMate) {
+            if (m.getMarbleId() == marbleId) {
+                return marble =m;
             }
         }
         return marble;
