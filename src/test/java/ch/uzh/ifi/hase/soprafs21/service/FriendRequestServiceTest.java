@@ -158,4 +158,30 @@ public class FriendRequestServiceTest {
 
         assertEquals(response.size(), allFriends.size());
     }
+
+    @Test
+    public void checkIfSenderAndReceiverExistTest() {
+
+        User user_sid_sender = new User();
+        user_sid_sender.setUsername("Siddhant");
+        user_sid_sender.setStatus(UserStatus.Free);
+
+        User user_sid_receiver = new User();
+        user_sid_receiver.setUsername("Siddhant");
+        user_sid_receiver.setStatus(UserStatus.Free);
+
+        //userService.createUser(user_sid_sender);
+        //userService.createUser(user_sid_receiver);
+
+        //Mockito.doNothing().when(userService).getUserRepository();
+        //Mockito.when(userService.getUserRepository().findByToken(Mockito.any()))
+        //        .thenReturn(user_sid_sender);
+        //Mockito.doNothing().when(userService).getUserRepository().findByToken(Mockito.any());
+        Mockito.when(userRepository.findByToken(Mockito.any()))
+                .thenReturn(user_sid_sender);
+        Mockito.when(userRepository.findByUsername(Mockito.any()))
+                .thenReturn(user_sid_receiver);
+
+        //userService.getUserRepository().deleteAll();
+    }
 }
