@@ -70,30 +70,30 @@ public class WSGameController {
 
     @EventListener
     public synchronized void handleSessionDisconnect(SessionDisconnectEvent event) {
-        String p = Objects.requireNonNull(event.getUser()).getName();
-        if (p != null) {
-            log.info("Player " + p + ": Connection lost");
-            String username = DogUtils.convertSessionIdentityToUserName(p,gameEngine.getUserService());
+        String sessionIdentityOfPlayer = Objects.requireNonNull(event.getUser()).getName();
+        if (sessionIdentityOfPlayer != null) {
+            log.info("Player " + sessionIdentityOfPlayer + ": Connection lost");
+            String username = userService.convertSessionIdentityToUser(sessionIdentityOfPlayer).getUsername();
             if(gameEngine.isUserInGameSession(username)){
                 if(gameEngine.userIsHost(username)){
-                    log.info("Player" + p + ":Has disconnected from GameSession as Host");
+                    log.info("Player" + sessionIdentityOfPlayer + ":Has disconnected from GameSession as Host");
                     webSocketService.broadcastAbruptEndOfGameSessionMessage(gameEngine.findGameSessionIdByUsername(username), username);
                     gameEngine.deleteGameSessionByHostName(username);
                 }else{
-                    log.info("Player" + p + ":Has disconnected from GameSession as Player");
+                    log.info("Player" + sessionIdentityOfPlayer + ":Has disconnected from GameSession as Player");
                     log.info(gameEngine.findGameSessionIdByUsername(username).toString());
                     log.info(userService.findByUsername(username).getUsername());
                     UUID gameSessionId = gameEngine.findGameSessionIdByUsername(username);
-                    gameEngine.deleteUserFromSession(userService.findByUsername(username), gameSessionId);
-                    webSocketService.broadcastUsersInGameSession(gameSessionId);
+                    gameEngine.deleteUserFromGameSession(userService.findByUsername(username), gameSessionId);
+                    webSocketService.broadcastAcceptedUsersInGameSession(gameSessionId);
                 }
             }else if(gameEngine.userInWaitingRoom(username)){
-                log.info("Player" + p + ":Has disconnected from waitingRoom");
+                log.info("Player" + sessionIdentityOfPlayer + ":Has disconnected from waitingRoom");
                 gameEngine.removeUserFromWaitingRoom(userService.findByUsername(username));
                 WaitingRoomSendOutCurrentUsersDTO dto = gameEngine.createWaitingRoomUserList();
                 webSocketService.broadcastPlayerDisconnectedFromWaitingRoom(dto);
             }else if(gameEngine.userInGame(username)) {
-                log.info("Player" + p + ":Has disconnected from game");
+                log.info("Player" + sessionIdentityOfPlayer + ":Has disconnected from game");
                 GameEndDTO dto = new GameEndDTO();
                 dto.setAborted(username);
                 webSocketService.broadcastGameEndMessage(gameEngine.findGameIdByPlayerName(username).toString(), dto);

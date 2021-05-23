@@ -75,9 +75,9 @@ public class GameEngineTest extends AbstractTest {
         user1.setId(1L);
         gameEngine.newGameSession(user1);
         user2.setId(2L);
-        gameEngine.addUserToSession(user2,gameEngine.getGameSessionList().get(0).getID());
+        gameEngine.addUserToGameSession(user2,gameEngine.getGameSessionList().get(0).getID());
         //assertTrue(gameEngine.getGameSessionList().get(0).getUserList().contains(user2));
-        gameEngine.deleteUserFromSession(user2,gameEngine.getGameSessionList().get(0).getID());
+        gameEngine.deleteUserFromGameSession(user2,gameEngine.getGameSessionList().get(0).getID());
         //assertTrue(!gameEngine.userInGameSession(user2,gameEngine.getGameSessionList().get(0).getID()));
         gameEngine.deleteGameSession(gameEngine.getGameSessionList().get(0).getID());
     }
@@ -86,7 +86,7 @@ public class GameEngineTest extends AbstractTest {
     public void testDeletingHostFromGameSession(){
         user1.setId(1L);
         gameEngine.newGameSession(user1);
-        gameEngine.deleteUserFromSession(user1,gameEngine.getGameSessionList().get(0).getID());
+        gameEngine.deleteUserFromGameSession(user1,gameEngine.getGameSessionList().get(0).getID());
         //assertTrue(gameEngine.getGameSessionList().get(0).getUserList().contains(user1));
     }
 }

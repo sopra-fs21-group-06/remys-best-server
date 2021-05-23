@@ -1,13 +1,13 @@
 package ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing;
 
 public class GameSessionHostLeftDTO {
-    String hostName;
+    String username;
 
-    public String getHostName() {
-        return hostName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

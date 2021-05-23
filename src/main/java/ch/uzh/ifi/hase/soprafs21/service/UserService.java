@@ -162,6 +162,10 @@ public class UserService {
         return userRepository.findByUsername(userName).getSessionIdentity();
     }
 
+    public User convertSessionIdentityToUser(String sessionIdentity){
+        return userRepository.findBySessionIdentity(sessionIdentity);
+    }
+
     public void updateUser(User user) {
         User existingUser = userRepository.findByToken(user.getToken());
         //if(user.getUsername()!= null){existingUser.setUsername(user.getUsername());}
