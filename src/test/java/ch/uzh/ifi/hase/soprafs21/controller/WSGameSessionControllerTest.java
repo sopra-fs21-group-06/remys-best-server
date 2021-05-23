@@ -4,12 +4,15 @@ import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.objects.Game;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
+import ch.uzh.ifi.hase.soprafs21.objects.GameSession;
 import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
+import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameRequestDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameSessionLeaveDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -17,21 +20,27 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class WSGameSessionControllerTest extends AbstractWSControllerTest {
 
     @Autowired
-    //@MockBean
+    @MockBean
     private GameEngine gameEngine;
 
+    @Autowired
     @MockBean
     WebSocketService websocketService;
 
     @MockBean
     CardAPIService cardAPIService;
 
-    /*@MockBean
+/*    @Autowired
+    @MockBean
     UserService userService;*/
 
     private GameRequestDTO generateGameRequestDTO(String token, String username) {
@@ -86,6 +95,9 @@ public class WSGameSessionControllerTest extends AbstractWSControllerTest {
         stompSession.send("/app/gamesession/"+game.getGameId()+"/invite", gameRequestDTO);
 
         //verify(websocketService, times(1)).sendGameSessionInvitation();
+        Mockito.doNothing().when(websocketService).broadcastInvitedUsersInGameSession(Mockito.any());
+        Mockito.doNothing().when(websocketService).sendInvitationToHome(Mockito.any(), Mockito.any());
+        Mockito.doNothing().when(websocketService).sendGameSessionInvitedUserCounter(Mockito.any(), Mockito.any());
 
 
     }
@@ -217,10 +229,84 @@ public class WSGameSessionControllerTest extends AbstractWSControllerTest {
         //users.add(testUser3);
         //users.add(testUser4);
 
-        gameEngine = GameEngine.instance();
+        //gameEngine = GameEngine.instance();
         Game game = new Game(users, websocketService, cardAPIService);
         gameEngine.newGameSession(testUser1);
 
+        GameSession gameSession = new GameSession(testUser1, userService);
+        doReturn(gameSession).when(gameEngine).findGameSessionByID(Mockito.any());
+
+        Mockito.doNothing().when(websocketService).broadcastInvitedUsersInGameSession(Mockito.any());
+        Mockito.doNothing().when(websocketService).broadcastAcceptedUsersInGameSession(Mockito.any());
+
         stompSession.send("/app/gamesession-request/"+game.getGameId()+"/reject", null);
+
+/*        Mockito.doNothing().when(websocketService).broadcastInvitedUsersInGameSession(Mockito.any());
+        Mockito.doNothing().when(websocketService).broadcastAcceptedUsersInGameSession(Mockito.any());*/
+    }
+
+    @Test
+    void acceptInvitationTest() {
+
+        User testUser1 = createTestUser("abcd_sid", "hello@abcd_sid.com");
+        User testUser2 = createTestUser("efgh_sid", "hello@efgh_sid.com");
+        User testUser3 = createTestUser("ijkl_sid", "hello@ijkl_sid.com");
+        User testUser4 = createTestUser("mnop_sid", "hello@mnop_sid.com");
+        testUser1.setStatus(UserStatus.Busy);
+        testUser2.setStatus(UserStatus.Free);
+        testUser3.setStatus(UserStatus.Free);
+        testUser4.setStatus(UserStatus.Free);
+
+        ArrayList<User> users = new ArrayList<>();
+        users.add(testUser1);
+
+        //gameEngine = GameEngine.instance();
+        Game game = new Game(users, websocketService, cardAPIService);
+        gameEngine.newGameSession(testUser1);
+
+        GameSession gameSession = new GameSession(testUser1, userService);
+
+        //doReturn(testUser2).when(userService).convertSessionIdentityToUser(Mockito.any());
+        doNothing().when(gameEngine).addUserToGameSession(Mockito.any(), Mockito.any());
+
+        Mockito.doNothing().when(websocketService).broadcastInvitedUsersInGameSession(Mockito.any());
+        Mockito.doNothing().when(websocketService).broadcastAcceptedUsersInGameSession(Mockito.any());
+
+        stompSession.send("/app/gamesession-request/"+game.getGameId()+"/accept", null);
+
+/*        Mockito.doNothing().when(websocketService).broadcastInvitedUsersInGameSession(Mockito.any());
+        Mockito.doNothing().when(websocketService).broadcastAcceptedUsersInGameSession(Mockito.any());*/
+    }
+
+    @Test
+    void fillUpTest() {
+
+        User testUser1 = createTestUser("abcd_sid", "hello@abcd_sid.com");
+        User testUser2 = createTestUser("efgh_sid", "hello@efgh_sid.com");
+        User testUser3 = createTestUser("ijkl_sid", "hello@ijkl_sid.com");
+        User testUser4 = createTestUser("mnop_sid", "hello@mnop_sid.com");
+        testUser1.setStatus(UserStatus.Busy);
+        testUser2.setStatus(UserStatus.Free);
+        testUser3.setStatus(UserStatus.Free);
+        testUser4.setStatus(UserStatus.Free);
+
+        ArrayList<User> users = new ArrayList<>();
+        users.add(testUser1);
+
+        //gameEngine = GameEngine.instance();
+        Game game = new Game(users, websocketService, cardAPIService);
+        gameEngine.newGameSession(testUser1);
+
+        GameSession gameSession = new GameSession(testUser1, userService);
+
+        /*given(gameEngine.findGameSessionByID(Mockito.any()))
+                .willReturn(gameSession);*/
+
+        doReturn(gameSession).when(gameEngine).findGameSessionByID(Mockito.any());
+        doNothing().when(gameEngine).createGameFromGameSessionAndFillUp(Mockito.any());
+
+        stompSession.send("/app/gamesession/"+game.getGameId()+"/fill-up", null);
+
+        //doNothing().when(gameEngine).createGameFromGameSessionAndFillUp(Mockito.any());
     }
 }
