@@ -10,6 +10,7 @@ import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameRequestDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.GameSessionLeaveDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -222,5 +223,30 @@ public class WSGameSessionControllerTest extends AbstractWSControllerTest {
         gameEngine.newGameSession(testUser1);
 
         stompSession.send("/app/gamesession-request/"+game.getGameId()+"/reject", null);
+    }
+
+    @Test
+    void acceptInvitationTest() {
+
+        User testUser1 = createTestUser("abcd_sid", "hello@abcd_sid.com");
+        User testUser2 = createTestUser("efgh_sid", "hello@efgh_sid.com");
+        User testUser3 = createTestUser("ijkl_sid", "hello@ijkl_sid.com");
+        User testUser4 = createTestUser("mnop_sid", "hello@mnop_sid.com");
+        testUser1.setStatus(UserStatus.Busy);
+        testUser2.setStatus(UserStatus.Free);
+        testUser3.setStatus(UserStatus.Free);
+        testUser4.setStatus(UserStatus.Free);
+
+        ArrayList<User> users = new ArrayList<>();
+        users.add(testUser1);
+
+        gameEngine = GameEngine.instance();
+        Game game = new Game(users, websocketService, cardAPIService);
+        gameEngine.newGameSession(testUser1);
+
+        stompSession.send("/app/gamesession-request"+game.getGameId()+"/accept", null);
+
+        Mockito.doNothing().when(websocketService).broadcastInvitedUsersInGameSession(Mockito.any());
+        Mockito.doNothing().when(websocketService).broadcastAcceptedUsersInGameSession(Mockito.any());
     }
 }
