@@ -105,4 +105,57 @@ public class FriendRequestServiceTest {
 
         assertEquals(response.size(), friendRequestList.size());
     }
+
+    @Test
+    public void getFriendsOfUserTest() {
+
+        User user = new User();
+        user.setStatus(UserStatus.Free);
+        user.setUsername("Siddhant");
+
+        User user_pascal = new User();
+        user_pascal.setStatus(UserStatus.Free);
+        user_pascal.setUsername("Pascal");
+
+        User user_andrina = new User();
+        user_andrina.setStatus(UserStatus.Free);
+        user_andrina.setUsername("Andrina");
+
+        List<FriendDTO> allFriends = new ArrayList<FriendDTO>();
+
+        List<FriendRequest> senderFriends = new ArrayList<FriendRequest>();
+        List<FriendRequest> receiverFriends = new ArrayList<FriendRequest>();
+
+        FriendRequest test_FriendRequest = new FriendRequest();
+        test_FriendRequest.setRequestStatus(RequestStatus.ACCEPTED);
+        test_FriendRequest.setSenderName("Siddhant");
+        test_FriendRequest.setReceiverName("Pascal");
+        test_FriendRequest.setCreationDate("29 May 2021");
+
+        senderFriends.add(test_FriendRequest);
+
+        FriendRequest test_FriendRequest_2 = new FriendRequest();
+        test_FriendRequest_2.setRequestStatus(RequestStatus.ACCEPTED);
+        test_FriendRequest_2.setSenderName("Andrina");
+        test_FriendRequest_2.setReceiverName("Siddhant");
+        test_FriendRequest_2.setCreationDate("29 May 2021");
+
+        receiverFriends.add(test_FriendRequest_2);
+
+        Mockito.when(friendRequestRepository.findByReceiverNameAndRequestStatus(Mockito.any(), Mockito.any()))
+                .thenReturn(senderFriends);
+        Mockito.when(friendRequestRepository.findBySenderNameAndRequestStatus(Mockito.any(), Mockito.any()))
+                .thenReturn(receiverFriends);
+
+        Mockito.when(userService.findByUsername(Mockito.any()))
+                .thenReturn(user);
+
+        //allFriends.add(DTOMapper.INSTANCE.convertUserToFriendDTO(user));
+        allFriends.add(DTOMapper.INSTANCE.convertUserToFriendDTO(user_pascal));
+        allFriends.add(DTOMapper.INSTANCE.convertUserToFriendDTO(user_andrina));
+
+        List<FriendDTO> response = friendRequestService.getFriendsOfUser("Siddhant");
+
+        assertEquals(response.size(), allFriends.size());
+    }
 }
