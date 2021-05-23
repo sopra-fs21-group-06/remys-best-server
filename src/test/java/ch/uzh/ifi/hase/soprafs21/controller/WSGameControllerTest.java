@@ -110,4 +110,24 @@ public class WSGameControllerTest extends AbstractWSControllerTest {
         doNothing().when(game).setCardCodeToExchange(Mockito.anyString(), Mockito.anyString());
     }
 
+    @Test
+    void playMoveTest() throws Exception {
+
+        User user = createTestUser("iamsiddhantsahu", "hello@siddhantsahu.com");
+        ArrayList<User> users = new ArrayList<>();
+        users.add(user);
+
+        Game currentRunningGame = new Game(users, websocketService, cardAPIService);
+        //String gameID = currentRunningGame.getGameId();
+
+        given(gameEngine.getRunningGameByID(currentRunningGame.getGameId())).willReturn(currentRunningGame);
+
+        ExecutePlayCardDTO executePlayCardDTO = generateExecutePlayCardDTO();
+
+        stompSession.send("/app/game/" + currentRunningGame.getGameId().toString() + "/play", executePlayCardDTO);
+
+        //verify(game,times(1)).executeMove(Mockito.any());
+
+        doNothing().when(game).executeMove(Mockito.any());
+    }
 }
