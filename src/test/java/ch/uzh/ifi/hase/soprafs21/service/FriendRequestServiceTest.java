@@ -72,4 +72,21 @@ public class FriendRequestServiceTest {
         assertEquals(response.get(0).getSenderName(), friendRequestList.get(0).getSenderName());
         assertEquals(response.get(0).getCreationDate(), friendRequestList.get(0).getCreationDate());
     }
+
+    @Test
+    public void getFriendRequestsByReceiverNameTest() {
+
+        List<FriendRequest> friendRequestList = new ArrayList<FriendRequest>();
+        friendRequestList.add(testFriendRequest);
+
+        Mockito.when(friendRequestRepository.findByReceiverNameAndRequestStatus(Mockito.anyString(), Mockito.any()))
+                .thenReturn(friendRequestList);
+
+        List<FriendRequest>response = friendRequestService.getFriendRequestsByReceiverName("Pascal");
+
+        Mockito.verify(friendRequestRepository, Mockito.times(1))
+                .findByReceiverNameAndRequestStatus("Pascal", RequestStatus.PENDING);
+
+        assertEquals(response.size(), friendRequestList.size());
+    }
 }
