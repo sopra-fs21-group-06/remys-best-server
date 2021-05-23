@@ -87,6 +87,9 @@ public class WSGameSessionControllerTest extends AbstractWSControllerTest {
         stompSession.send("/app/gamesession/"+game.getGameId()+"/invite", gameRequestDTO);
 
         //verify(websocketService, times(1)).sendGameSessionInvitation();
+        Mockito.doNothing().when(websocketService).broadcastInvitedUsersInGameSession(Mockito.any());
+        Mockito.doNothing().when(websocketService).sendInvitationToHome(Mockito.any(), Mockito.any());
+        Mockito.doNothing().when(websocketService).sendGameSessionInvitedUserCounter(Mockito.any(), Mockito.any());
 
 
     }
