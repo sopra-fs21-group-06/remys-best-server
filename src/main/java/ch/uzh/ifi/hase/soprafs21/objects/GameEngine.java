@@ -215,15 +215,17 @@ public class GameEngine {
     }
 
     /** check needs to happen if user available before calling method **/
-    public void newGameSession(User host) {
+    public GameSession newGameSession(User host) {
+        GameSession gameSession = null;
         if(host.getStatus().equals(UserStatus.Free)){
-            GameSession gameSession = new GameSession(host, userService);
+            gameSession = new GameSession(host, userService);
             try {
                 gameSessionList.add(gameSession);
             }catch(NullPointerException e){
                 System.out.println("Something went wrong in newGameSession");
             }
         }
+        return gameSession;
     }
 
     public boolean userInWaitingRoom(String username) {
