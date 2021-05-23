@@ -12,15 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimerTask;
-import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 
-import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.convertPlayersToGameSessionUserListDTO;
+import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.convertPlayersToGameSessionAcceptedUserListDTO;
+import static ch.uzh.ifi.hase.soprafs21.utils.DogUtils.convertPlayersToGameSessionInvitedUserListDTO;
 
 
 /**
@@ -103,11 +98,6 @@ public class WebSocketService {
         broadcastToTopic(String.format(path, gameSessionId), DogUtils.generateGameSessionHostLeftDTO(hostName));
     }
 
-    public void broadcastGameSessionInvitedUserList(UUID gameSessionId, List<User> invitedUserList){
-        String path = "/gamesession/%s/invited-user";
-        broadcastToTopic(String.format(path, gameSessionId.toString()), DogUtils.generateGameSessionInvitedUsersDTO(invitedUserList));
-    }
-
     public void broadcastCountdownToGameSession(UUID gameSessionId, RequestCountDownDTO requestCountDownDTO){
         String path = "/gamesession/%s/countdown";
         broadcastToTopic(String.format(path, gameSessionId.toString()), requestCountDownDTO);
@@ -119,9 +109,14 @@ public class WebSocketService {
         broadcastToTopic(String.format(path, gameId.toString()), DogUtils.generateGameThrowAwayDTO(playerName, cardCodes));
     }
 
-    public void broadcastUsersInGameSession(UUID gameSessionId) {
+    public void broadcastAcceptedUsersInGameSession(UUID gameSessionId) {
         String path = "/gamesession/%s/accepted";
-        broadcastToTopic(String.format(path, gameSessionId.toString()), convertPlayersToGameSessionUserListDTO(GameEngine.instance().getUsersByGameSessionId(gameSessionId)));
+        broadcastToTopic(String.format(path, gameSessionId.toString()), convertPlayersToGameSessionAcceptedUserListDTO(GameEngine.instance().getAcceptedUsersByGameSessionId(gameSessionId)));
+    }
+
+    public void broadcastInvitedUsersInGameSession(UUID gameSessionId){
+        String path = "/gamesession/%s/invited-user";
+        broadcastToTopic(String.format(path, gameSessionId.toString()), convertPlayersToGameSessionInvitedUserListDTO(GameEngine.instance().getInvitedUsersByGameSessionId(gameSessionId)));
     }
 
     public void broadcastPlayerDisconnectedFromWaitingRoom(WaitingRoomSendOutCurrentUsersDTO dto){
@@ -169,49 +164,46 @@ public class WebSocketService {
         sendToPlayer(userSessionIdentity, path, waitingRoomChooseColorDTO);
     }
 
-    public void sendGameSessionInvitedUserCounter(GameSession gameSession, User invitedUser, String sessionIdentity) throws InterruptedException {
+    public void sendGameSessionInvitedUserCounter(UUID gameSessionID, User invitedUser) {
+        GameSession gameSession = GameEngine.instance().findGameSessionByID(gameSessionID);
 
         final int[] counter = {15};
-        TimerTask task = new TimerTask() {
+        Timer timer = new Timer();
+        final TimerTask task = new TimerTask() {
+            @Override
             public void run() {
-                RequestCountDownDTO requestCountDownDTO = DogUtils.generateRequestCountDownDTO(counter[0], invitedUser.getUsername());
-                --counter[0];
-
-                if(counter[0] < 0 || !gameSession.isInvitedUserInHere(invitedUser.getUsername())){
-                    if(gameSession.isInvitedUserInHere(invitedUser.getUsername())){
-                        gameSession.deleteInvitedUser(invitedUser);
-                    }
-                    broadcastGameSessionInvitedUserList(gameSession.getID(), gameSession.getInvitedUsers());
-                    cancel();
-                }else{
-                    broadcastCountdownToGameSession(gameSession.getID(),requestCountDownDTO );
-                    sendCountdownToHome(sessionIdentity, requestCountDownDTO);
+                // user has accepted or rejected the invitation in the meantime
+                // Note: the frontend will trigger a reject if the countdown expires, i.e. is 0
+                if(counter[0] < 0 || !gameSession.isInvitedUserInHere(invitedUser.getUsername())) {
+                    timer.cancel();
+                    timer.purge();
+                    return;
                 }
+
+                RequestCountDownDTO requestCountDownDTO = DogUtils.generateRequestCountDownDTO(counter[0], invitedUser.getUsername());
+                broadcastCountdownToGameSession(gameSession.getID(),requestCountDownDTO );
+                sendInvitationCountdownToHome(invitedUser.getSessionIdentity(), requestCountDownDTO);
+
+                counter[0]--;
             }
         };
-
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        long delay = 1000L;
-        long period = 1000L;
-        executor.scheduleAtFixedRate(task, delay, period, TimeUnit.MILLISECONDS);
-        Thread.sleep(1000L*17);
-        executor.shutdown();
+        timer.schedule(task, 0,1000);
     }
 
-    public void sendCountdownToHome(String sessionIdentity, RequestCountDownDTO requestCountDownDTO){
-        String path = "/countdown";
+    public void sendInvitationCountdownToHome(String sessionIdentity, RequestCountDownDTO requestCountDownDTO){
+        String path = "/home/invitation/countdown";
         sendToPlayer(sessionIdentity, path, requestCountDownDTO);
     }
 
-    public void sendGameSessionInvitation(UUID gameSessionId, String sessionIdentityOfInvitedUser, String hostName){
-        String path = "/invitation";
+    public void sendInvitationToHome(UUID gameSessionId, String sessionIdentityOfInvitedUser) {
+        String hostName = GameEngine.instance().findGameSessionByID(gameSessionId).getHostName();
+        String path = "/home/invitation";
         sendToPlayer(sessionIdentityOfInvitedUser, path, DogUtils.generateGameSessionInviteUserDTO(gameSessionId, hostName));
     }
 
     public void sendGameSessionInviteError(String sessionIdentity){
         String msg = "Invited User must be online and free to join your game.";
         String path = "/gamesession/error/invite";
-
         sendErrorMsg(sessionIdentity, msg, path);
     }
 
@@ -220,9 +212,9 @@ public class WebSocketService {
         sendErrorMsg(sessionIdentity, msg, path);
     }
 
-    private void sendErrorMsg(String sessionIdentitiy, String msg, String path){
+    private void sendErrorMsg(String sessionIdentity, String msg, String path){
         ErrorDTO errorDTO = new ErrorDTO();
         errorDTO.setMsg(msg);
-        sendToPlayer(sessionIdentitiy, path, errorDTO);
+        sendToPlayer(sessionIdentity, path, errorDTO);
     }
 }

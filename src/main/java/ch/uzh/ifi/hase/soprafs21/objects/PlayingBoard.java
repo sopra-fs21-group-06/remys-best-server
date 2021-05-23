@@ -122,17 +122,7 @@ public class PlayingBoard {
             return (!(yellowHome.isEmpty()));
         }
     }
-    public int getNumberMarblesAtHome(Color color){
-        if(color == Color.GREEN){
-            return greenHome.size();
-        } else if (color == Color.RED){
-            return redHome.size();
-        } else if (color == Color.BLUE){
-            return blueHome.size();
-        } else {
-            return yellowHome.size();
-        }
-    }
+
 
     public Marble getFirstHomeMarble(Color color, boolean removeFromStack){
         Marble m = null;
@@ -265,7 +255,7 @@ public class PlayingBoard {
         int countMarble = 0;
         for(Field f: finishFields) {
             if (f.getFieldValue() > finishField.getFieldValue()) {
-                if (f.getFieldStatus().equals(FieldStatus.BLOCKED)) {
+                if (f.getFieldStatus().equals(FieldStatus.OCCUPIED)) {
                     countMarble++;
                 }
             }
@@ -347,10 +337,26 @@ public class PlayingBoard {
         boolean marbleCanFinish = FALSE;
         int distanceToStart = 16 - field.getFieldValue();
         int distanceFreeFinish = nrStepsToNextFreeFinishSpot(field);
-        if(marble.getColor().equals(field.getColor()) && !field.getFieldStatus().equals(FieldStatus.BLOCKED) && !getNextStartFieldIsBlocked(field.getColor())){
-            if(distanceToStart + distanceFreeFinish >= valueCard && distanceToStart < valueCard){
+        boolean marbleHasRightColor = marble.getColor().equals(field.getColor());
+        boolean marbleIsNotOnStart = !field.getFieldStatus().equals(FieldStatus.BLOCKED);
+        boolean ownStartIsNotBlocked = !getNextStartFieldIsBlocked(field.getColor());
+        if(marbleHasRightColor && marbleIsNotOnStart && ownStartIsNotBlocked){
+            if(distanceToStart < valueCard){
                 String s = String.valueOf(marble.getMarbleId());
-                log.info("Marlbe " + s +" can finish");
+                marbleCanFinish = TRUE;
+            }
+        }
+        return marbleCanFinish;
+    }
+    public boolean marbleCanMoveInFinishFieldWithLeftValueCard(Marble marble, Field field, int valueCard){
+        boolean marbleCanFinish = FALSE;
+        int distanceToStart = 16 - field.getFieldValue();
+        int distanceFreeFinish = nrStepsToNextFreeFinishSpot(field);
+        boolean marbleHasRightColor = marble.getColor().equals(field.getColor());
+        boolean marbleIsNotOnStart = !field.getFieldStatus().equals(FieldStatus.BLOCKED);
+        boolean ownStartIsNotBlocked = !getNextStartFieldIsBlocked(field.getColor());
+        if(marbleHasRightColor && marbleIsNotOnStart && ownStartIsNotBlocked){
+            if(distanceToStart + distanceFreeFinish > valueCard && distanceToStart < valueCard){
                 marbleCanFinish = TRUE;
             }
         }

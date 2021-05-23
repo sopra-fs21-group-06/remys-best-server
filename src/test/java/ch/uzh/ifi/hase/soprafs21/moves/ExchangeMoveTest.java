@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ExchangeMoveTest extends AbstractMoveTest {
-
+    //ISSUE: Restricting available marbles for exchanging using JACK #86
     Logger log = LoggerFactory.getLogger(FourBackwards.class);
     @Test
     public void testExchange() {

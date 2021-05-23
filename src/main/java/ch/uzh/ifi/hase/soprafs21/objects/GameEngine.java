@@ -29,7 +29,7 @@ public class GameEngine {
     private final UserService userService;
     private final WebSocketService webSocketService;
     private final GameService gameService;
-    private static final int PLAYER_AMOUNT = 4;
+    public static final int PLAYER_AMOUNT = 4;
     Logger log = LoggerFactory.getLogger(GameEngine.class);
 
     @Autowired
@@ -85,7 +85,6 @@ public class GameEngine {
         GameSession gameSession = findGameSessionByID(gameSessionId);
         assert gameSession != null;
         gameSession.addInvitedUser(user);
-
     }
 
     public void removeUserFromWaitingRoom(User user){
@@ -112,7 +111,7 @@ public class GameEngine {
     public Game createGameFromGameSession(GameSession gameSession){
         try {
             if (gameSessionList.contains(gameSession)) {
-                if (gameSession.getAcceptedUsers().size() == 4) {
+                if (gameSession.getAcceptedUsers().size() == PLAYER_AMOUNT) {
                     gameSessionList.remove(gameSession);
                     Game game = new Game(gameSession.getAcceptedUsers(), webSocketService, new CardAPIService());
 
@@ -176,28 +175,15 @@ public class GameEngine {
         }
     }
 
-    public void addUserToSession(User user,UUID gameSessionID){
-        try {
-            gameEngine.findGameSessionByID(gameSessionID).deleteInvitedUser(user);
-            if(gameEngine.findGameSessionByID(gameSessionID).getAcceptedUsers().size()==PLAYER_AMOUNT){
-                gameEngine.createGameFromGameSession(findGameSessionByID(gameSessionID));
-
-            }else {
-                for (GameSession gameSession : gameSessionList) {
-                    if (gameSession.getID().equals(gameSessionID)) {
-                        gameSession.addAcceptedUser(user);
-                    }
-                }
-                if(gameEngine.findGameSessionByID(gameSessionID).getAcceptedUsers().size()== PLAYER_AMOUNT) {
-                    gameEngine.createGameFromGameSession(findGameSessionByID(gameSessionID));
-                }
-            }
-        }catch(NullPointerException e){
-            System.out.println("Something went wrong in addUserToSession()");
+    public void addUserToGameSession(User user, UUID gameSessionID){
+        GameSession gameSession = findGameSessionByID(gameSessionID);
+        gameSession.addAcceptedUser(user);
+        if(gameSession.getAcceptedUsers().size() == PLAYER_AMOUNT){
+            createGameFromGameSession(gameSession);
         }
     }
 
-    public void deleteUserFromSession(User user, UUID gameSessionID){
+    public void deleteUserFromGameSession(User user, UUID gameSessionID){
         try {
             Objects.requireNonNull(findGameSessionByID(gameSessionID)).deleteAcceptedUser(user);
         }catch(NullPointerException e){
@@ -229,15 +215,17 @@ public class GameEngine {
     }
 
     /** check needs to happen if user available before calling method **/
-    public void newGameSession(User host) {
+    public GameSession newGameSession(User host) {
+        GameSession gameSession = null;
         if(host.getStatus().equals(UserStatus.Free)){
-            GameSession gameSession = new GameSession(host, userService);
+            gameSession = new GameSession(host, userService);
             try {
                 gameSessionList.add(gameSession);
             }catch(NullPointerException e){
                 System.out.println("Something went wrong in newGameSession");
             }
         }
+        return gameSession;
     }
 
     public boolean userInWaitingRoom(String username) {
@@ -345,9 +333,17 @@ public class GameEngine {
         return null;
     }
 
-    public List<User> getUsersByGameSessionId(UUID gameSessionId){
+    public List<User> getAcceptedUsersByGameSessionId(UUID gameSessionId){
         try {
             return Objects.requireNonNull(findGameSessionByID(gameSessionId)).getAcceptedUsers();
+        }catch(NullPointerException e){
+            return null;
+        }
+    }
+
+    public List<User> getInvitedUsersByGameSessionId(UUID gameSessionId){
+        try {
+            return Objects.requireNonNull(findGameSessionByID(gameSessionId)).getInvitedUsers();
         }catch(NullPointerException e){
             return null;
         }

@@ -48,6 +48,9 @@ public class Game {
     public Round getCurrentRound() {
         return currentRound;
     }
+    public int getRoundNumber(){
+        return this.roundNumber;
+    }
 
     /** used for conversion of a user into a player entity **/
     public Player userToPlayer(User user){

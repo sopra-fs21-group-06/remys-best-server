@@ -66,7 +66,8 @@ public class GameSession {
     }
 
     public void addAcceptedUser(User user) {
-        if(user!=null){
+        if(user!=null && !user.getUsername().equals(hostName)){
+            deleteInvitedUser(user);
             acceptedUsers.add(user);
             userService.updateStatus(user.getToken(), UserStatus.Busy);
         }

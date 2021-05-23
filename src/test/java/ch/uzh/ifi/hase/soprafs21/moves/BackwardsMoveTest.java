@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class BackwardsMoveTest extends AbstractMoveTest {
-
+    //Move 4 field backward using FOUR #88
     @Test
     public void testFourBackwardsFromHomeBase() {
         Game game = setupGame();

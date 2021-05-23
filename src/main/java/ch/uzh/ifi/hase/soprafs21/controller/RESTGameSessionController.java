@@ -22,4 +22,6 @@ public class RESTGameSessionController {
         GameEngine.instance().newGameSession(user);
         return new GameSessionIdDTO(user.getUsername());
     }
+
+
 }

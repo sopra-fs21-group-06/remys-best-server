@@ -36,6 +36,7 @@ public class WaitingRoom {
         if(userToRemove!=null){
             String usernameToRemove = userToRemove.getUsername();
             userQueue.removeIf(user -> user.getUsername().equals(usernameToRemove));
+            userCount--;
         }
     }
 
@@ -46,7 +47,6 @@ public class WaitingRoom {
                 return userQueue.size();
             }
         }
-
         userQueue.add(userToAdd);
         userCount++;
         return userQueue.size();
@@ -59,6 +59,7 @@ public class WaitingRoom {
         }
         for(int i = 0; i < numberOfUsers; i++){
             User newUserToAddToGamesession = userQueue.remove(0);
+            userCount--;
             usersToAddToGameSession.add(newUserToAddToGamesession);
 
         }

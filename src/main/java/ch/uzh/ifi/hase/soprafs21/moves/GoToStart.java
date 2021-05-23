@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.moves;
 
+import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
@@ -20,20 +21,21 @@ public class GoToStart implements INormalMove {
 
     @Override
     public List<String> getPossibleTargetFields(Game game, Marble marbleToMove) {
-        Field targetField = game.getPlayingBoard().getField(16, game.getCurrentRound().getCurrentPlayer().getColor());
+        Field targetField = game.getPlayingBoard().getField(16,marbleToMove.getColor());
         List<String> possibleTargetFieldKeys = new ArrayList<>();
         possibleTargetFieldKeys.add(targetField.getFieldKey());
-        if (!targetField.getFieldStatus().equals(FieldStatus.BLOCKED)) {
-            possibleTargetFieldKeys.add(targetField.getFieldKey());
-        }
         return possibleTargetFieldKeys;
     }
 
     @Override
     public List<Marble> getPlayableMarbles(Game game, GameService gameService) {
         List<Marble> possibleMarbles = new ArrayList<>();
-        Boolean hasMarblesOnHomeField = game.getPlayingBoard().hasMarbleOnHomeStack(game.getCurrentRound().getCurrentPlayer().getColor());
-        Boolean startingFieldIsBocked = game.getPlayingBoard().getNextStartFieldIsBlocked(game.getCurrentRound().getCurrentPlayer().getColor());
+        Color colorToLookAt = game.getCurrentRound().getCurrentPlayer().getColor();
+        if(game.getCurrentRound().getCurrentPlayer().isFinished()){
+            colorToLookAt =game.getCurrentRound().getCurrentPlayer().getTeamMate().getColor();
+        }
+        Boolean hasMarblesOnHomeField = game.getPlayingBoard().hasMarbleOnHomeStack(colorToLookAt);
+        Boolean startingFieldIsBocked = game.getPlayingBoard().getNextStartFieldIsBlocked(colorToLookAt);
         if(!hasMarblesOnHomeField){
             log.info("No marbles at home at getPlayableMarbles start");
             return possibleMarbles;
@@ -43,7 +45,7 @@ public class GoToStart implements INormalMove {
             return possibleMarbles;
         }
 
-        Marble m = game.getPlayingBoard().getFirstHomeMarble(game.getCurrentRound().getCurrentPlayer().getColor(), false);
+        Marble m = game.getPlayingBoard().getFirstHomeMarble(colorToLookAt, false);
         possibleMarbles.add(m);
         return possibleMarbles;
     }

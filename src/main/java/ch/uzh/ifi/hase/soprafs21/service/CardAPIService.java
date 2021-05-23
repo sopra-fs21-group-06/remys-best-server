@@ -53,7 +53,21 @@ public class CardAPIService {
     private synchronized ArrayList<Card> drawCardsInternal(int amountOfCards) {
         String uri = String.format("https://deckofcardsapi.com/api/deck/%s/draw/?count=%s", this.deckId, amountOfCards);
 
-        CardAPICardResponseObject cardAPICardResponseObject = this.restTemplate.getForObject(uri, CardAPICardResponseObject.class);
+        CardAPICardResponseObject cardAPICardResponseObject = null;
+        boolean hasCardsReceived = false;
+        while(!hasCardsReceived){
+            try{
+                cardAPICardResponseObject = this.restTemplate.getForObject(uri, CardAPICardResponseObject.class);
+                hasCardsReceived = true;
+            } catch(Exception ex){
+                // 500 Internal Server Error of the API, try again after 100 millis
+                try {
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                    // start loop immediately
+                }
+            }
+        }
 
         // transform cardCodes to cards
         ArrayList<Card> drawnCards = new ArrayList<>();
