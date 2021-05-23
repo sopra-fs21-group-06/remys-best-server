@@ -55,4 +55,21 @@ public class FriendRequestServiceTest {
         Mockito.when(friendRequestRepository.save(Mockito.any())).thenReturn(testFriendRequest);
     }
 
+    @Test
+    public void getAllFriendRequestsTest() {
+
+        List<FriendRequest> friendRequestList = new ArrayList<FriendRequest>();
+        friendRequestList.add(testFriendRequest);
+        Mockito.when(friendRequestRepository.findAll()).thenReturn(friendRequestList);
+
+        List<FriendRequest>response = friendRequestService.getAllFriendRequests();
+
+        Mockito.verify(friendRequestRepository, Mockito.times(1)).findAll();
+
+        assertEquals(response.size(), friendRequestList.size());
+        assertEquals(response.get(0).getReceiverName(), friendRequestList.get(0).getReceiverName());
+        assertEquals(response.get(0).getRequestStatus(), friendRequestList.get(0).getRequestStatus());
+        assertEquals(response.get(0).getSenderName(), friendRequestList.get(0).getSenderName());
+        assertEquals(response.get(0).getCreationDate(), friendRequestList.get(0).getCreationDate());
+    }
 }
