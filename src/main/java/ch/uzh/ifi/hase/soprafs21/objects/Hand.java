@@ -33,10 +33,10 @@ public class Hand {
             }
         }
     }
+
     public void throwAwayHand(){
         List<Card> newHandDeck = new ArrayList<>();
         setHandDeck(newHandDeck);
-
     }
 }
 

@@ -1,31 +1,22 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
-import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.service.CardAPIService;
-import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Boolean.TRUE;
-
 public class Round {
     private final CardAPIService cardAPIService;
-    private Game game;
-    private int currentCardAmount;
+    private final Game game;
+    private final int currentCardAmount;
     private Player currentPlayer;
-    private List<Player> players;
-    private Player winner = null;
+    private final List<Player> players;
     private final WebSocketService webSocketService;
     private final UserService userService;
 
-
-    Logger log = LoggerFactory.getLogger(Round.class);
     public Round(Game game, WebSocketService webSocketService, UserService userService, CardAPIService cardAPIService){
         this.game = game;
         this.players = game.getPlayers();
@@ -46,37 +37,27 @@ public class Round {
     }
 
     public void changeCurrentPlayer() {
-        for (Player p: players){
-            if(p.getColor().equals(DogUtils.getNextColor(this.currentPlayer.getColor()))) {
+        Player nextPlayer = DogUtils.getNextPlayer(currentPlayer, players);
+        for (Player p: players) {
+            if(p.getPlayerName().equals(nextPlayer.getPlayerName())) {
                 currentPlayer = p;
-                if (!currentPlayer.getHand().getHandDeck().isEmpty()) {
-                    break;
-                }
-            }
-        }
-        if(currentPlayer.getColor().equals(DogUtils.getPreviousColor(game.getStartPlayer().getColor())) && currentPlayer.getHand().getHandDeck().isEmpty()) {
-            for (Player p: players){
-                if(p.getColor().equals(DogUtils.getNextColor(this.currentPlayer.getColor()))) {
-                    currentPlayer = p;
-                    if (!p.getHand().getHandDeck().isEmpty()) {
-                        break;
-                    }
+                if (currentPlayer.getHand().getHandDeck().isEmpty()) {
+                    changeCurrentPlayer();
                 }
             }
         }
         game.broadcastCurrentTurnAndUpdatedFacts();
-
     }
 
     public String getNextPlayerName() {
-        return DogUtils.getNextPlayerName(this.currentPlayer, this.players);
+        return DogUtils.getNextPlayer(this.currentPlayer, this.players).getPlayerName();
     }
 
     public Game getGame () {
         return game;
     }
 
-    public Player getCurrentPlayer () {
+    public Player getCurrentPlayer() {
         return currentPlayer;
     }
 

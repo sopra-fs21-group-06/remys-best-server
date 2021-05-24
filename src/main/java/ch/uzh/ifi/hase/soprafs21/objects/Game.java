@@ -15,12 +15,12 @@ import java.util.UUID;
 
 public class Game {
     /** should game have a Round ? such that we just instantiate a new variable of round that automatically is created with right number of cards etc?**/
-    private List<Player> players = new ArrayList<>();
+    private final List<Player> players = new ArrayList<>();
     private int currentCardAmountForRound = MAX_NUMBER_OF_CARDS;
     private static int MIN_NUMBER_OF_CARDS = 2;
     private static int MAX_NUMBER_OF_CARDS = 6;
     private Player startPlayer;
-    private PlayingBoard playingBoard = new PlayingBoard();
+    private final PlayingBoard playingBoard = new PlayingBoard();
     private final UUID gameId = UUID.randomUUID();
     private int roundNumber = 0;
     private Round currentRound;
@@ -48,6 +48,7 @@ public class Game {
     public Round getCurrentRound() {
         return currentRound;
     }
+
     public int getRoundNumber(){
         return this.roundNumber;
     }
@@ -259,6 +260,6 @@ public class Game {
     }
 
     public String getNextPlayerName() {
-        return DogUtils.getNextPlayerName(this.startPlayer, this.players);
+        return DogUtils.getNextPlayer(this.startPlayer, this.players).getPlayerName();
     }
 }

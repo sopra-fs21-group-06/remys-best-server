@@ -1,9 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.AbstractTest;
-import ch.uzh.ifi.hase.soprafs21.moves.INormalMove;
-import ch.uzh.ifi.hase.soprafs21.moves.TwoForwards;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
+import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -59,32 +58,61 @@ public class GameServiceTest extends AbstractTest {
         List<String> playableCardCodes = game.getGameService().canPlay(currentPlayer, game);
         assertEquals(0, playableCardCodes.size());
     }
+
     // Player throws cards away and sits round out #77
     @Test
     public void testChangePlayer_skipPlayer() {
         Game game = setupGame();
-        Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
-        List<String> cardCodesPlayer1 = List.of("2D", "0H", "4H", "7C", "9S", "JH");
-        addCardsToHand(currentPlayer, cardCodesPlayer1);
-        Player playerNext = game.getPlayers().get(1);
-        List<String> cardCodesPlayer2 = List.of("2D", "2H", "3H", "4C", "5S", "6H");
-        addCardsToHand(playerNext, cardCodesPlayer2);
-        playerNext.getHand().throwAwayHand();
-        Player playerNextNext = game.getPlayers().get(2);
-        List<String> cardCodesPlayer3 = List.of("2D", "0H", "4H", "7C", "9S", "JH");
-        addCardsToHand(playerNextNext, cardCodesPlayer3);
-        Player playerNextNextNExt = game.getPlayers().get(3);
-        List<String> cardCodesPlayer4 = List.of("2D", "0H", "4H", "7C", "9S", "JH");
-        addCardsToHand(playerNextNextNExt, cardCodesPlayer4);
-        playerNextNextNExt.getHand().throwAwayHand();
-        game.getCurrentRound().changeCurrentPlayer();
-        log.info(String.valueOf(game.getCurrentRound().getCurrentPlayer().getColor()));
-        assertEquals(game.getCurrentRound().getCurrentPlayer(), playerNextNext);
+        List<String> cardCodes = List.of("2D", "0H", "4H", "7C");
+
+        Player player1 = game.getCurrentRound().getCurrentPlayer();
+        addCardsToHand(player1, cardCodes);
+        Player player2 = DogUtils.getNextPlayer(player1, game.getPlayers());
+        addCardsToHand(player2, cardCodes);
+        Player player3 = DogUtils.getNextPlayer(player2, game.getPlayers());
+        addCardsToHand(player3, cardCodes);
+        Player player4 = DogUtils.getNextPlayer(player3, game.getPlayers());
+        addCardsToHand(player4, cardCodes);
+
+        assertEquals(player1.getPlayerName(), DogUtils.getNextPlayer(player4, game.getPlayers()).getPlayerName());
+
+        player2.getHand().throwAwayHand();
 
         game.getCurrentRound().changeCurrentPlayer();
-        log.info(String.valueOf(game.getCurrentRound().getCurrentPlayer().getColor()));
-        assertEquals(game.getCurrentRound().getCurrentPlayer(), currentPlayer);
+        assertEquals(player3, game.getCurrentRound().getCurrentPlayer());
+
+        game.getCurrentRound().changeCurrentPlayer();
+        assertEquals(player4, game.getCurrentRound().getCurrentPlayer());
+
+        game.getCurrentRound().changeCurrentPlayer();
+        assertEquals(player1, game.getCurrentRound().getCurrentPlayer());
+
+        game.getCurrentRound().changeCurrentPlayer();
+        assertEquals(player3, game.getCurrentRound().getCurrentPlayer());
+
+        player4.getHand().throwAwayHand();
+
+        game.getCurrentRound().changeCurrentPlayer();
+        assertEquals(player1, game.getCurrentRound().getCurrentPlayer());
+
+        game.getCurrentRound().changeCurrentPlayer();
+        assertEquals(player3, game.getCurrentRound().getCurrentPlayer());
+
+        game.getCurrentRound().changeCurrentPlayer();
+        assertEquals(player1, game.getCurrentRound().getCurrentPlayer());
+
+        player3.getHand().throwAwayHand();
+
+        game.getCurrentRound().changeCurrentPlayer();
+        assertEquals(player1, game.getCurrentRound().getCurrentPlayer());
+
+        game.getCurrentRound().changeCurrentPlayer();
+        assertEquals(player1, game.getCurrentRound().getCurrentPlayer());
+
+        game.getCurrentRound().changeCurrentPlayer();
+        assertEquals(player1, game.getCurrentRound().getCurrentPlayer());
     }
+
     //Rotate Start Player Clockwise #59
     @Test
     public void testChangePlayer() {

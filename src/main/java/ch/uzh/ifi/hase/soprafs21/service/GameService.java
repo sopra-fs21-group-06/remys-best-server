@@ -59,8 +59,6 @@ public class GameService {
         game.changeStartingPlayer();
         game.incrementRoundNumber();
         game.incrementCardAmountForRound();
-
-        // TODO set exchange mode ?
     }
 
     public List<String> canPlay(Player p, Game game){
@@ -242,7 +240,6 @@ public class GameService {
             log.info("round finsihed(checkEndTurnAndEndRound)");
             endRound(game);
         } else {
-
             game.getCurrentRound().changeCurrentPlayer();
         }
     }
@@ -298,18 +295,14 @@ public class GameService {
     }
 
     public boolean checkPlayerIsFinished(Player currentPlayer){
-        int countChangeTeam = 0;
         for(Marble m: currentPlayer.getMarbleList()){
-            if(m.getFinish()){
-                countChangeTeam++;
+            if(!m.getFinish()){
+                return false;
             }
         }
-        if(countChangeTeam == 4) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
+        return true;
     }
+
     public void endTurn(Game game) {
         Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
         Player teamMate = currentPlayer.getTeamMate();
@@ -321,24 +314,19 @@ public class GameService {
             else {
                 log.info("Change of Color and Marble for currentPlayer");
                 currentPlayer.setMarbleList(teamMate.getMarbleList());
-
             }
         }
     }
+
     public boolean checkRoundIsFinished(Game game){
-        int countNoMoreCards = 0;
         for(Player p: game.getPlayers()){
-            if(p.getHand().getHandDeck().isEmpty()){
-                countNoMoreCards++;
+            if(!p.getHand().getHandDeck().isEmpty()){
+                return false;
             }
         }
-
-        if(countNoMoreCards == 4){
-            log.info("No more cards in game(checkroundisfinsined");
-            return TRUE;
-        }
-        return FALSE;
+        return true;
     }
+
     public void endRound(Game game){
         updateRoundStats(game);
         initiateRound(game);

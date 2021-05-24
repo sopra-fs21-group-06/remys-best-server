@@ -207,19 +207,19 @@ public class DogUtils {
         return gameThrowAwayDTO;
     }
 
-    public static String getNextPlayerName(Player currentPlayer, List<Player> players) {
+    public static Player getNextPlayer(Player currentPlayer, List<Player> players) {
         Color currentColor = currentPlayer.getColor();
         Color nextColor = getNextColor(currentColor);
 
-        String playerName = null;
+        Player nextPlayer = null;
         for (Player player: players){
             if(player.getColor().equals(nextColor)){
-                playerName = player.getPlayerName();
+                nextPlayer = player;
                 break;
             }
         }
 
-        return playerName;
+        return nextPlayer;
     }
 
     public static Color getNextColor(Color color) {
