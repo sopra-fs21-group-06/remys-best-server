@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.objects;
 
 import ch.uzh.ifi.hase.soprafs21.constant.Color;
-import ch.uzh.ifi.hase.soprafs21.constant.FieldStatus;
 
 public class Marble {
     private final int marbleId;
@@ -9,7 +8,6 @@ public class Marble {
     private Field currentField;
     private Boolean isHome;
     private Boolean isFinish;
-
 
     public Marble(int marbleId, Color color){
         this.marbleId = marbleId;

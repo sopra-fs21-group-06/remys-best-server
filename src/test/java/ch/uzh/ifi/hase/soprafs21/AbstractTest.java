@@ -82,4 +82,10 @@ public abstract class AbstractTest {
         }
         player.getHand().addCardsToHand(cardsToAdd);
     }
+
+    public void addCardsToHands(List<Player> player, List<String> cardCodes) {
+        for(Player p : player) {
+            addCardsToHand(p, cardCodes);
+        }
+    }
 }
