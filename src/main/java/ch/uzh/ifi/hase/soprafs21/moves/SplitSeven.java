@@ -64,7 +64,22 @@ public class SplitSeven implements ISplitMove {
         if (changesStartField) {
             game.getPlayingBoard().getRightColorStartField(marbleToMove.getColor()).setFieldStatus(FieldStatus.BLOCKED);
         }
-
+        List<String> targetFieldKeysToDelete = new ArrayList<>();
+        if (countToRemainSeven != 0){
+            for (String possibleTargetKey : possibleTargetFieldKeys) {
+                Field possibleFinish = game.getPlayingBoard().getFieldByFieldKey(possibleTargetKey);
+                if(game.getPlayingBoard().finishFieldIsFinishMoveField(possibleFinish)){
+                    log.info("TO REMOVE MAYBE!!!" + possibleFinish.getFieldKey());
+                    ArrayList<MarbleIdAndTargetFieldKey> sevenMovesToCheck = new ArrayList<>();
+                    sevenMovesToCheck.add(new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleId(), possibleTargetKey));
+                    if(getPlayableMarbles(game, game.getGameService(), sevenMovesToCheck).isEmpty()){
+                        log.info("TO REMOVE!!!" + possibleFinish.getFieldKey());
+                        targetFieldKeysToDelete.add(possibleTargetKey);
+                    }
+                }
+            }
+        }
+        possibleTargetFieldKeys.removeAll(targetFieldKeysToDelete);
         if (changeFinishField) {
             for (String s : toChangeBack) {
                 game.getPlayingBoard().getFieldByFieldKey(s).setFieldStatus(FieldStatus.FREE);

@@ -491,6 +491,71 @@ public class SplitSevenMoveTest extends AbstractMoveTest {
 
 
     }
+    @Test
+    public void testSeven_RightFinishFields() {
+        Game game = setupGame();
+        //Send all Marbles except for one to finish
+        Player player = game.getCurrentRound().getCurrentPlayer();
+
+        List<Marble> playerMarbles = player.getMarbleList();
+        Marble marble1 = playerMarbles.get(3);
+        Marble marble2 = playerMarbles.get(2);
+        Marble marble3 = playerMarbles.get(1);
+        Marble marble4 = playerMarbles.get(0);
+        String finishField1 = "12BLUE";
+        String finishField2 = "13BLUE";
+        String finishField3 = "14BLUE";
+        String finishField4 = "15BLUE";
+        marble1.setCurrentField(game.getPlayingBoard().getFieldByFieldKey(finishField1));
+        marble2.setCurrentField(game.getPlayingBoard().getFieldByFieldKey(finishField2));
+        marble3.setCurrentField(game.getPlayingBoard().getFieldByFieldKey(finishField3));
+        marble4.setCurrentField(game.getPlayingBoard().getFieldByFieldKey(finishField4));
+        finishField1 = "20BLUE";
+        finishField2 = "19BLUE";
+        finishField3 = "18BLUE";
+        finishField4 = "16BLUE";
+        Field field1 = game.getPlayingBoard().getFieldByFieldKey(finishField1);
+        Field field2 = game.getPlayingBoard().getFieldByFieldKey(finishField2);
+        Field field3 = game.getPlayingBoard().getFieldByFieldKey(finishField3);
+        Field field4 = game.getPlayingBoard().getFieldByFieldKey(finishField4);
+        game.getPlayingBoard().makeMove(field1, marble1);
+        game.getPlayingBoard().makeMove(field2, marble2);
+        game.getPlayingBoard().makeMove(field3, marble3);
+        game.getPlayingBoard().makeMove(field4, marble4);
+        marble1.setHome(Boolean.FALSE);
+        marble2.setHome(Boolean.FALSE);
+        marble3.setHome(Boolean.FALSE);
+        marble4.setHome(Boolean.FALSE);
+        assertTrue(marble1.getFinish());
+        assertTrue(marble2.getFinish());
+        assertTrue(marble3.getFinish());
+        assertFalse(marble4.getFinish());
+
+        ArrayList<MarbleIdAndTargetFieldKey> sevenMoves = new ArrayList<>();
+
+        ISplitMove splitSeven = new SplitSeven();
+        List<Marble> playableMarbles = splitSeven.getPlayableMarbles(game, game.getGameService(), sevenMoves);
+        assertEquals(playableMarbles.size(), 1);
+        assertEquals(playableMarbles.get(0), marble4);
+        //Marble is on homefield and possible TargetFIelds are last finishspot or 7 steps into green part
+        String targetFieldKey1 = "1GREEN";
+        String targetFieldKey2 = "2GREEN";
+        String targetFieldKey3 = "3GREEN";
+        String targetFieldKey4 = "4GREEN";
+        String targetFieldKey5 = "5GREEN";
+        String targetFieldKey6 = "6GREEN";
+        String targetFieldKey7 = "7GREEN";
+
+        List<String> possibleTargetFields = splitSeven.getPossibleTargetFields(game, marble4, sevenMoves);
+        assertEquals(possibleTargetFields.size(), 7);
+        assertEquals(possibleTargetFields.get(0), targetFieldKey1);
+        assertEquals(possibleTargetFields.get(1), targetFieldKey2);
+        assertEquals(possibleTargetFields.get(2), targetFieldKey3);
+        assertEquals(possibleTargetFields.get(3), targetFieldKey4);
+        assertEquals(possibleTargetFields.get(4), targetFieldKey5);
+        assertEquals(possibleTargetFields.get(5), targetFieldKey6);
+        assertEquals(possibleTargetFields.get(6), targetFieldKey7);
 
 
+    }
 }
