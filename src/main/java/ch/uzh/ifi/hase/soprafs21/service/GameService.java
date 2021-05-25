@@ -174,6 +174,7 @@ public class GameService {
                 break;
             }
         }
+        assert moveToGetPlayableMarbles != null;
         return getPlayableMarblesOfMove(moveToGetPlayableMarbles, game, this, sevenMoves);
     }
 
@@ -189,6 +190,7 @@ public class GameService {
                 break;
             }
         }
+        assert moveToGetPossibleTargetFields != null;
         return getPossibleTargetFieldsOfMove(moveToGetPossibleTargetFields, game, marbleToMove, sevenMoves);
     }
 
@@ -211,6 +213,7 @@ public class GameService {
                 break;
             }
         }
+        assert moveToExecute != null;
         if(moveToExecute == null) {
             throw new Exception("Something strange happened");
         }
@@ -225,6 +228,7 @@ public class GameService {
                 ma = m;
             }
         }
+        assert ma != null;
         String mahome = String.valueOf(ma.getHome());
         String mafinish = String.valueOf(ma.getFinish());
         log.info("Marble :" + s + "Field :" + mIdAndFieldKey.getFieldKey() + "FieldStatus: "+ status +  "Marble is home :" + mahome + "Marble is finsih: " + mafinish);

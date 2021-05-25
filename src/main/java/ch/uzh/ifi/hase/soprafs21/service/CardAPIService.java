@@ -21,6 +21,7 @@ public class CardAPIService {
     public CardAPIService() {
         this.restTemplate = createRestTemplate();
         CardAPIDeckResponseObject deckResponseObject = createDeck();
+        assert deckResponseObject != null;
         this.deckId = deckResponseObject.getDeck_id();
         this.remaining = deckResponseObject.getRemaining();
     }
@@ -46,7 +47,7 @@ public class CardAPIService {
         String uri = String.format("https://deckofcardsapi.com/api/deck/%s/shuffle/", this.deckId);
 
         CardAPIDeckResponseObject cardAPIDeckResponseObject = this.restTemplate.getForObject(uri, CardAPIDeckResponseObject.class);
-
+        assert cardAPIDeckResponseObject != null;
         this.remaining = cardAPIDeckResponseObject.getRemaining();
     }
 
@@ -54,6 +55,7 @@ public class CardAPIService {
         String uri = String.format("https://deckofcardsapi.com/api/deck/%s/draw/?count=%s", this.deckId, amountOfCards);
 
         CardAPICardResponseObject cardAPICardResponseObject = null;
+        assert cardAPICardResponseObject != null;
         boolean hasCardsReceived = false;
         while(!hasCardsReceived){
             try{
