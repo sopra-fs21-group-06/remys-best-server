@@ -56,6 +56,8 @@ public class FourBackwards implements INormalMove {
                 marbleToMove = m;
             }
         }
+        assert marbleToMove != null;
+
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
         MarbleIdAndTargetFieldKey resultEating = game.getGameService().eat(targetField,game);
         game.getPlayingBoard().makeMove(targetField, marbleToMove);
