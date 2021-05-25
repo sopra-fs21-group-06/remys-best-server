@@ -55,7 +55,6 @@ public class CardAPIService {
         String uri = String.format("https://deckofcardsapi.com/api/deck/%s/draw/?count=%s", this.deckId, amountOfCards);
 
         CardAPICardResponseObject cardAPICardResponseObject = null;
-        assert cardAPICardResponseObject != null;
         boolean hasCardsReceived = false;
         while(!hasCardsReceived){
             try{
@@ -72,6 +71,7 @@ public class CardAPIService {
         }
 
         // transform cardCodes to cards
+        assert cardAPICardResponseObject != null;
         ArrayList<Card> drawnCards = new ArrayList<>();
         for (CardAPICardJson card : cardAPICardResponseObject.getCards()) {
             drawnCards.add(new Card(card.getCode()));

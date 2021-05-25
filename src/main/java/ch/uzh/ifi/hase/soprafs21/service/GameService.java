@@ -126,14 +126,12 @@ public class GameService {
         }
     }
 
-    private void checkHasCardThisMove(List<Card> hand, String moveName) throws Exception {
+    private void checkHasCardThisMove(Card cardToPlay, String moveName) throws Exception {
         boolean hasCardThisMove = false;
-        for(Card card: hand){
-            for(IMove move : card.getMoves()) {
-                if (move.getName().equals(moveName)) {
-                    hasCardThisMove = true;
-                    break;
-                }
+        for(IMove move : cardToPlay.getMoves()) {
+            if (move.getName().equals(moveName)) {
+                hasCardThisMove = true;
+                break;
             }
         }
         if(!hasCardThisMove) {
@@ -156,17 +154,18 @@ public class GameService {
       }  */
         checkIsYourMarble(cardToPlay, moveName, game, marbleToMove);
         checkIsCardInYourHand(hand, cardToPlay);
-        checkHasCardThisMove(hand, moveName);
+        checkHasCardThisMove(cardToPlay, moveName);
         if(!marbleToMove.getHome() /*&& !moveName.equals("Split 7")*/) {
             checkTargetFieldValidity(marbleToMove, moveName, cardToPlay, game, targetFieldKey);
         }
     }
 
-    public List<Marble> getPlayableMarbles(Game game, String playerName, Card cardToPlay, String moveName) {
+    public List<Marble> getPlayableMarbles(Game game, String playerName, Card cardToPlay, String moveName) throws Exception {
         return getPlayableMarbles(game, playerName, cardToPlay, moveName, new ArrayList<>());
     }
 
-    public List<Marble> getPlayableMarbles(Game game, String playerName, Card cardToPlay, String moveName, ArrayList<MarbleIdAndTargetFieldKey> sevenMoves) {
+    public List<Marble> getPlayableMarbles(Game game, String playerName, Card cardToPlay, String moveName, ArrayList<MarbleIdAndTargetFieldKey> sevenMoves) throws Exception {
+        checkHasCardThisMove(cardToPlay, moveName);
         IMove moveToGetPlayableMarbles = null;
         for(IMove imove : cardToPlay.getMoves()) {
             if (imove.getName().equals(moveName)) {
@@ -214,9 +213,6 @@ public class GameService {
             }
         }
         assert moveToExecute != null;
-        if(moveToExecute == null) {
-            throw new Exception("Something strange happened");
-        }
         ArrayList<MarbleIdAndTargetFieldKey> executedMarbleIdsAndTargetFieldKeys = moveToExecute.executeMove(game,marbleIdAndTargetFieldKeys );
 
         String s = String.valueOf(mIdAndFieldKey.getMarbleId());
