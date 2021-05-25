@@ -60,6 +60,7 @@ public class Exchange implements INormalMove {
                 marbleToMove = m;
             }
         }
+        assert marbleToMove != null;
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
         String fieldKeyNewTeamMate = marbleToMove.getCurrentField().getFieldKey();
         Marble marbleTeamMate = targetField.getMarble();
