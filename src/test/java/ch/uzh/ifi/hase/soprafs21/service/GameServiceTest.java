@@ -182,7 +182,7 @@ public class GameServiceTest extends AbstractTest {
         assertTrue(game.getGameService().checkRoundIsFinished(game));
     }
     @Test
-    public void testGetPlayableMarbles(){
+    public void testGetPlayableMarbles() throws Exception {
         Game game = setupGame();
         Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
         Card card = new Card("AH");
@@ -203,7 +203,7 @@ public class GameServiceTest extends AbstractTest {
         ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = new ArrayList<>();
         List<String> targetFieldList = game.getGameService().getPossibleTargetFields(game, firstHomeMarble, moveName, card, marbleIdAndTargetFieldKeys);
         assertEquals(targetFieldList.size(), 1);
-        assertTrue(targetFieldList.get(0).equals("16BLUE"));
+        assertEquals(targetFieldList.get(0), "16BLUE");
 
     }
     @Test
@@ -222,8 +222,8 @@ public class GameServiceTest extends AbstractTest {
             marbleIdAndTargetFieldKeys.set(game.getGameService().makeMove(game, currentPlayer.getPlayerName(), cardCodesPlayer.get(0), moveName, listToSendWith));
         });
         assertEquals(marbleIdAndTargetFieldKeys.get().size(), 1);
-        assertTrue(marbleIdAndTargetFieldKeys.get().get(0).getFieldKey().equals("16BLUE"));
-        assertTrue(marbleIdAndTargetFieldKeys.get().get(0).getMarbleId() == firstHomeMarble.getMarbleId());
+        assertEquals(marbleIdAndTargetFieldKeys.get().get(0).getFieldKey(), "16BLUE");
+        assertEquals(firstHomeMarble.getMarbleId(), marbleIdAndTargetFieldKeys.get().get(0).getMarbleId());
     }
     @Test
     public void test_checkHasCardThisMove(){
@@ -235,7 +235,7 @@ public class GameServiceTest extends AbstractTest {
         ArrayList<MarbleIdAndTargetFieldKey> listToSendWith = new ArrayList<>();
         listToSendWith.add(new MarbleIdAndTargetFieldKey(firstHomeMarble.getMarbleId(), "16BLUE"));
         Assertions.assertThrows(Exception.class, () -> {
-            ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = game.getGameService().makeMove(game, currentPlayer.getPlayerName(), card.getCode(), moveName, listToSendWith);
+            game.getGameService().makeMove(game, currentPlayer.getPlayerName(), card.getCode(), moveName, listToSendWith);
         });
     }
 
@@ -250,7 +250,7 @@ public class GameServiceTest extends AbstractTest {
         ArrayList<MarbleIdAndTargetFieldKey> listToSendWith = new ArrayList<>();
         listToSendWith.add(new MarbleIdAndTargetFieldKey(firstHomeMarble.getMarbleId(), "16BLUE"));
         Assertions.assertThrows(Exception.class, () -> {
-            ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = game.getGameService().makeMove(game, playerNext.getPlayerName(), card.getCode(), moveName, listToSendWith);
+            game.getGameService().makeMove(game, playerNext.getPlayerName(), card.getCode(), moveName, listToSendWith);
         });
     }
 
