@@ -35,6 +35,7 @@ public class WSWaitingRoomController {
         log.info("Player " + getIdentity(sha) + ": Message received");
         userService.updateUserIdentity(getIdentity(sha), waitingRoomEnterDTO.getToken());
         userService.updateStatus(waitingRoomEnterDTO.getToken(), UserStatus.Busy);
+        log.info("Player " + userService.convertTokenToUsername(waitingRoomEnterDTO.getToken()));
         gameEngine.addUserToWaitingRoom(userService.findByToken(waitingRoomEnterDTO.getToken()));
         WaitingRoomSendOutCurrentUsersDTO userObjDTOList = gameEngine.createWaitingRoomUserList();
         log.info(userObjDTOList.toString());
