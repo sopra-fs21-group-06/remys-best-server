@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.junit.jupiter.api.AfterEach;
@@ -60,6 +61,7 @@ public abstract class AbstractWSControllerTest {
         user.setPassword("password");
         user.setSessionIdentity(UUID.randomUUID().toString());
         user.setToken(UUID.randomUUID().toString());
+        user.setStatus(UserStatus.Free);
         userService.createUser(user);
         return user;
     }
