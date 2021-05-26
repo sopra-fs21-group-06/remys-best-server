@@ -47,19 +47,19 @@ public class GameService {
     // New Round initiated, then Send Card to Player and GameStats
     public void initiateRound(Game game) {
         Round currentRound = new Round(game, webSocketService, userService, game.getCardAPIService());
-        game.incrementRoundNumber();
         game.setCurrentRound(currentRound);
+        game.incrementRoundNumber();
+    }
+
+    public void updateRoundStats(Game game){
+        game.changeStartingPlayer();
+        game.incrementCardAmountForRound();
     }
 
     public UserService getUserService() {
         return userService;
     }
 
-    public void updateRoundStats(Game game){
-        game.changeStartingPlayer();
-        game.incrementRoundNumber();
-        game.incrementCardAmountForRound();
-    }
 
     public List<String> canPlay(Player p, Game game){
         List<Card> hand = p.getHand().getHandDeck();
@@ -80,7 +80,7 @@ public class GameService {
             log.info("Player cant Play");
             webSocketService.broadcastThrowAway(game.getGameId(), p.getPlayerName(), handAsCardCode);
             p.getHand().throwAwayHand();
-            game.getCurrentRound().changeCurrentPlayer();
+            checkEndTurnAndEndRound(game);
         }
         return playableCardCodes;
     }
@@ -225,11 +225,10 @@ public class GameService {
             }
         }
         assert ma != null;
-        String mahome = String.valueOf(ma.getHome());
-        String mafinish = String.valueOf(ma.getFinish());
-        log.info("Marble :" + s + "Field :" + mIdAndFieldKey.getFieldKey() + "FieldStatus: "+ status +  "Marble is home :" + mahome + "Marble is finsih: " + mafinish);
+
         webSocketService.broadcastPlayedMessage(playerName, cardCodeToPlay, executedMarbleIdsAndTargetFieldKeys, game.getGameId());
         game.getCurrentRound().getCurrentPlayer().layDownCard(cardToPlay);
+
         checkEndTurnAndEndRound(game);
         return executedMarbleIdsAndTargetFieldKeys;
     }
@@ -276,9 +275,9 @@ public class GameService {
         if(marble.getCurrentField() instanceof FinishField){
             count = game.getPlayingBoard().nrStepsToNextFreeFinishSpot(startingFieldMove);
         } else {
-            count = game.getPlayingBoard().nrStepsToNextStartFieldBlock(startingFieldMove);
+            count = game.getPlayingBoard().nrStepsToNextStartFieldBlock(startingFieldMove) - 1;
         }
-        if (numberToGoForwards < count) {
+        if (numberToGoForwards <= count) {
             return TRUE;
         }
         return FALSE;
@@ -321,6 +320,8 @@ public class GameService {
     public boolean checkRoundIsFinished(Game game){
         for(Player p: game.getPlayers()){
             if(!p.getHand().getHandDeck().isEmpty()){
+                log.info("FINISHED NO" + p.getPlayerName() + p.getHand().getHandDeck().get(0).getCode());
+
                 return false;
             }
         }
