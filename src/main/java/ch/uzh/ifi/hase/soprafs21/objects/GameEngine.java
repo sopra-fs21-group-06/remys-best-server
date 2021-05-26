@@ -112,6 +112,7 @@ public class GameEngine {
         try {
             if (gameSessionList.contains(gameSession)) {
                 if (gameSession.getAcceptedUsers().size() == PLAYER_AMOUNT) {
+                    log.info(String.valueOf(gameSession.getAcceptedUsers().size()));
                     gameSessionList.remove(gameSession);
                     Game game = new Game(gameSession.getAcceptedUsers(), webSocketService, new CardAPIService());
 
@@ -284,6 +285,8 @@ public class GameEngine {
     public void createGameFromGameSessionAndFillUp(GameSession gameSession){
 
         int numberOfUsersToInvite = PLAYER_AMOUNT - gameSession.getAcceptedUsers().size();
+        log.info(String.valueOf(numberOfUsersToInvite + " This is the number of users to invite"));
+        log.info(String.valueOf(waitingRoom.getUserCount())+ " This ist the number users in the waitingroom");
 
         if(!gameSession.getInvitedUsers().isEmpty()){
             String msg =  "Cant use FillUp while there are still pending gameRequests";
@@ -294,6 +297,8 @@ public class GameEngine {
             try {
                 List<User> usersFromWaitingRoomToFillup = waitingRoom.getXNumberOfUsers(numberOfUsersToInvite);
                 List<User> usersInGameSession = gameSession.getAcceptedUsers();
+                log.info(String.valueOf(usersFromWaitingRoomToFillup.size()));
+                log.info(String.valueOf(usersInGameSession.size()));
 
                 gameSession.getAcceptedUsers().addAll(usersFromWaitingRoomToFillup);
                 Game createdGame = createGameFromGameSession(gameSession);
