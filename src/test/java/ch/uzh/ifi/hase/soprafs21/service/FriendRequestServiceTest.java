@@ -520,4 +520,42 @@ public class FriendRequestServiceTest {
                 () -> friendRequestService.checkIfFriendRequestExists(user_sid_sender.getToken(), user_sid_receiver.getUsername()));
 
     }
+
+    @Test
+    public void checkIfFriendRequestExistsTest_friendRequestExistsNull() {
+
+        User user_sid_sender = new User();
+        user_sid_sender.setUsername("Siddhant");
+        user_sid_sender.setStatus(UserStatus.Free);
+        user_sid_sender.setToken("abcd");
+
+        User user_sid_receiver = new User();
+        user_sid_receiver.setUsername("Pascal");
+        user_sid_receiver.setStatus(UserStatus.Free);
+
+        FriendRequest friendRequestSender = new FriendRequest();
+        friendRequestSender.setRequestStatus(RequestStatus.PENDING);
+        friendRequestSender.setSenderName(user_sid_sender.getUsername());
+        friendRequestSender.setReceiverName(user_sid_receiver.getUsername());
+
+        FriendRequest friendRequestReceiver = new FriendRequest();
+        friendRequestReceiver.setRequestStatus(RequestStatus.PENDING);
+        friendRequestReceiver.setSenderName(user_sid_receiver.getUsername());
+        friendRequestReceiver.setReceiverName(user_sid_sender.getUsername());
+
+        Mockito.when(userService.getUserRepository())
+                .thenReturn(userRepository);
+
+        Mockito.when(userRepository.findByToken(user_sid_sender.getToken()))
+                .thenReturn(user_sid_sender);
+
+        Mockito.when(friendRequestRepository.findBySenderNameAndReceiverName(user_sid_sender.getUsername(), user_sid_receiver.getUsername()))
+                .thenReturn(null);
+        Mockito.when(friendRequestRepository.findBySenderNameAndReceiverName(user_sid_receiver.getUsername(), user_sid_sender.getUsername()))
+                .thenReturn(friendRequestReceiver);
+
+        FriendRequest answer = friendRequestService.checkIfFriendRequestExists(user_sid_sender.getToken(), user_sid_receiver.getUsername());
+
+        assertEquals(friendRequestReceiver, answer);
+    }
 }
