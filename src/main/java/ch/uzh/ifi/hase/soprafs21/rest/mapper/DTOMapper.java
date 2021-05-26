@@ -33,10 +33,19 @@ public interface DTOMapper {
     @Mapping(source = "password", target = "password")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "email", target = "email")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "token", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "sessionIdentity", ignore = true)
     User convertUserRegisterPostDTOtoEntity(UserRegisterPostDTO userRegisterPostDTO);
 
     @Mapping(source = "usernameOrEmail", target = "username")
     @Mapping(source = "password", target = "password")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "token", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "email", ignore = true)
+    @Mapping(target = "sessionIdentity", ignore = true)
     User convertUserLoginPostDTOtoEntity(UserLoginPostDTO userLoginPostDTO);
 
     @Mapping(source = "token", target = "token")
@@ -59,6 +68,7 @@ public interface DTOMapper {
     ChooseColorPlayerDTO convertPlayerToChooseColorPlayerDTO(Player player);
 
     @Mapping(source = "code", target = "code")
+    @Mapping(target = "idx", ignore = true)
     GameCardDTO convertCardToGameCardDTO(Card card);
 
     @Mapping(source = "moveName", target = "moveName")
@@ -83,5 +93,10 @@ public interface DTOMapper {
 
     @Mapping(source="email", target="email")
     @Mapping(source="password", target="password")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "token", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "username", ignore = true)
+    @Mapping(target = "sessionIdentity", ignore = true)
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 }
