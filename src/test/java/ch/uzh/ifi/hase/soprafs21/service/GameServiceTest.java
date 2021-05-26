@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.AbstractTest;
+import ch.uzh.ifi.hase.soprafs21.moves.GoToStart;
+import ch.uzh.ifi.hase.soprafs21.moves.INormalMove;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import org.junit.jupiter.api.Assertions;
@@ -283,6 +285,25 @@ public class GameServiceTest extends AbstractTest {
         Assertions.assertThrows(Exception.class, () -> {
             ArrayList<MarbleIdAndTargetFieldKey> marbleIdAndTargetFieldKeys = game.getGameService().makeMove(game, currentPlayer.getPlayerName(), card.getCode(), moveName, listToSendWith);
         });
+    }
+    @Test
+    public void test_CheckNewRoundIsInitiated_afterThrowAwayCard(){
+        Game game = setupGame();
+        Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
+        List<String> cardCodesPlayer = List.of("2H", "2H", "3H", "4C", "5S", "6H");
+        addCardsToHand(currentPlayer, cardCodesPlayer);
+        currentPlayer.getHand().throwAwayHand();
+        currentPlayer = game.getCurrentRound().getCurrentPlayer();
+        addCardsToHand(currentPlayer, cardCodesPlayer);
+        currentPlayer.getHand().throwAwayHand();
+        currentPlayer = game.getCurrentRound().getCurrentPlayer();
+        addCardsToHand(currentPlayer, cardCodesPlayer);
+        currentPlayer.getHand().throwAwayHand();
+        cardCodesPlayer = List.of("2H", "2H", "3H", "4C", "5S", "6H");
+        currentPlayer = game.getCurrentRound().getCurrentPlayer();
+        addCardsToHand(currentPlayer, cardCodesPlayer);
+        assertTrue(game.getGameService().canPlay(currentPlayer, game).isEmpty());
+        assertEquals(game.getRoundNumber(), 2);
     }
 
 }

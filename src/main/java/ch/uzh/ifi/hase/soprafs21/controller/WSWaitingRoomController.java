@@ -3,7 +3,6 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.objects.GameEngine;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
-import ch.uzh.ifi.hase.soprafs21.service.WebSocketService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.incoming.WaitingRoomEnterDTO;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.outgoing.WaitingRoomSendOutCurrentUsersDTO;
 import org.slf4j.Logger;
@@ -20,12 +19,10 @@ public class WSWaitingRoomController {
     Logger log = LoggerFactory.getLogger(WSWaitingRoomController.class);
 
     private final GameEngine gameEngine;
-    private final WebSocketService webSocketService;
     private final UserService userService;
 
-    public WSWaitingRoomController(GameEngine gameEngine, WebSocketService webSocketService, UserService userService) {
+    public WSWaitingRoomController(GameEngine gameEngine, UserService userService) {
         this.gameEngine = gameEngine;
-        this.webSocketService = webSocketService;
         this.userService = userService;
     }
 

@@ -14,15 +14,14 @@ import java.util.List;
 import java.util.UUID;
 
 public class Game {
-    /** should game have a Round ? such that we just instantiate a new variable of round that automatically is created with right number of cards etc?**/
     private final List<Player> players = new ArrayList<>();
     private int currentCardAmountForRound = MAX_NUMBER_OF_CARDS;
-    private static int MIN_NUMBER_OF_CARDS = 2;
-    private static int MAX_NUMBER_OF_CARDS = 6;
+    private static final int MIN_NUMBER_OF_CARDS = 2;
+    private static final int MAX_NUMBER_OF_CARDS = 6;
     private Player startPlayer;
     private final PlayingBoard playingBoard = new PlayingBoard();
     private final UUID gameId = UUID.randomUUID();
-    private int roundNumber = 0;
+    private int roundNumber = 1;
     private Round currentRound;
     private GameService gameService = GameService.getInstance();
     private final WebSocketService webSocketService;
@@ -219,7 +218,7 @@ public class Game {
     }
 
     public void broadcastFactsMessage(){
-        webSocketService.broadcastFactsMessage(roundNumber, currentRound.getCurrentPlayer().getPlayerName(), getNextCardAmount(), currentRound.getNextPlayerName(), gameId);
+        webSocketService.broadcastFactsMessage(roundNumber, currentRound.getCurrentPlayer().getPlayerName(), getNextCardAmount(), currentRound.getNextRoundBeginner(), gameId);
     }
 
     public void executeMove(ExecutePlayCardDTO executePlayCardDTO) throws Exception {
