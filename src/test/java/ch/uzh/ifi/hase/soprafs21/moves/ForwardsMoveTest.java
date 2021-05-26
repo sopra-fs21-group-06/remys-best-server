@@ -110,8 +110,8 @@ public class ForwardsMoveTest extends AbstractMoveTest {
         Marble marble = goToStart(game);
 
         // two forwards
-        INormalMove oneForwards = new TwoForwards();
-        String targetFieldKey = "2GREEN";
+        INormalMove oneForwards = new OneForwards();
+        String targetFieldKey = "1GREEN";
 
         List<Marble> playableMarbles = oneForwards.getPlayableMarbles(game, game.getGameService());
         assertTrue(playableMarbles.contains(marble));

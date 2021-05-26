@@ -69,12 +69,11 @@ public class SplitSeven implements ISplitMove {
             for (String possibleTargetKey : possibleTargetFieldKeys) {
                 Field possibleFinish = game.getPlayingBoard().getFieldByFieldKey(possibleTargetKey);
                 if(game.getPlayingBoard().finishFieldIsFinishMoveField(possibleFinish)){
-                    log.info("TO REMOVE MAYBE!!!" + possibleFinish.getFieldKey());
                     ArrayList<MarbleIdAndTargetFieldKey> sevenMovesToCheck = new ArrayList<>();
                     sevenMovesToCheck.add(new MarbleIdAndTargetFieldKey(marbleToMove.getMarbleId(), possibleTargetKey));
                     if(getPlayableMarbles(game, game.getGameService(), sevenMovesToCheck).isEmpty()){
-                        log.info("TO REMOVE!!!" + possibleFinish.getFieldKey());
                         targetFieldKeysToDelete.add(possibleTargetKey);
+
                     }
                 }
             }
@@ -137,12 +136,13 @@ public class SplitSeven implements ISplitMove {
     public List<Marble> getPlayableMarbles(Game game, GameService gameService, ArrayList<MarbleIdAndTargetFieldKey> sevenMoves) {
         List<Marble> possibleMarbles = new ArrayList<>();
         //Case Player can make the Move by Himself
+        int countToRemainSeven = game.getGameService().getRemainingSevenMoves(game, sevenMoves);
         List<Marble> marblePlayer = game.getCurrentRound().getCurrentPlayer().getMarblesOnFieldAndNotFinished();
         List<Marble> marbleMate = game.getCurrentRound().getCurrentPlayer().getTeamMate().getMarblesOnFieldAndNotFinished();
 
         List<Marble> possiblePlayerMarble = getNrMarblesCanMakeRemainingSevenMoves(game, gameService, sevenMoves, game.getCurrentRound().getCurrentPlayer(), marblePlayer);
         List<Marble> possibleTeamMateMarble = getNrMarblesCanMakeRemainingSevenMoves(game, gameService, sevenMoves, game.getCurrentRound().getCurrentPlayer().getTeamMate(), marbleMate);
-        if(possibleTeamMateMarble.isEmpty() && possiblePlayerMarble.isEmpty()){
+        if(possiblePlayerMarble.isEmpty() && possibleTeamMateMarble.isEmpty()){
             //case kann sieben nicht spielen
             log.info("RETURN POSSIBLE MARBE 2");
             return possibleMarbles;
@@ -150,7 +150,7 @@ public class SplitSeven implements ISplitMove {
             log.info("RETURN POSSIBLE MARBE 1");
             log.info((game.getCurrentRound().getCurrentPlayer().getPlayerName()));
             return possiblePlayerMarble;
-        } else if (!possibleTeamMateMarble.isEmpty()){
+        } else if (!possibleTeamMateMarble.isEmpty() && countToRemainSeven != 7){
             log.info("RETURN POSSIBLE MARBE 3");
             return possibleTeamMateMarble;
         }
@@ -191,7 +191,7 @@ public class SplitSeven implements ISplitMove {
                 }
             }
         }
-        log.info("COUNTREMAINSVEN" + String.valueOf(countToRemainSeven) + "DINSTANCEALL " + String.valueOf(countPossibleStepsAllMarbles));
+
         //Case player can make move only with his marbles
         if (countPossibleStepsAllMarbles >= countToRemainSeven) {
             possibleMarbles = stillMovable;
