@@ -27,7 +27,6 @@ public class AbstractRESTControllerTest {
 
     @BeforeEach
     public void setup() {
-        //userService.getUserRepository().deleteAll();
         Mockito.when(cardAPIService.drawCards(Mockito.anyInt())).thenReturn(new ArrayList<>());
     }
 

@@ -94,11 +94,8 @@ public class RESTUserControllerTest extends AbstractRESTControllerTest {
         // then
         mockMvc.perform(postRequest)
                 .andExpect(status().isCreated())
-                //.andExpect(jsonPath("$.id", is(user.getId().intValue())))
-                //.andExpect(jsonPath("$.name", is(user.getPassword())))
                 .andExpect(jsonPath("$.token", is(user.getToken())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())));
-                //.andExpect(jsonPath("$.status", is(user.getStatus().toString())));
     }
 
     @Test

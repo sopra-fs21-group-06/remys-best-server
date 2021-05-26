@@ -72,7 +72,7 @@ public class WSGameControllerTest extends AbstractWSControllerTest {
     }
 
     @Test
-    void gameReadyTest() throws Exception {
+    void gameReadyTest() {
 
         User user = createTestUser("iamsiddhantsahu", "hello@siddhantsahu.com");
         ArrayList<User> users = new ArrayList<>();
@@ -86,20 +86,17 @@ public class WSGameControllerTest extends AbstractWSControllerTest {
 
         stompSession.send("/app/game/" + currentRunningGame.getGameId().toString() + "/ready", gameReadyDTO);
 
-        //verify(game, times(1)).setPlayerToReady(user.getUsername());
-        //verify(gameEngine, times(1)).getRunningGameByID(Mockito.any());
         doNothing().when(game).setPlayerToReady(Mockito.anyString());
     }
 
     @Test
-    void cardExchangeTest() throws Exception {
+    void cardExchangeTest() {
 
         User user = createTestUser("iamsiddhantsahu", "hello@siddhantsahu.com");
         ArrayList<User> users = new ArrayList<>();
         users.add(user);
 
         Game currentRunningGame = new Game(users, websocketService, cardAPIService);
-        //String gameID = currentRunningGame.getGameId();
 
         given(gameEngine.getRunningGameByID(currentRunningGame.getGameId())).willReturn(currentRunningGame);
 
@@ -118,15 +115,12 @@ public class WSGameControllerTest extends AbstractWSControllerTest {
         users.add(user);
 
         Game currentRunningGame = new Game(users, websocketService, cardAPIService);
-        //String gameID = currentRunningGame.getGameId();
 
         given(gameEngine.getRunningGameByID(currentRunningGame.getGameId())).willReturn(currentRunningGame);
 
         ExecutePlayCardDTO executePlayCardDTO = generateExecutePlayCardDTO();
 
         stompSession.send("/app/game/" + currentRunningGame.getGameId().toString() + "/play", executePlayCardDTO);
-
-        //verify(game,times(1)).executeMove(Mockito.any());
 
         doNothing().when(game).executeMove(Mockito.any());
     }

@@ -64,10 +64,6 @@ public class RESTGameControllerTest extends AbstractRESTControllerTest {
                 .andExpect(jsonPath("$.moves[0].moveName", is(card.getMoves().get(0).getName())));
     }
 
-    public void getMovesTest_cardDoesNotExist_returnError() throws Exception {
-        // TODO
-    }
-
     @Test
     public void getPossibleMarblesTest_cardAndMoveNameExists_returnPossibleMarbles() throws Exception {
         Game currentRunningGame = setupGame();
@@ -96,16 +92,6 @@ public class RESTGameControllerTest extends AbstractRESTControllerTest {
         mockMvc.perform(postRequest).andExpect(status().isOk())
                 .andExpect(jsonPath("$.marbles", hasSize(1)))
                 .andExpect(jsonPath("$.marbles[0].marbleId", is(marbleDTO.getMarbleId())));
-    }
-
-    @Test
-    public void getPossibleMarblesTest_cardDoesNotExist_returnError() throws Exception {
-        // TODO
-    }
-
-    @Test
-    public void getPossibleMarblesTest_moveNameDoesNotExist_returnError() throws Exception {
-        // TODO
     }
 
     @Test
@@ -144,20 +130,5 @@ public class RESTGameControllerTest extends AbstractRESTControllerTest {
                 .andExpect(jsonPath("$.targetFieldKeys[0]", is(mockedTargetFieldKeys.get(0))))
                 .andExpect(jsonPath("$.targetFieldKeys[1]", is(mockedTargetFieldKeys.get(1))))
                 .andExpect(jsonPath("$.targetFieldKeys[2]", is(mockedTargetFieldKeys.get(2))));
-    }
-
-    @Test
-    public void getPossibleTargetFields_cardDoesNotExist_returnError() throws Exception {
-        // TODO
-    }
-
-    @Test
-    public void getPossibleTargetFields_marbleIdDoesNotExist_returnError() throws Exception {
-        // TODO
-    }
-
-    @Test
-    public void getPossibleTargetFields_moveNameDoesNotExist_returnError() throws Exception {
-        // TODO
     }
 }
