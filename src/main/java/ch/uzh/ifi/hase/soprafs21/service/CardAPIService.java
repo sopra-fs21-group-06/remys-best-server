@@ -56,16 +56,19 @@ public class CardAPIService {
 
         CardAPICardResponseObject cardAPICardResponseObject = null;
         boolean hasCardsReceived = false;
-        while(!hasCardsReceived){
+        int maxAttempts = 3;
+        while(!hasCardsReceived && maxAttempts > 0){
             try{
                 cardAPICardResponseObject = this.restTemplate.getForObject(uri, CardAPICardResponseObject.class);
                 hasCardsReceived = true;
             } catch(Exception ex){
-                // 500 Internal Server Error of the API, try again after 100 millis
+                // 500 Internal Server Error of the Deck of Cards API, try again after 100 millis
                 try {
                     wait(100);
-                } catch (Exception e) {
-                    // start loop immediately
+                    maxAttempts = maxAttempts - 1;
+                } catch (InterruptedException e) {
+                    // Restore interrupted state...
+                    Thread.currentThread().interrupt();
                 }
             }
         }

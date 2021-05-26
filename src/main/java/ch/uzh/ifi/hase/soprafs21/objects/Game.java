@@ -222,20 +222,14 @@ public class Game {
         webSocketService.broadcastFactsMessage(roundNumber, currentRound.getCurrentPlayer().getPlayerName(), getNextCardAmount(), currentRound.getNextPlayerName(), gameId);
     }
 
-    public void executeMove(ExecutePlayCardDTO executePlayCardDTO){
+    public void executeMove(ExecutePlayCardDTO executePlayCardDTO) throws Exception {
         String playerName = gameService.getUserService().convertTokenToUsername(executePlayCardDTO.getToken());
         String cardCode = executePlayCardDTO.getCode();
         String moveName = executePlayCardDTO.getMoveName();
         List<MarbleExecuteCardDTO> marbleExecuteCardDTO = executePlayCardDTO.getMarbles();
 
-        try {
-            ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeysToExecute = DogUtils.generateMarbleIdsAndTargetFieldKeys(marbleExecuteCardDTO);
-            gameService.makeMove(this, playerName, cardCode, moveName, marbleIdsAndTargetFieldKeysToExecute);
-        } catch (Exception e) {
-            e.printStackTrace();
-            // TODO send error via websocket and abort, websocketService.sendPrivateError() to be implemented
-            // e.getMessage();
-        }
+        ArrayList<MarbleIdAndTargetFieldKey> marbleIdsAndTargetFieldKeysToExecute = DogUtils.generateMarbleIdsAndTargetFieldKeys(marbleExecuteCardDTO);
+        gameService.makeMove(this, playerName, cardCode, moveName, marbleIdsAndTargetFieldKeysToExecute);
     }
 
     public GameService getGameService() {
