@@ -8,18 +8,14 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.outgoing.Frien
 import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestManagement.outgoing.FriendRequestResponsePostDTO;
 import ch.uzh.ifi.hase.soprafs21.service.FriendRequestService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(RESTFriendRequestController.class)
-public class RESTFriendRequestTest {
+public class RESTFriendRequestTest extends AbstractRESTControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -56,7 +52,6 @@ public class RESTFriendRequestTest {
         List<FriendRequest> allFriendRequests = Collections.singletonList(friendRequest);
 
         given(friendRequestService.getAllFriendRequests()).willReturn(allFriendRequests);
-        //when(friendRequestService.getAllFriendRequests())
 
         MockHttpServletRequestBuilder getRequest = get("/friendrequests")
                 .contentType(MediaType.APPLICATION_JSON);
@@ -64,7 +59,6 @@ public class RESTFriendRequestTest {
         mockMvc.perform(getRequest)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
-
     }
 
     @Test
@@ -92,11 +86,6 @@ public class RESTFriendRequestTest {
 
     @Test
     public void getAllReceivedFriendRequestsTests() throws Exception {
-
-        //User user = new User();
-        //user.setUsername("Siddhant");
-        //user.setToken("abcdefg");
-
         FriendRequest friendRequest = new FriendRequest();
         friendRequest.setSenderName("Pascal");
         friendRequest.setReceiverName("Siddhant");
@@ -142,7 +131,6 @@ public class RESTFriendRequestTest {
         FriendRequestCreatePostDTO friendRequestCreatePostDTO = new FriendRequestCreatePostDTO();
         friendRequestCreatePostDTO.setReceiverName("Siddhant");
 
-        //given(friendRequestService.createFriendRequest(Mockito.any()))
         doNothing().when(friendRequestService).createFriendRequest(friendRequestCreatePostDTO, "abcdef");
 
         MockHttpServletRequestBuilder postRequest = post("/friendrequests")
@@ -160,7 +148,6 @@ public class RESTFriendRequestTest {
         FriendRequestResponsePostDTO friendRequestResponsePostDTO = new FriendRequestResponsePostDTO();
         friendRequestResponsePostDTO.setSenderName("Siddhant");
 
-        //given(friendRequestService.createFriendRequest(Mockito.any()))
         doNothing().when(friendRequestService).processResponseFriendRequest(friendRequestResponsePostDTO, RequestStatus.DECLINED , "abcdef");
 
         MockHttpServletRequestBuilder postRequest = post("/friendrequests/decline")
@@ -178,7 +165,6 @@ public class RESTFriendRequestTest {
         FriendRequestResponsePostDTO friendRequestResponsePostDTO = new FriendRequestResponsePostDTO();
         friendRequestResponsePostDTO.setSenderName("Siddhant");
 
-        //given(friendRequestService.createFriendRequest(Mockito.any()))
         doNothing().when(friendRequestService).processResponseFriendRequest(friendRequestResponsePostDTO, RequestStatus.ACCEPTED , "abcdef");
 
         MockHttpServletRequestBuilder postRequest = post("/friendrequests/accept")
@@ -188,20 +174,5 @@ public class RESTFriendRequestTest {
 
         mockMvc.perform(postRequest)
                 .andExpect(status().isOk());
-    }
-
-    /**
-     * Helper Method to convert userPostDTO into a JSON string such that the input can be processed
-     * Input will look like this: {"name": "Test User", "username": "testUsername"}
-     * @param object
-     * @return string
-     */
-    private String asJsonString(final Object object) {
-        try {
-            return new ObjectMapper().writeValueAsString(object);
-        }
-        catch (JsonProcessingException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("The request body could not be created.%s", e.toString()));
-        }
     }
 }

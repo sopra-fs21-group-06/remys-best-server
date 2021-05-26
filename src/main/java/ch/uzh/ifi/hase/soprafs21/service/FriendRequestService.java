@@ -120,7 +120,7 @@ public class FriendRequestService {
         }
     }
 
-    private boolean checkIfFriendRequestAlreadyExists(String senderToken, String receiverName){
+    public boolean checkIfFriendRequestAlreadyExists(String senderToken, String receiverName){
 
         User sender = userService.getUserRepository().findByToken(senderToken);
 
@@ -144,7 +144,7 @@ public class FriendRequestService {
         return friendRequestExistsInverted == null;
     }
 
-    private FriendRequest checkIfFriendRequestExists(String senderToken, String senderName){
+    public FriendRequest checkIfFriendRequestExists(String senderToken, String senderName){
         User sender = userService.getUserRepository().findByToken(senderToken);
 
         FriendRequest friendRequestExists = friendRequestRepository.findBySenderNameAndReceiverName(sender.getUsername(), senderName);

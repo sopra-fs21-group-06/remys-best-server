@@ -17,7 +17,7 @@ public class WaitingRoom {
     }
 
     public int getUserCount() {
-        return userCount;
+        return userQueue.size();
     }
 
     public List<User> getUserQueue() {
