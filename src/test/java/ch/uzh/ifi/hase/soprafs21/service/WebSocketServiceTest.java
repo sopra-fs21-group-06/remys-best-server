@@ -70,10 +70,10 @@ public class WebSocketServiceTest {
         int roundCount = 2;
         String playerName = "player one";
         int nextCardAmount = 4;
-        String nextPlayerName = "player two";
+        String nextRoundBeginner = "player two";
         UUID gameId = UUID.randomUUID();
 
-        webSocketServiceSpy.broadcastFactsMessage(roundCount, playerName, nextCardAmount, nextPlayerName, gameId);
+        webSocketServiceSpy.broadcastFactsMessage(roundCount, playerName, nextCardAmount, nextRoundBeginner, gameId);
 
         assertEquals(String.format("/game/%s/facts", gameId.toString()), path);
 
@@ -85,7 +85,7 @@ public class WebSocketServiceTest {
         assertEquals("Active Player", gameFactsDTO.getFacts().get(1).getSubTitle());
         assertEquals(String.valueOf(nextCardAmount), gameFactsDTO.getFacts().get(2).getTitle());
         assertEquals("Next Round Card Amount", gameFactsDTO.getFacts().get(2).getSubTitle());
-        assertEquals(nextPlayerName, gameFactsDTO.getFacts().get(3).getTitle());
+        assertEquals(nextRoundBeginner, gameFactsDTO.getFacts().get(3).getTitle());
         assertEquals("Next Round Beginner", gameFactsDTO.getFacts().get(3).getSubTitle());
     }
 
