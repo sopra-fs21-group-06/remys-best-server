@@ -50,13 +50,6 @@ public class WSGameControllerTest extends AbstractWSControllerTest {
         return gameReadyDTO;
     }
 
-    private GameCardExchange genearateGameCardExchangeDTO(String token, String code) {
-        GameCardExchange gameCardExchange = new GameCardExchange();
-        gameCardExchange.setCode(code);
-        gameCardExchange.setToken(token);
-        return gameCardExchange;
-    }
-
     private ExecutePlayCardDTO generateExecutePlayCardDTO() {
         ExecutePlayCardDTO executePlayCardDTO = new ExecutePlayCardDTO();
         executePlayCardDTO.setCode("2D");
@@ -64,17 +57,16 @@ public class WSGameControllerTest extends AbstractWSControllerTest {
         executePlayCardDTO.setMoveName("2 Forwards");
 
         List<MarbleExecuteCardDTO> marbles = new ArrayList<>();
-        marbles.add(new MarbleExecuteCardDTO(2, "dumy"));
-        marbles.add(new MarbleExecuteCardDTO(4, "dumy2"));
+        marbles.add(new MarbleExecuteCardDTO(2, "dummy"));
+        marbles.add(new MarbleExecuteCardDTO(4, "dummy2"));
 
         executePlayCardDTO.setMarbles(marbles);
         return executePlayCardDTO;
     }
 
     @Test
-    void gameReadyTest() {
-
-        User user = createTestUser("iamsiddhantsahu", "hello@siddhantsahu.com");
+    void testReady() {
+        User user = createTestUser("sid", "hello@siddhantsahu.com");
         ArrayList<User> users = new ArrayList<>();
         users.add(user);
 
@@ -90,9 +82,8 @@ public class WSGameControllerTest extends AbstractWSControllerTest {
     }
 
     @Test
-    void cardExchangeTest() {
-
-        User user = createTestUser("iamsiddhantsahu", "hello@siddhantsahu.com");
+    void testLeave() {
+        User user = createTestUser("sid", "hello@siddhantsahu.com");
         ArrayList<User> users = new ArrayList<>();
         users.add(user);
 
@@ -100,7 +91,26 @@ public class WSGameControllerTest extends AbstractWSControllerTest {
 
         given(gameEngine.getRunningGameByID(currentRunningGame.getGameId())).willReturn(currentRunningGame);
 
-        GameCardExchange gameCardExchange = genearateGameCardExchangeDTO(user.getToken(), "2D");
+        GameReadyDTO gameReadyDTO = generateGameReadyDTO(user.getToken());
+
+        stompSession.send("/app/game/" + currentRunningGame.getGameId().toString() + "/leave", gameReadyDTO);
+
+        doNothing().when(websocketService).broadcastGameEndMessage(Mockito.anyString(), Mockito.any());
+    }
+
+    @Test
+    void testCardExchange() {
+        User user = createTestUser("sid", "hello@siddhantsahu.com");
+        ArrayList<User> users = new ArrayList<>();
+        users.add(user);
+
+        Game currentRunningGame = new Game(users, websocketService, cardAPIService);
+
+        given(gameEngine.getRunningGameByID(currentRunningGame.getGameId())).willReturn(currentRunningGame);
+
+        GameCardExchange gameCardExchange = new GameCardExchange();
+        gameCardExchange.setCode("2D");
+        gameCardExchange.setToken(user.getToken());
 
         stompSession.send("/app/game/" + currentRunningGame.getGameId().toString() + "/card-exchange", gameCardExchange);
 
@@ -108,9 +118,8 @@ public class WSGameControllerTest extends AbstractWSControllerTest {
     }
 
     @Test
-    void playMoveTest() throws Exception {
-
-        User user = createTestUser("iamsiddhantsahu", "hello@siddhantsahu.com");
+    void testPlayMove() throws Exception {
+        User user = createTestUser("sid", "hello@siddhantsahu.com");
         ArrayList<User> users = new ArrayList<>();
         users.add(user);
 

@@ -61,7 +61,7 @@ public class GameSessionTest {
         assertFalse(gameSession.isAcceptedUserInHere(newUser));
         assertEquals(UserStatus.Free, userService.findByUsername(newUser.getUsername()).getStatus());
     }
-
+    
     private User createTestUser(String username, String email) {
         User user = new User();
         user.setUsername(username);
@@ -71,6 +71,4 @@ public class GameSessionTest {
         userService.createUser(user);
         return user;
     }
-
-    // TODO fillupWithWaitingRoom
 }

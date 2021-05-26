@@ -13,6 +13,7 @@ public class Round {
     private final Game game;
     private final int currentCardAmount;
     private Player currentPlayer;
+    private final Player nextRoundBeginner;
     private final List<Player> players;
     private final WebSocketService webSocketService;
     private final UserService userService;
@@ -21,6 +22,7 @@ public class Round {
         this.game = game;
         this.players = game.getPlayers();
         this.currentPlayer = game.getStartPlayer();
+        this.nextRoundBeginner = DogUtils.getNextPlayer(currentPlayer, players);
         this.currentCardAmount = game.getCurrentCardAmountForRound();
         this.cardAPIService = cardAPIService;
         this.webSocketService = webSocketService;
@@ -49,8 +51,8 @@ public class Round {
         game.broadcastCurrentTurnAndUpdatedFacts();
     }
 
-    public String getNextPlayerName() {
-        return DogUtils.getNextPlayer(this.currentPlayer, this.players).getPlayerName();
+    public String getNextRoundBeginner() {
+        return nextRoundBeginner.getPlayerName();
     }
 
     public Game getGame () {
