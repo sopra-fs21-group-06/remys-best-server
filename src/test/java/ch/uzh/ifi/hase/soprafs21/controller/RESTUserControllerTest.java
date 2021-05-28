@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserManagment.UserLoginPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserManagment.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserManagment.UserRegisterPostDTO;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -22,8 +23,8 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.doNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -174,30 +175,42 @@ public class RESTUserControllerTest extends AbstractRESTControllerTest {
                 .andExpect(status().isConflict());
     }
 
-//    @Test
-//    public void logoutUser_validInput_userLoggedOut() throws Exception {
-//        //given
-//        User user = new User();
-//        user.setUsername("iamsiddhantsahu");
-//        user.setPassword("abcd");
-//        user.setEmail("hello@siddhantsahu.com");
-//
-//        UserLoginPostDTO userLoginPostDTO = new UserLoginPostDTO();
-//        userLoginPostDTO.setPassword("abcd");
-//        userLoginPostDTO.setUsernameOrEmail("iamsiddhantsahu");
-//
-//        ResponseStatusException ex = new ResponseStatusException(HttpStatus.CONFLICT);
-//        given(userService.logInUser(Mockito.any())).willThrow(ex);
-//
-//        // when/then -> do the request + validate the result
-//        MockHttpServletRequestBuilder postRequest = post("/users/login")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(asJsonString(userLoginPostDTO));
-//
-//        // then
-//        mockMvc.perform(postRequest)
-//                .andExpect(status().isConflict());
-//    }
+    @Test
+    public void logoutUser_validInput_userLoggedOut() throws Exception {
+        //given
+        User user = new User();
+        user.setUsername("iamsiddhantsahu");
+        user.setPassword("abcd");
+        user.setEmail("hello@siddhantsahu.com");
+        user.setToken("sid");
 
+        doNothing().when(userService).logOutUser(Mockito.any());
 
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder postRequest = post("/users/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", user.getToken());
+
+        // then
+        mockMvc.perform(postRequest)
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void updateUser_valid() throws Exception {
+
+        UserPutDTO userPutDTO = new UserPutDTO();
+        userPutDTO.setEmail("hello@sidhantsahu.com");
+        userPutDTO.setPassword("abcd");
+
+        doNothing().when(userService).updateUser(Mockito.any());
+
+        MockHttpServletRequestBuilder putRequest = put("/users")
+                .content(asJsonString(userPutDTO))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        // then
+        mockMvc.perform(putRequest)
+                .andExpect(status().isOk());
+    }
 }
