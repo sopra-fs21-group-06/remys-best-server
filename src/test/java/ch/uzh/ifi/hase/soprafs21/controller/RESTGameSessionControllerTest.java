@@ -37,6 +37,31 @@ public class RESTGameSessionControllerTest extends AbstractRESTControllerTest {
     @Test
     public void createGameSessionTest() throws Exception {
 
+        User host = createTestUser("iamsiddhantsahu", "hello@siddhantsahu.com");
+        host.setToken("abcd");
+
+        GameSession gameSession = new GameSession(host, userService);
+
+        GameSessionIdDTO gameSessionIdDTO = new GameSessionIdDTO();
+        gameSessionIdDTO.setGameSessionId(gameSession.getID());
+
+        Mockito.when(userService.getUserRepository())
+                .thenReturn(userRepository);
+        Mockito.when(userRepository.findByToken(host.getToken()))
+                .thenReturn(host);
+        Mockito.when(userRepository.save(Mockito.any(User.class)))
+                .thenAnswer(i -> i.getArguments()[0]);
+        Mockito.when(gameEngine.newGameSession(host))
+                .thenReturn(gameSession);
+        Mockito.when(gameEngine.findGameSessionByHostName(host.getUsername()))
+                .thenReturn(gameSession);
+
+        MockHttpServletRequestBuilder getRequest = get("/create-gamesession")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", host.getToken());
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isCreated());
     }
 
 }
