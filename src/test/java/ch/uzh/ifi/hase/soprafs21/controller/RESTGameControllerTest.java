@@ -4,9 +4,11 @@ import ch.uzh.ifi.hase.soprafs21.constant.Color;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GameManagement.PossibleMarblesDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GameManagement.PossibleTargetFieldsDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GameManagement.SevenMovesDTO;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleDTO;
+import ch.uzh.ifi.hase.soprafs21.websocket.dto.MarbleExecuteCardDTO;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,5 +132,52 @@ public class RESTGameControllerTest extends AbstractRESTControllerTest {
                 .andExpect(jsonPath("$.targetFieldKeys[0]", is(mockedTargetFieldKeys.get(0))))
                 .andExpect(jsonPath("$.targetFieldKeys[1]", is(mockedTargetFieldKeys.get(1))))
                 .andExpect(jsonPath("$.targetFieldKeys[2]", is(mockedTargetFieldKeys.get(2))));
+    }
+
+    @Test
+    public void throwAwayTest() throws Exception {
+
+        Game currentRunningGame = setupGame();
+        UUID gameID = currentRunningGame.getGameId();
+        currentRunningGame.setGameService(gameService);
+
+        List<String> response = new ArrayList<>();
+        response.add("2D");
+        response.add("2H");
+
+        given(gameEngine.getRunningGameByID(Mockito.any())).willReturn(currentRunningGame);
+        given(gameEngine.findPlayerbyUsername(Mockito.any(), Mockito.any())).willReturn(currentRunningGame.getPlayers().get(0));
+        given(gameEngine.getGameService()).willReturn(currentRunningGame.getGameService());
+        given(gameService.canPlay(Mockito.any(), Mockito.any())).willReturn(response);
+
+        MockHttpServletRequestBuilder getRequest = MockMvcRequestBuilders.get("/game/{gameId}/throw-away",gameID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "userToken");
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isAccepted());
+    }
+
+    @Test
+    public void remainingSevenMovesTest() throws Exception {
+
+        Game currentRunningGame = setupGame();
+        UUID gameID = currentRunningGame.getGameId();
+        currentRunningGame.setGameService(gameService);
+
+        List<MarbleExecuteCardDTO> marbleExecuteCardDTOS = new ArrayList<>();
+        marbleExecuteCardDTOS.add(new MarbleExecuteCardDTO(2, "2 Forwards"));
+        SevenMovesDTO sevenMovesDTO = new SevenMovesDTO();
+        sevenMovesDTO.setSevenMoves(marbleExecuteCardDTOS);
+
+        given(gameEngine.getRunningGameByID(Mockito.any())).willReturn(currentRunningGame);
+
+        MockHttpServletRequestBuilder postRequest = MockMvcRequestBuilders.post("/game/{gameId}/remaining-seven-moves",gameID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "userToken")
+                .content(asJsonString(sevenMovesDTO));
+
+        mockMvc.perform(postRequest)
+                .andExpect(status().isOk());
     }
 }
