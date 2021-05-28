@@ -195,4 +195,22 @@ public class RESTUserControllerTest extends AbstractRESTControllerTest {
         mockMvc.perform(postRequest)
                 .andExpect(status().isOk());
     }
+
+    @Test
+    public void updateUser_valid() throws Exception {
+
+        UserPutDTO userPutDTO = new UserPutDTO();
+        userPutDTO.setEmail("hello@sidhantsahu.com");
+        userPutDTO.setPassword("abcd");
+
+        doNothing().when(userService).updateUser(Mockito.any());
+
+        MockHttpServletRequestBuilder putRequest = put("/users")
+                .content(asJsonString(userPutDTO))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        // then
+        mockMvc.perform(putRequest)
+                .andExpect(status().isOk());
+    }
 }
