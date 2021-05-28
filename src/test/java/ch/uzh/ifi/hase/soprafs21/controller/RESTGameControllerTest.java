@@ -131,4 +131,29 @@ public class RESTGameControllerTest extends AbstractRESTControllerTest {
                 .andExpect(jsonPath("$.targetFieldKeys[1]", is(mockedTargetFieldKeys.get(1))))
                 .andExpect(jsonPath("$.targetFieldKeys[2]", is(mockedTargetFieldKeys.get(2))));
     }
+
+    @Test
+    public void throwAwayTest() throws Exception {
+
+        Game currentRunningGame = setupGame();
+        UUID gameID = currentRunningGame.getGameId();
+        currentRunningGame.setGameService(gameService);
+
+        List<String> response = new ArrayList<>();
+        response.add("2D");
+        response.add("2H");
+
+        given(gameEngine.getRunningGameByID(Mockito.any())).willReturn(currentRunningGame);
+        //given(userService.convertTokenToUsername(Mockito.any())).willReturn(user);
+        given(gameEngine.findPlayerbyUsername(Mockito.any(), Mockito.any())).willReturn(currentRunningGame.getPlayers().get(0));
+        given(gameEngine.getGameService()).willReturn(currentRunningGame.getGameService());
+        given(gameService.canPlay(Mockito.any(), Mockito.any())).willReturn(response);
+
+        MockHttpServletRequestBuilder getRequest = MockMvcRequestBuilders.get("/game/{gameId}/throw-away",gameID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "userToken");
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isAccepted());
+    }
 }
