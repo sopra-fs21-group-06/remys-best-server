@@ -1,8 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.AbstractTest;
-import ch.uzh.ifi.hase.soprafs21.moves.GoToStart;
-import ch.uzh.ifi.hase.soprafs21.moves.INormalMove;
 import ch.uzh.ifi.hase.soprafs21.objects.*;
 import ch.uzh.ifi.hase.soprafs21.utils.DogUtils;
 import org.junit.jupiter.api.Assertions;
@@ -158,9 +156,9 @@ public class GameServiceTest extends AbstractTest {
         game.getGameService().updateRoundStats(game);
         assertEquals(game.getCurrentCardAmountForRound(), 5);
         assertEquals(game.getStartPlayer(), game.getPlayers().get(1));
-        assertEquals(game.getRoundNumber(), 2);
-
+        assertEquals(1, game.getRoundNumber());
     }
+
     @Test
     public void testChangeColorMarbles_AfterEndTurn(){
         Game game = setupGame();
@@ -303,7 +301,7 @@ public class GameServiceTest extends AbstractTest {
         currentPlayer = game.getCurrentRound().getCurrentPlayer();
         addCardsToHand(currentPlayer, cardCodesPlayer);
         assertTrue(game.getGameService().canPlay(currentPlayer, game).isEmpty());
-        assertEquals(game.getRoundNumber(), 2);
+        assertEquals(1, game.getRoundNumber());
     }
 
 }
