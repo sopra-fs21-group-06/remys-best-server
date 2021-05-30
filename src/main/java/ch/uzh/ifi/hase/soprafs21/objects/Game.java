@@ -21,7 +21,7 @@ public class Game {
     private Player startPlayer;
     private final PlayingBoard playingBoard = new PlayingBoard();
     private final UUID gameId = UUID.randomUUID();
-    private int roundNumber = 1;
+    private int roundNumber = 0;
     private Round currentRound;
     private GameService gameService = GameService.getInstance();
     private final WebSocketService webSocketService;
